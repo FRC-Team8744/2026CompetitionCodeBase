@@ -12,7 +12,7 @@
         "y": 1.8985092649243271
       },
       "isLocked": false,
-      "linkedName": "ER4-startRight"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4pfirrs2Right"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -52,24 +52,24 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ElevatorDown",
+      "name": "",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "ElevatorDown"
+          "name": null
         }
       }
     },
     {
-      "name": "RunIntake",
+      "name": "",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "SourceIntake"
+          "name": null
         }
       }
     }

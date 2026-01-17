@@ -12,7 +12,7 @@
         "y": 1.439664374379639
       },
       "isLocked": false,
-      "linkedName": "4pfirrs2Right"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "NoTwoPieces",
+      "name": "",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "NoTwoPieces"
+          "name": null
         }
       }
     }

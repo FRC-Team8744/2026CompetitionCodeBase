@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "4pfirrs2Right"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -47,24 +47,24 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ElevatorDown",
+      "name": "",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "ElevatorDown"
+          "name": null
         }
       }
     },
     {
-      "name": "SourceIntake",
+      "name": "",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "RunIntake"
+          "name": null
         }
       }
     }
