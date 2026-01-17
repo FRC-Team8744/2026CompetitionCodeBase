@@ -15,25 +15,17 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.ExtendedKalmanFilter;
-import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -48,9 +40,11 @@ import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DriveModifier;
+import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.alignment.AlignToPoleX;
-import frc.robot.subsystems.vision.Limelight4Test;
-import frc.robot.subsystems.vision.PhotonVisionGS;
+import frc.robot.subsystems.vision.PhotonVision;
+// import frc.robot.subsystems.vision.Limelight4Test;
+// import frc.robot.subsystems.vision.LimeLight4;
 import frc.robot.RotationEnum;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -98,9 +92,10 @@ public class DriveSubsystem extends SubsystemBase {
   Joystick m_Joystick = new Joystick(OIConstants.kDriverControllerPort);
 
   // The imu sensor
-  public final Pigeon2 m_imu = new Pigeon2(Constants.SwerveConstants.kIMU_ID);
-  private final PhotonVisionGS m_vision;
+  public final static Pigeon2 m_imu = new Pigeon2(Constants.SwerveConstants.kIMU_ID);
+  // private final LimeLight4 m_vision;
   public final AlignToPoleX m_alignToPoleX;
+  private PhotonVision m_visionPV;
 
   public RotationEnum isAutoRotate = RotationEnum.NONE;
   public boolean isAutoYSpeed = false;
@@ -127,14 +122,14 @@ public class DriveSubsystem extends SubsystemBase {
   SwerveDriveOdometry m_odometry;
 
   // Create Field2d for robot and trajectory visualizations.
-  public Field2d m_field;
-  
-  /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(PhotonVisionGS m_vision, AlignToPoleX m_alignToPoleX, Limelight4Test m_limelight, DriveModifier...driveModifiers) {
-    
-    m_turnCtrl.setTolerance(10.00);
-    this.m_vision = m_vision;
-    this.m_alignToPoleX = m_alignToPoleX;
+  public Field2d m_field;    
+    /** Creates a new DriveSubsystem. */
+    public DriveSubsystem(PhotonVision m_visionPV,AlignToPoleX m_alignToPoleX, DriveModifier...driveModifiers) {
+      
+      m_turnCtrl.setTolerance(10.00);
+      // this.m_vision = m_vision;
+      this.m_alignToPoleX = m_alignToPoleX;
+      this.m_visionPV = m_visionPV;
     
     offset_FL = SwerveConstants.kFrontLeftMagEncoderOffsetDegrees;
     offset_RL = SwerveConstants.kRearLeftMagEncoderOffsetDegrees;
@@ -238,15 +233,18 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    if (m_vision.getTarget().isPresent()) {
-      if (m_vision.singleTag) {
-        if (m_vision.getTarget().map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
-          m_poseEstimator.addVisionMeasurement(m_vision.getRobotPose().get(), m_vision.getApriltagTime());
+    if (m_visionPV.getTarget().isPresent()) {
+      if (m_visionPV.singleTag) {
+        if (m_visionPV.getTarget().map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
+          m_poseEstimator.addVisionMeasurement(m_visionPV.getRobotPose().get(), m_visionPV.getApriltagTime());
         }
       } else {
-        m_vision.getRobotPose().ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, m_vision.getApriltagTime()));
+        m_visionPV.getRobotPose().ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, m_visionPV.getApriltagTime()));
       }
     }
+
+    SmartDashboard.putNumber("Left Distance", m_frontLeft.getPosition().distanceMeters);
+    SmartDashboard.putNumber("Pigeon Yaw", m_imu.getYaw().getValueAsDouble());
 
     m_poseEstimator.update(m_imu.getRotation2d(), getModulePositions());
 
@@ -263,11 +261,8 @@ public class DriveSubsystem extends SubsystemBase {
         });
     
     // Update robot position on Field2d.
-    m_field.setRobotPose(getEstimatedPose());
-
-    // SmartDashboard.putNumber("Gyro angle", m_imu.getYaw().getValueAsDouble());
-    // SmartDashboard.putNumber("Gyro pitch", m_imu.getPitch().getValueAsDouble());
-    // SmartDashboard.putNumber("Gyro roll", m_imu.getRoll().getValueAsDouble());
+    // m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
     SmartDashboard.putNumber("Estimated Pose X", m_poseEstimator.getEstimatedPosition().getX());
     SmartDashboard.putNumber("Estimated Pose Y", m_poseEstimator.getEstimatedPosition().getY());
@@ -280,6 +275,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("yCheck", Constants.yCheck);
 
     SmartDashboard.putNumber("FL current Angle", m_frontLeft.getCurrentDriveAngle());
+    SmartDashboard.putNumber("FL Drive Motor Position", m_frontLeft.getDriveMotorPosition());
 
     // SmartDashboard.putNumber("Yep", m_frontLeft.getVelocity());
 
@@ -334,11 +330,6 @@ public class DriveSubsystem extends SubsystemBase {
     
     getRobotVelocityX();
     getRobotVelocityY();
-
-    // SmartDashboard.putNumber("Estimated rotation", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-    // SmartDashboard.putNumber("X Speed", autoXSpeed);
-    // SmartDashboard.putNumber("Y Speed", autoYSpeed);
-    // SmartDashboard.putNumber("Goal Rotation Speed", autoRotateSpeed);
   }
 
   /**
@@ -417,10 +408,6 @@ public class DriveSubsystem extends SubsystemBase {
     ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
     rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
-    // xSpeed *= Constants.SwerveConstants.kMaxSpeedTeleop;
-    // ySpeed *= Constants.SwerveConstants.kMaxSpeedTeleop;
-    // rot *= Constants.ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
-
     // Apply speed scaling
     xSpeed = xSpeed * m_DriverSpeedScale;
     ySpeed = ySpeed * m_DriverSpeedScale;
@@ -432,27 +419,6 @@ public class DriveSubsystem extends SubsystemBase {
       xSpeed = -xSpeed;
     }
 
-    /*if (isAutoRotate == false && Math.abs(rot / ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND) <= 0.1 
-    && rotationTimer.hasElapsed(0.1)
-    ) {
-      if (roboNoSpino) {
-        goalAngle = m_poseEstimator.getEstimatedPosition().getRotation().getDegrees();
-        roboNoSpino = false;
-      }
-    
-      m_turnCtrl.setSetpoint(goalAngle);
-      double m_output = MathUtil.clamp(m_turnCtrl.calculate(m_poseEstimator.getEstimatedPosition().getRotation().getDegrees()), -1.0, 1.0);
-      rot = m_output;
-    }
-    else {
-      goalAngle = m_poseEstimator.getEstimatedPosition().getRotation().getDegrees();
-      m_turnCtrl.reset();
-      roboNoSpino = true;
-      rotationTimer.restart();
-    }
-    SmartDashboard.putNumber("Goal Angle", goalAngle);
-    */
-
     SmartDashboard.putNumber("XSpeed", xSpeed);
     SmartDashboard.putNumber("YSpeed", ySpeed);
     SmartDashboard.putNumber("Rotation", rot);
@@ -462,7 +428,7 @@ public class DriveSubsystem extends SubsystemBase {
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_imu.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    SwerveDriveKinematics.desaturateWheelSpeeds( swerveModuleStates, SwerveConstants.kMaxSpeedMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveFL_enum]);
     m_frontRight.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveFR_enum]);
     m_rearLeft.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveRL_enum]);

@@ -9,8 +9,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.alignment.AlignToPoleX;
-import frc.robot.subsystems.vision.Limelight4Test;
-import frc.robot.subsystems.vision.PhotonVisionGS;
+import frc.robot.subsystems.vision.PhotonVision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -25,14 +24,15 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private PhotonVisionGS m_vision = new PhotonVisionGS();
+  // private LimeLight4 m_vision = new LimeLight4();
   private AlignToPoleX m_alignToPoleX = new AlignToPoleX();
-  private Limelight4Test m_limelight4Test = new Limelight4Test();
-  private DriveSubsystem m_robotDrive = new DriveSubsystem(m_vision, m_alignToPoleX, m_limelight4Test, m_alignToPoleX);
+  private PhotonVision m_visionPV = new PhotonVision();
+  // private Limelight4Test m_limelight4Test = new Limelight4Test();
+  private DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV, m_alignToPoleX, m_alignToPoleX);
   // The driver's controller
   private CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
-  private AutoCommandManager m_autoManager = new AutoCommandManager(m_vision, m_robotDrive);
+  private AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive);
   
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -47,8 +47,8 @@ public class RobotContainer {
           new RunCommand(
               () ->
                   m_robotDrive.drive(
-                      -m_driver.getLeftY()  * SwerveConstants.kMaxSpeedTeleop,
-                      -m_driver.getLeftX()  * SwerveConstants.kMaxSpeedTeleop,
+                      -m_driver.getLeftY() * SwerveConstants.kMaxSpeedTeleop,
+                      -m_driver.getLeftX() * SwerveConstants.kMaxSpeedTeleop,
                       m_driver.getRightX() * ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND,
                       true),
               m_robotDrive));

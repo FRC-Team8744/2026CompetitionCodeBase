@@ -27,10 +27,10 @@ import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class PhotonVisionGS extends SubsystemBase {
-  private PhotonCamera camera = new PhotonCamera("Camera 1.0");
-  private Rotation3d rd = new Rotation3d(Units.degreesToRadians(5.54), Units.degreesToRadians(-9.2), Units.degreesToRadians(154.1));
-  private Transform3d td = new Transform3d(-0.22, 0.285, 0.525, rd);
+public class PhotonVision extends SubsystemBase {
+  private PhotonCamera camera = new PhotonCamera("Limelight4");
+  private Rotation3d rd = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(90.0));
+  private Transform3d td = new Transform3d(Units.inchesToMeters(6.25), Units.inchesToMeters(10.75), Units.inchesToMeters(10), rd);
   private Pose3d targetTd;
   private double apriltagTime;
   public double distanceToApriltag = 0;
@@ -53,7 +53,7 @@ public class PhotonVisionGS extends SubsystemBase {
   private Transform3d multiTagResult;
   public boolean singleTag = true;
 
-  public PhotonVisionGS() {
+  public PhotonVision() {
     ID = 0;
   }
 
