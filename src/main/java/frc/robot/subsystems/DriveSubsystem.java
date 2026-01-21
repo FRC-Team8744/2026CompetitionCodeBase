@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -37,10 +36,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AutoCommandManager;
 import frc.robot.Constants;
+import frc.robot.Debug;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DriveModifier;
-import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.alignment.AlignToPoleX;
 import frc.robot.subsystems.vision.PhotonVision;
 // import frc.robot.subsystems.vision.Limelight4Test;
@@ -75,9 +74,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public boolean leftPoint = true;
 
-  private double goalAngle = 0;
   private PIDController m_turnCtrl = new PIDController(0.03, 0.0065, 0.0035);
-  private boolean roboNoSpino = true;
   private Timer rotationTimer = new Timer();
 
   final Timer m_timerX = new Timer();
@@ -289,26 +286,24 @@ public class DriveSubsystem extends SubsystemBase {
     
 
     // Diagnostics
+    Debug.dashboard(
+      Debug.Dashboard.of("FL Mag Enc", m_frontLeft.getCanCoder()),
+      Debug.Dashboard.of("FR Mag Enc", m_frontRight.getCanCoder()),
+      Debug.Dashboard.of("RL Mag Enc", m_rearLeft.getCanCoder()),
+      Debug.Dashboard.of("RR Mag Enc", m_rearRight.getCanCoder()),
 
-  if (Constants.kDebugLevel >=3) {
-      SmartDashboard.putNumber("FL Mag Enc", m_frontLeft.getCanCoder());
-      SmartDashboard.putNumber("FR Mag Enc", m_frontRight.getCanCoder());
-      SmartDashboard.putNumber("RL Mag Enc", m_rearLeft.getCanCoder());
-      SmartDashboard.putNumber("RR Mag Enc", m_rearRight.getCanCoder());
+      Debug.Dashboard.of("FL Angle State", m_frontLeft.getState().angle.getDegrees()),
+      Debug.Dashboard.of("FL Angle SparkMax", m_frontLeft.getAngle().getDegrees()),
+      Debug.Dashboard.of("FL Angle CanCoder", m_frontLeft.getCanCoder()),
+      Debug.Dashboard.of("FL Angle Offset", m_frontLeft.getCanCoder() - m_frontLeft.getAngle().getDegrees()),
+      Debug.Dashboard.of("FL Angle Current",m_frontLeft.getTurnCurrent()),
 
-      SmartDashboard.putNumber("FL Angle State", m_frontLeft.getState().angle.getDegrees());
-      SmartDashboard.putNumber("FL Angle SparkMax", m_frontLeft.getAngle().getDegrees());
-      SmartDashboard.putNumber("FL Angle CanCoder", m_frontLeft.getCanCoder());
-      SmartDashboard.putNumber("FL Angle Offset", m_frontLeft.getCanCoder() - m_frontLeft.getAngle().getDegrees());
-      SmartDashboard.putNumber("FL Angle Current",m_frontLeft.getTurnCurrent());
+      Debug.Dashboard.of("FL Turn Enc", m_frontLeft.getPosition().angle.getDegrees()),
+      Debug.Dashboard.of("FR Turn Enc", m_frontRight.getPosition().angle.getDegrees()),
+      Debug.Dashboard.of("RL Turn Enc", m_rearLeft.getPosition().angle.getDegrees()),
+      Debug.Dashboard.of("RR Turn Enc", m_rearRight.getPosition().angle.getDegrees()),
       
-      SmartDashboard.putNumber("FL Turn Enc", m_frontLeft.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber("FR Turn Enc", m_frontRight.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber("RL Turn Enc", m_rearLeft.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber("RR Turn Enc", m_rearRight.getPosition().angle.getDegrees());
-
-      SmartDashboard.putNumber("RL Drive encoder", m_rearLeft.getPosition().distanceMeters);
-    }
+      Debug.Dashboard.of("RL Drive encoder", m_rearLeft.getPosition().distanceMeters));
 
     Vector<Double> robotVector = new Vector<>();
     if (Math.abs(xVelocity) <= 0.1) {

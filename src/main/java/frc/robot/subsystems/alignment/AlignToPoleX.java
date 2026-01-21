@@ -5,16 +5,14 @@
 package frc.robot.subsystems.alignment;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.DriveModifier;
 import frc.robot.RotationEnum;
+import frc.robot.Debug;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.isInAreaEnum;
 import frc.robot.subsystems.DriveSubsystem;
@@ -67,17 +65,15 @@ public class AlignToPoleX extends DriveModifier {
       goalX = 3;
     }
 
-    // SmartDashboard.putNumber("Goal X", goalX);
-    SmartDashboard.putNumber("Robot X", robotX);
-
     xOffset = goalX - robotX;
 
     // if (Math.abs(xOffset) >= 3.0) {
     //   xOffset = 0;
     // }
 
-    // SmartDashboard.putNumber("X Offset", xOffset);
-    // SmartDashboard.putNumber("Goal X", goalX);
+    Debug.dashboard("Goal X", goalX);
+    Debug.dashboard("X Offset", xOffset);
+    SmartDashboard.putNumber("Robot X", robotX);
 
     m_driveCtrl.setSetpoint(xOffset);
 
