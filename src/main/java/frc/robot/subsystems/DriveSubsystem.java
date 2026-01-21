@@ -230,13 +230,14 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    if (m_visionPV.getTarget().isPresent()) {
-      if (m_visionPV.singleTag) {
-        if (m_visionPV.getTarget().map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
-          m_poseEstimator.addVisionMeasurement(m_visionPV.getRobotPose().get(), m_visionPV.getApriltagTime());
+    PhotonVision.Result visionResult = m_visionPV.getVisionResult();
+    if (visionResult.apriltag.isPresent()) {
+      if (visionResult.singleTag) {
+        if (visionResult.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
+          m_poseEstimator.addVisionMeasurement(visionResult.robotPose.get(), visionResult.apriltagTime);
         }
       } else {
-        m_visionPV.getRobotPose().ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, m_visionPV.getApriltagTime()));
+        visionResult.robotPose.ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, visionResult.apriltagTime));
       }
     }
 

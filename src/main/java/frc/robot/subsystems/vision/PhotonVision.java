@@ -1,166 +1,138 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
-
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.isInAreaEnum;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonVision extends SubsystemBase {
-  private PhotonCamera camera = new PhotonCamera("Limelight4");
-  private Rotation3d rd = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(90.0));
-  private Transform3d td = new Transform3d(Units.inchesToMeters(6.25), Units.inchesToMeters(10.75), Units.inchesToMeters(10), rd);
-  private Pose3d targetTd;
-  private double apriltagTime;
-  public double distanceToApriltag = 0;
+  private final Context context;
 
-  private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2025ReefscapeWelded.loadAprilTagLayoutField();
-  private PhotonPipelineResult result;
-  private PhotonTrackedTarget target;
-
-  private double ID = 0;
-  private Debouncer m_filterSpeakerInView = new Debouncer (0.1, Debouncer.DebounceType.kBoth);
-  private boolean speakerInView;
-  private boolean speakerInView_filtered;
-
-  private LinearFilter m_lowpass = LinearFilter.movingAverage(100);
-  private double tx_out;
-  //**heightMatters is the height of the object based on the april tags and the camera used for cacluations in shooting**//
-  private double heightMatters = 1.93;
-  // private double heightMatters = 2.02;
-  public double m_goalAngle;
-  private Transform3d multiTagResult;
-  public boolean singleTag = true;
-
-  public PhotonVision() {
-    ID = 0;
+  private Result visionResult;
+  
+  public PhotonVision(Context context) {
+    this.context = context;
+    this.visionResult = Result.empty();
   }
 
   @Override
   public void periodic() {
-    result = camera.getLatestResult();
-    apriltagTime = result.getTimestampSeconds();
+    Result.Builder resultBuilder = Result.builder();
+
+    PhotonPipelineResult result = context.camera.getLatestResult();
+    resultBuilder.setApriltagTime(result.getTimestampSeconds());
     result.getTargets();
-    // camera.setPipelineIndex(0);
 
     if (result.hasTargets()) {
-      PhotonTrackedTarget localTarget;
-      localTarget = result.getTargets().stream()
+      PhotonTrackedTarget resultAprilTag = distillTarget(result);
+      resultBuilder.setApriltag(resultAprilTag);
+
+      // Start of check list
+      Transform3d multiTagResult = result.getMultiTagResult().map(((m) -> m.estimatedPose.best)).orElse(null);
+
+      var id = resultAprilTag.getFiducialId();
+      Pose3d aprilTagPose3d = context.aprilTagFieldLayout.getTagPose(id).get();
+
+      if (multiTagResult == null) {
+        resultBuilder.setSingleTag(true);
+        Transform3d cameraToTarget = resultAprilTag.getBestCameraToTarget();
+        resultBuilder.setRobotPose(PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d, context.cameraToRobotOffset));
+      } else {
+        resultBuilder.setSingleTag(false);
+        resultBuilder.setRobotPose(new Pose3d().plus(multiTagResult.plus(context.cameraToRobotOffset)));
+      }
+    }
+
+    visionResult = resultBuilder.build();
+  }
+
+  private PhotonTrackedTarget distillTarget(PhotonPipelineResult result) {
+    return result.getTargets().stream()
         .filter(((t) -> t.getFiducialId() == isInAreaEnum.areaEnum.getAprilTag()))
         .findAny()
         .orElseGet((() -> result.getBestTarget()));
-
-      // Start of check list
-      boolean foundSpeaker = true;
-      multiTagResult = result.getMultiTagResult().map(((m) -> m.estimatedPose.best)).orElse(null);
-      if (multiTagResult == null) {
-        singleTag = true;
-      } else {
-        singleTag = false;
-      }
-      Transform3d cameraToTarget = new Transform3d();
-      if (singleTag) {
-        cameraToTarget = localTarget.getBestCameraToTarget();
-      }
-      // SmartDashboard.putNumber("cameraToTarget1 X", cameraToTarget.getX());
-      var id = localTarget == null ? null : localTarget.getFiducialId();
-      Pose3d aprilTagPose3d = aprilTagFieldLayout.getTagPose(id).get();
-      if (!singleTag) {
-        targetTd = new Pose3d().plus(multiTagResult.plus(td));
-      } else {
-        targetTd = PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d, td);
-      }
-      if (!singleTag) {
-        // SmartDashboard.putNumber("Multi Tag Result X", multiTagResult.getX());
-        // SmartDashboard.putNumber("Multi Tag Result Y", multiTagResult.getY());
-      } else {
-        // SmartDashboard.putNumber("Single Tag Result X", cameraToTarget.getX());
-        // SmartDashboard.putNumber("Single Tag Result Y", cameraToTarget.getY());
-      }
-
-      ID = localTarget.getFiducialId();
-
-      target = localTarget;
-      // SmartDashboard.putNumber("April tag local targer number", localTarget.getFiducialId());
-
-      if (foundSpeaker) {
-        speakerInView = true;
-        double yaw = (PhotonUtils.getYawToPose(targetTd.toPose2d(), aprilTagPose3d.toPose2d()).getDegrees());
-        yaw *= ID == 7 ? 1 : -1;
-        distanceToApriltag = PhotonUtils.getDistanceToPose(targetTd.toPose2d(), aprilTagPose3d.toPose2d());
-        tx_out = yaw; //m_lowpass.calculate(yaw);
-      } else {
-        speakerInView = false;
-        // m_lowpass.reset();
-      }
-      speakerInView_filtered = m_filterSpeakerInView.calculate(speakerInView);
-
-  double yaw = Units.radiansToDegrees(targetTd.getRotation().getZ());
-  tx_out = m_lowpass.calculate(yaw);
-  // SmartDashboard.putNumber("April tag target number", target.getFiducialId());
-  // SmartDashboard.putNumber("April tag targetTd number", targetTd.getX());
-  // SmartDashboard.putNumber("Get Target Distance camera 1", getTargetDistance());
-  // SmartDashboard.putNumber("Get Target Distance camera 1 X", targetTd.toPose2d().getX());
-  // SmartDashboard.putNumber("Get Target Distance camera 1 Y", targetTd.toPose2d().getY());
-  // SmartDashboard.putNumber("Get Target Distance camera 1 Z", targetTd.getZ());
-} else {
-  ID = 0;
-  targetTd = null;
-  target = null;
   }
-}
+
   // port: http://photonvision.local:5800
 
-  public boolean isSpeakerInView() {
-    return speakerInView_filtered;
+  public Result getVisionResult() {
+    return visionResult;
   }
 
-  public double getTargetHorzAngle() {
-    return tx_out;
+  public static class Context {
+    private final PhotonCamera camera;
+    private final Transform3d cameraToRobotOffset;
+    private final AprilTagFieldLayout aprilTagFieldLayout;
+
+    public Context(String cameraName, Transform3d cameraToRobotOffset, AprilTagFieldLayout aprilTagFieldLayout) {
+      this.camera = new PhotonCamera(cameraName);
+      this.cameraToRobotOffset = cameraToRobotOffset;
+      this.aprilTagFieldLayout = aprilTagFieldLayout;
+    }
   }
 
-  public double getTargetHeight() {
-    return heightMatters;
-  }
+  public static class Result {
+    public final Optional <PhotonTrackedTarget> apriltag;
+    public final Optional <Pose2d> robotPose;
+    public final double apriltagTime;
+    public final boolean singleTag;
 
-  public double getTargetDistance() {
-    return distanceToApriltag;
-  }
+    private Result(PhotonTrackedTarget apriltag, Pose3d robotPose, double apriltagTime, boolean singleTag) {
+      this.apriltag = Optional.ofNullable(apriltag);
+      this.robotPose = Optional.ofNullable(robotPose).map((rp) -> rp.toPose2d());
+      this.apriltagTime = apriltagTime;
+      this.singleTag = singleTag;
+    }
 
-  public Optional <Double> getTargetYDistance() {
-    return Optional.ofNullable(targetTd).map((t) -> t.getY());
-  }
+    public static Result empty() {
+      return new Result(null, null, 0.0, true);
+    }
 
-  public Optional <PhotonTrackedTarget> getTarget() {
-    return Optional.ofNullable(target);
-  }
+    private static Builder builder() {
+      return new Builder();
+    }
 
-  public Optional <Pose2d> getRobotPose() {
-    return Optional.ofNullable(targetTd).map((t) -> t.toPose2d());
-  }
+    private static class Builder {
+      private PhotonTrackedTarget apriltag = null;
+      private Pose3d robotPose = null;
+      private double apriltagTime = 0.0;
+      private boolean singleTag = true;
 
-  public double getApriltagTime() {
-    return apriltagTime;
+      private Builder setApriltag(PhotonTrackedTarget apriltag) {
+        this.apriltag = apriltag;
+        return this;
+      }
+
+      private Builder setRobotPose(Pose3d robotPose) {
+        this.robotPose = robotPose;
+        return this;
+      }
+
+      private Builder setApriltagTime(double apriltagTime) {
+        this.apriltagTime = apriltagTime;
+        return this;
+      }
+
+      private Builder setSingleTag(boolean singleTag) {
+        this.singleTag = singleTag;
+        return this;
+      }
+
+      private Result build() {
+        return new Result(apriltag, robotPose, apriltagTime, singleTag);
+      }
+    }
   }
 }
