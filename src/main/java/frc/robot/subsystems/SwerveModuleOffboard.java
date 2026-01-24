@@ -10,22 +10,17 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import static edu.wpi.first.units.Units.Rotation;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.SwerveConstants;
@@ -34,13 +29,11 @@ public class SwerveModuleOffboard {
   // Drive motor
   private final TalonFX m_driveMotor;
   private final TalonFX m_driveEncoder;
-  private final int m_drivePID;
 
   private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
   private final PositionVoltage turnPosition =  new PositionVoltage(0);
 
   private static final TalonFXConfiguration rotationConfig = new TalonFXConfiguration();
-  private static final CANcoderConfiguration testCanCoderConfig = new CANcoderConfiguration();
   private static final Slot0Configs rotationConfigPID = rotationConfig.Slot0;
 
   private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(0.32, 1.51, 0.27);
@@ -48,12 +41,10 @@ public class SwerveModuleOffboard {
   // Turning motor
   private final TalonFX m_turningMotor;
   private final TalonFX m_turningEncoder;
-  private final int m_turningPID;
   
   // Swerve module absolute encoder (wheel angle)
   private final CANcoder m_canCoder;
   private final double m_canCoderOffsetDegrees;
-  private double lastAngle;
 
   SwerveModuleState state;
   private int DisplayCount = 0;
@@ -71,12 +62,10 @@ public class SwerveModuleOffboard {
     // Create drive motor objects
     m_driveMotor = new TalonFX(driveMotorID);
     m_driveEncoder = m_driveMotor;
-    m_drivePID = 0;
 
     // Create turning motor objects
     m_turningMotor = new TalonFX(turningMotorID);
     m_turningEncoder = m_turningMotor;
-    m_turningPID = 0;
 
     // Create steering encoder objects (high resolution encoder)
     m_canCoder = new CANcoder(magEncoderID, "rio");
@@ -97,8 +86,6 @@ public class SwerveModuleOffboard {
     rotationConfigPID.kI = Constants.ConstantsOffboard.KRAKENROTATION_I;
     rotationConfigPID.kD = Constants.ConstantsOffboard.KRAKENROTATION_D;
     rotationConfig.withSlot0(rotationConfigPID);
-
-    lastAngle = getState().angle.getRadians();
 
     m_driveMotor.getConfigurator().apply(Constants.driveConfig);
     m_driveMotor.getConfigurator().setPosition(0);

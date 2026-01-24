@@ -3,6 +3,11 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.OIConstants;
@@ -25,14 +30,19 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
-  private AlignToPoleX m_alignToPoleX = new AlignToPoleX();
-  private PhotonVision m_visionPV = new PhotonVision();
+  private final Rotation3d cameraToRobotOffsetRotation = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(90.0));
+  private final Transform3d cameraToRobotOffset1 = new Transform3d(Units.inchesToMeters(5.3125), Units.inchesToMeters(10.1875), Units.inchesToMeters(10.25), cameraToRobotOffsetRotation);
+  private final Transform3d cameraToRobotOffset2 = new Transform3d(Units.inchesToMeters(-5.125), Units.inchesToMeters(10.1875), Units.inchesToMeters(10.25), cameraToRobotOffsetRotation);
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
+  private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
+  private final PhotonVision m_visionPV = new PhotonVision(photonVisionContext);
   // private Limelight4Test m_limelight4Test = new Limelight4Test();
-  private DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV, m_alignToPoleX, m_alignToPoleX);
+  private final AlignToPoleX m_alignToPoleX = new AlignToPoleX();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV, m_alignToPoleX, m_alignToPoleX);
   // The driver's controller
-  private CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
+  private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
-  private AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive);
+  private final AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive);
   
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
