@@ -5,19 +5,18 @@
 package frc.robot.subsystems.alignment;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.DriveModifier;
 import frc.robot.RotationEnum;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.isInAreaEnum;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.drive.DriveContext;
+import frc.robot.subsystems.drive.DriveModifier;
+import frc.robot.subsystems.drive.SpeedBuilder;
 
 public class AlignToPoleX extends DriveModifier {
   /** Creates a new AlignToPole. */
@@ -27,11 +26,11 @@ public class AlignToPoleX extends DriveModifier {
   public double xOffset;
   public double robotX;
   public AlignToPoleX() {
-    super(true, false, false);
+    super();
   }
 
   @Override
-  protected void initialize() {
+  protected void initialize(DriveContext context) {
     // m_driveCtrl.enableContinuousInput(-180, 180);
     m_driveCtrl.setTolerance(0.1);
     m_driveCtrl.reset();
@@ -117,12 +116,13 @@ public class AlignToPoleX extends DriveModifier {
   }
 
   @Override
-  public boolean shouldRun(DriveSubsystem drive) {
-    return Constants.isAutoXSpeed && Constants.isAutoRotate == RotationEnum.STRAFEONTARGET;
+  public boolean shouldRun(DriveContext context) {
+    return context.isAutoXSpeed && context.isAutoRotate == RotationEnum.STRAFEONTARGET;
   }
 
   @Override
-  protected void doExecute(DriveSubsystem drive) {
-    Constants.autoXSpeed = execute(drive.getEstimatedPose());
+  protected void doExecute(DriveContext context) {
+    context.autoXSpeed = execute(context.drivable.getEstimatedPose());
+    context.currentSpeed = context.currentSpeed.setX(context.autoXSpeed);
   }
 }

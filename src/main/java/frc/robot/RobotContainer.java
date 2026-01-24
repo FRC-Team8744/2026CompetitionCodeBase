@@ -9,6 +9,11 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.alignment.AlignToPoleX;
+import frc.robot.subsystems.drive.DriveContext;
+import frc.robot.subsystems.drive.RunSlow;
+import frc.robot.subsystems.drive.Speed;
+import frc.robot.subsystems.drive.SpeedProcessor;
+import frc.robot.subsystems.drive.Teleop;
 import frc.robot.subsystems.vision.PhotonVision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,14 +30,23 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
-  private AlignToPoleX m_alignToPoleX = new AlignToPoleX();
   private PhotonVision m_visionPV = new PhotonVision();
   // private Limelight4Test m_limelight4Test = new Limelight4Test();
-  private DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV, m_alignToPoleX, m_alignToPoleX);
-  // The driver's controller
+    // The driver's controller
   private CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
+  private Teleop m_teleop = new Teleop(
+      OIConstants.kDeadband,
+      () -> -m_driver.getLeftY() * SwerveConstants.kMaxSpeedTeleop,
+      () -> -m_driver.getLeftX() * SwerveConstants.kMaxSpeedTeleop,
+      () -> m_driver.getRightX() * ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND
+  );
+  private AlignToPoleX m_alignToPoleX = new AlignToPoleX();
+  private RunSlow m_runSlow = new RunSlow(new Speed(0.1, 0.1, 1));
+  private DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV);
+  private DriveContext m_driveContext = new DriveContext(m_robotDrive);
+  private SpeedProcessor m_speedProcessor = new SpeedProcessor(m_driveContext, m_teleop, m_alignToPoleX, m_runSlow);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
-  private AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive);
+  private AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive, m_speedProcessor);
   
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -41,17 +55,7 @@ public class RobotContainer {
     configureButtonBindings();
 
   // Configure default commands
-      m_robotDrive.setDefaultCommand(
-          // The left stick controls translation of the robot.
-          // Turning is controlled by the X axis of the right stick.
-          new RunCommand(
-              () ->
-                  m_robotDrive.drive(
-                      -m_driver.getLeftY() * SwerveConstants.kMaxSpeedTeleop,
-                      -m_driver.getLeftX() * SwerveConstants.kMaxSpeedTeleop,
-                      m_driver.getRightX() * ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND,
-                      true),
-              m_robotDrive));
+      m_robotDrive.setDefaultCommand(new RunCommand(() -> m_speedProcessor.process(), m_robotDrive));
     // m_autoChooser = AutoBuilder.buildAutoChooser();  // Default auto will be 'Commands.none()'
 
     // SmartDashboard.putData("Auto Mode", m_autoChooser);
@@ -67,10 +71,10 @@ public class RobotContainer {
   private void configureButtonBindings() {
     m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
     m_driver.rightStick()
-    .toggleOnTrue(Commands.runOnce(() -> m_robotDrive.isAutoRotate = m_robotDrive.isAutoRotate == RotationEnum.STRAFEONTARGET ? RotationEnum.NONE : RotationEnum.STRAFEONTARGET));
+    .toggleOnTrue(Commands.runOnce(() -> m_driveContext.isAutoRotate = m_driveContext.isAutoRotate == RotationEnum.STRAFEONTARGET ? RotationEnum.NONE : RotationEnum.STRAFEONTARGET));
 
     m_driver.b()
-    .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
+    .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_driveContext.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_driveContext.isAutoRotate = RotationEnum.NONE))));
   }
 
   public Command getAutonomousCommand() {

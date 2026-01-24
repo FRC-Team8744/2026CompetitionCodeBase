@@ -64,9 +64,6 @@ public final class Constants {
   public static double leftL1ScoringPoint = 3.58;
   public static final double[][] rotationMatrix = {{0.5, Math.sin(Math.PI / 3.0)}, {-Math.sin(Math.PI / 3.0), 0.5}};
 
-  public static RotationEnum isAutoRotate = RotationEnum.NONE;
-  public static boolean isAutoXSpeed = false;
-  public static double autoXSpeed = 0;
   public static double autoYSpeed = 0;
   public static double autoRotateSpeed = 0;
   public static boolean isAutoYSpeed = true;

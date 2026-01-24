@@ -39,9 +39,10 @@ import frc.robot.AutoCommandManager;
 import frc.robot.Constants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.DriveModifier;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.alignment.AlignToPoleX;
+import frc.robot.subsystems.drive.Drivable;
+import frc.robot.subsystems.drive.Speed;
 import frc.robot.subsystems.vision.PhotonVision;
 // import frc.robot.subsystems.vision.Limelight4Test;
 // import frc.robot.subsystems.vision.LimeLight4;
@@ -49,7 +50,7 @@ import frc.robot.RotationEnum;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase implements Drivable {
   StructPublisher<Pose2d> pose_publisher = NetworkTableInstance.getDefault().getStructTopic("RobotPose", Pose2d.struct).publish();
   StructArrayPublisher<SwerveModuleState> swerve_publisher = NetworkTableInstance.getDefault().getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
 
@@ -61,8 +62,6 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_DriverSpeedScale = 1.0;
   private double m_AutoSpeedScale = 1.0;
 
-  public DriveModifier[] driveModifiers;
-
   // Robot swerve modules
   private final SwerveModuleOffboard m_frontLeft;
   private final SwerveModuleOffboard m_rearLeft;
@@ -71,7 +70,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double autoRotateSpeed = 0;
   public double autoYSpeed = 0;
-  public double autoXSpeed = 0;
 
   public boolean leftPoint = true;
 
@@ -94,16 +92,12 @@ public class DriveSubsystem extends SubsystemBase {
   // The imu sensor
   public final static Pigeon2 m_imu = new Pigeon2(Constants.SwerveConstants.kIMU_ID);
   // private final LimeLight4 m_vision;
-  public final AlignToPoleX m_alignToPoleX;
   private PhotonVision m_visionPV;
-
-  public RotationEnum isAutoRotate = RotationEnum.NONE;
+  
   public boolean isAutoYSpeed = false;
-  public boolean isAutoXSpeed = false;
   public boolean isAutoRotateToggle = true;
   public boolean isAutoYSpeedToggle = true;
   public boolean isAutoXSpeedToggle = true;
-  public boolean isDrivingSlow = false;
   
   // public boolean hasYFinished = false;
   
@@ -124,11 +118,10 @@ public class DriveSubsystem extends SubsystemBase {
   // Create Field2d for robot and trajectory visualizations.
   public Field2d m_field;    
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(PhotonVision m_visionPV,AlignToPoleX m_alignToPoleX, DriveModifier...driveModifiers) {
+    public DriveSubsystem(PhotonVision m_visionPV) {
       
       m_turnCtrl.setTolerance(10.00);
       // this.m_vision = m_vision;
-      this.m_alignToPoleX = m_alignToPoleX;
       this.m_visionPV = m_visionPV;
     
     offset_FL = SwerveConstants.kFrontLeftMagEncoderOffsetDegrees;
@@ -179,36 +172,6 @@ public class DriveSubsystem extends SubsystemBase {
           // Create and push Field2d to SmartDashboard.
     m_field = new Field2d();
     SmartDashboard.putData(m_field);
-
-    // Configure the AutoBuilder last
-      try {
-      AutoBuilder.configure(
-        this::getEstimatedPose, // Robot pose supplier
-        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-          new PIDConstants(7.0, 0.0, 0.0), // Translation PID constants
-          new PIDConstants(10.0, 0.0, 0.0)), // Rotation PID constants
-        RobotConfig.fromGUISettings(),
-            ()->{
-        // Boolean supplier that controls when the path will be mirrored for the red alliance
-        // This will flip the path being followed to the red side of the field.
-        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
-      },
-      this
-       // Reference to this subsystem to set requirements
-    );
-  } catch (Exception e) {
-    DriverStation.reportError(e.getMessage(), e.getStackTrace());
-  }
-    // Reference: https://www.chiefdelphi.com/t/has-anyone-gotten-pathplanner-integrated-with-the-maxswerve-template/443646
 
     // Set up custom logging to add the current path to a field 2d widget
     PathPlannerLogging.setLogActivePathCallback((poses) -> m_field.getObject("path").setPoses(poses));
@@ -327,9 +290,6 @@ public class DriveSubsystem extends SubsystemBase {
     // Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
 
     SmartDashboard.putBoolean("Is Right", !leftPoint);
-    
-    getRobotVelocityX();
-    getRobotVelocityY();
   }
 
   /**
@@ -372,21 +332,24 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rot Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
+  @Override
+  public void drive(Speed initialSpeed) {
 
-    if (isDrivingSlow) {
-      ySpeed *= 0.1;
-      xSpeed *= 0.1;
-    }
+    Speed speed = initialSpeed;
+    // rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
 
-    if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      ySpeed = autoYSpeed;
-    }
+    // if (isDrivingSlow) {
+    //   ySpeed *= 0.1;
+    //   xSpeed *= 0.1;
+    // }
 
-    if (isAutoXSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      xSpeed = autoXSpeed;
-    }
+    // if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
+    //   ySpeed = autoYSpeed;
+    // }
+
+    // if (isAutoXSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
+    //   xSpeed = autoXSpeed;
+    // }
 
     // if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
     //   rot = Constants.autoRotateSpeed;
@@ -400,34 +363,36 @@ public class DriveSubsystem extends SubsystemBase {
     //   xSpeed = Constants.autoXSpeed;
     // }
 
-    SmartDashboard.putBoolean("Is Driving Slow", isDrivingSlow);
+    // SmartDashboard.putBoolean("Is Driving Slow", isDrivingSlow);
     SmartDashboard.putNumber("FL Desired Position", m_frontLeft.getDesiredPosition());
 
     // Apply joystick deadband
-    xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
-    ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
-    rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+    // xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
+    // ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
+    // rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
     // Apply speed scaling
-    xSpeed = xSpeed * m_DriverSpeedScale;
-    ySpeed = ySpeed * m_DriverSpeedScale;
-    rot = rot * m_DriverSpeedScale;
+    // xSpeed = xSpeed * m_DriverSpeedScale;
+    // ySpeed = ySpeed * m_DriverSpeedScale;
+    // rot = rot * m_DriverSpeedScale;
     
-    if (isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      fieldRelative = false;
-      ySpeed = -ySpeed;
-      xSpeed = -xSpeed;
-    }
+    speed.times(m_DriverSpeedScale);
 
-    SmartDashboard.putNumber("XSpeed", xSpeed);
-    SmartDashboard.putNumber("YSpeed", ySpeed);
-    SmartDashboard.putNumber("Rotation", rot);
+    // if (isAutoRotate == RotationEnum.STRAFEONTARGET) {
+    //   fieldRelative = false;
+    //   ySpeed = -ySpeed;
+    //   xSpeed = -xSpeed;
+    // }
+
+    SmartDashboard.putNumber("XSpeed", speed.getX());
+    SmartDashboard.putNumber("YSpeed", speed.getY());
+    SmartDashboard.putNumber("Rotation", speed.getRot());
 
     var swerveModuleStates =
         SwerveConstants.kDriveKinematics.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_imu.getRotation2d())
-                : new ChassisSpeeds(xSpeed, ySpeed, rot));
+            speed.isFieldRelative()
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(speed, m_imu.getRotation2d())
+                : speed);
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveFL_enum]);
     m_frontRight.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveFR_enum]);
@@ -451,41 +416,17 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(desiredStates[SwerveConstants.kSwerveRR_enum]);
   }
 
-  public void driveRobotRelative(ChassisSpeeds speeds){
-    // SmartDashboard.putNumber("Robot Auto X", speeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("Auto Rotate Speed", autoRotateSpeed);
-    // SmartDashboard.putBoolean("Auto Rotate", isAutoRotate == RotationEnum.STRAFEONTARGET);
+  @Override
+  public void driveFieldRelative(ChassisSpeeds speeds){
+    this.drive(new Speed(speeds, true));
+  }
 
-    speeds.omegaRadiansPerSecond = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : speeds.omegaRadiansPerSecond;
-
-    if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      speeds.vyMetersPerSecond = autoYSpeed;
-    }
-
-    if (isAutoXSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      speeds.vxMetersPerSecond = autoXSpeed;
-    }
-
-    if (isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      // fieldRelative = false;
-      // ySpeed = -ySpeed;
-      speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
-    }
-
-    // Apply speed scaling
-    speeds.vxMetersPerSecond = speeds.vxMetersPerSecond * m_AutoSpeedScale;
-    speeds.vyMetersPerSecond = speeds.vyMetersPerSecond * m_AutoSpeedScale;
-    speeds.omegaRadiansPerSecond = -speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
-    
-    // SmartDashboard.putNumber("Robot Auto X After align", speeds.vxMetersPerSecond);
-
-    this.drive(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond,false);
-    // SmartDashboard.putNumber("DriveVelX", speeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("DriveVelY", speeds.vyMetersPerSecond);
-    // SmartDashboard.putNumber("DriveRotZ", speeds.omegaRadiansPerSecond);
+  @Override
+  public void driveRobotRelative(ChassisSpeeds speeds) {
+    this.drive(new Speed(speeds, false));
   }
   
-  public ChassisSpeeds getRobotRelativeSpeeds(){
+  public ChassisSpeeds getRobotRelativeSpeeds() {
     return SwerveConstants.kDriveKinematics.toChassisSpeeds(m_frontLeft.getState(),
                                                            m_frontRight.getState(),
                                                            m_rearLeft.getState(),
