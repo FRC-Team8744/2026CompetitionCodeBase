@@ -20,7 +20,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonVision extends SubsystemBase {
   private final Context context;
 
-  private Result visionResult;
+  private Result[] visionResult;
   
   public PhotonVision(Context context) {
     this.context = context;
@@ -29,33 +29,37 @@ public class PhotonVision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Result.Builder resultBuilder = Result.builder();
+    Result[] resultBuilder = new Result[context.numberOfCameras];
 
-    PhotonPipelineResult result = context.camera.getLatestResult();
-    resultBuilder.setApriltagTime(result.getTimestampSeconds());
-    result.getTargets();
+    for (int i = 0; i < context.numberOfCameras; i++) {
+      CameraWithOffsets cameraWithOffsets = context.cameras[i];
+      PhotonPipelineResult result = cameraWithOffsets.camera.getLatestResult();
+      resultBuilder[i] = new Result(null, null, 0.0, true);
+      resultBuilder[i].apriltagTime = result.getTimestampSeconds();
+      result.getTargets();
+  
+      if (result.hasTargets()) {
+        PhotonTrackedTarget resultAprilTag = distillTarget(result);
+        resultBuilder[i].apriltag = Optional.ofNullable(resultAprilTag);
 
-    if (result.hasTargets()) {
-      PhotonTrackedTarget resultAprilTag = distillTarget(result);
-      resultBuilder.setApriltag(resultAprilTag);
+        // Start of check list
+        Transform3d multiTagResult = result.getMultiTagResult().map(((m) -> m.estimatedPose.best)).orElse(null);
 
-      // Start of check list
-      Transform3d multiTagResult = result.getMultiTagResult().map(((m) -> m.estimatedPose.best)).orElse(null);
+        var id = resultAprilTag.getFiducialId();
+        Pose3d aprilTagPose3d = context.aprilTagFieldLayout.getTagPose(id).get();
 
-      var id = resultAprilTag.getFiducialId();
-      Pose3d aprilTagPose3d = context.aprilTagFieldLayout.getTagPose(id).get();
-
-      if (multiTagResult == null) {
-        resultBuilder.setSingleTag(true);
-        Transform3d cameraToTarget = resultAprilTag.getBestCameraToTarget();
-        resultBuilder.setRobotPose(PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d, context.cameraToRobotOffset));
-      } else {
-        resultBuilder.setSingleTag(false);
-        resultBuilder.setRobotPose(new Pose3d().plus(multiTagResult.plus(context.cameraToRobotOffset)));
+        if (multiTagResult == null) {
+          resultBuilder[i].singleTag = true;
+          Transform3d cameraToTarget = resultAprilTag.getBestCameraToTarget();
+          resultBuilder[i].robotPose = Optional.of(PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d, cameraWithOffsets.cameraToRobotOffset).toPose2d());
+        } else {
+          resultBuilder[i].singleTag = false;
+          resultBuilder[i].robotPose = Optional.of(new Pose3d().plus(multiTagResult.plus(cameraWithOffsets.cameraToRobotOffset)).toPose2d());
+        }
       }
     }
 
-    visionResult = resultBuilder.build();
+    visionResult = resultBuilder;
   }
 
   private PhotonTrackedTarget distillTarget(PhotonPipelineResult result) {
@@ -67,27 +71,37 @@ public class PhotonVision extends SubsystemBase {
 
   // port: http://photonvision.local:5800
 
-  public Result getVisionResult() {
+  public Result[] getVisionResult() {
     return visionResult;
   }
 
-  public static class Context {
-    private final PhotonCamera camera;
-    private final Transform3d cameraToRobotOffset;
-    private final AprilTagFieldLayout aprilTagFieldLayout;
+  public static class CameraWithOffsets {
+    public final PhotonCamera camera;
+    public final Transform3d cameraToRobotOffset;
 
-    public Context(String cameraName, Transform3d cameraToRobotOffset, AprilTagFieldLayout aprilTagFieldLayout) {
+    public CameraWithOffsets(String cameraName, Transform3d cameraToRobotOffset) {
       this.camera = new PhotonCamera(cameraName);
       this.cameraToRobotOffset = cameraToRobotOffset;
+    }
+  }
+
+  public static class Context {
+    private final CameraWithOffsets[] cameras;
+    private final AprilTagFieldLayout aprilTagFieldLayout;
+    private final int numberOfCameras;
+
+    public Context(AprilTagFieldLayout aprilTagFieldLayout, CameraWithOffsets...camera) {
+      this.cameras = camera;
       this.aprilTagFieldLayout = aprilTagFieldLayout;
+      this.numberOfCameras = camera.length;
     }
   }
 
   public static class Result {
-    public final Optional <PhotonTrackedTarget> apriltag;
-    public final Optional <Pose2d> robotPose;
-    public final double apriltagTime;
-    public final boolean singleTag;
+    public Optional <PhotonTrackedTarget> apriltag;
+    public Optional <Pose2d> robotPose;
+    public double apriltagTime;
+    public boolean singleTag;
 
     private Result(PhotonTrackedTarget apriltag, Pose3d robotPose, double apriltagTime, boolean singleTag) {
       this.apriltag = Optional.ofNullable(apriltag);
@@ -96,43 +110,8 @@ public class PhotonVision extends SubsystemBase {
       this.singleTag = singleTag;
     }
 
-    public static Result empty() {
-      return new Result(null, null, 0.0, true);
-    }
-
-    private static Builder builder() {
-      return new Builder();
-    }
-
-    private static class Builder {
-      private PhotonTrackedTarget apriltag = null;
-      private Pose3d robotPose = null;
-      private double apriltagTime = 0.0;
-      private boolean singleTag = true;
-
-      private Builder setApriltag(PhotonTrackedTarget apriltag) {
-        this.apriltag = apriltag;
-        return this;
-      }
-
-      private Builder setRobotPose(Pose3d robotPose) {
-        this.robotPose = robotPose;
-        return this;
-      }
-
-      private Builder setApriltagTime(double apriltagTime) {
-        this.apriltagTime = apriltagTime;
-        return this;
-      }
-
-      private Builder setSingleTag(boolean singleTag) {
-        this.singleTag = singleTag;
-        return this;
-      }
-
-      private Result build() {
-        return new Result(apriltag, robotPose, apriltagTime, singleTag);
-      }
+    public static Result[] empty() {
+      return new Result[] { new Result(null, null, 0.0, true) };
     }
   }
 }

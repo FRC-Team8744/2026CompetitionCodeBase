@@ -31,9 +31,10 @@ public class RobotContainer {
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
   private final Rotation3d cameraToRobotOffsetRotation = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(90.0));
-  private final Transform3d cameraToRobotOffset = new Transform3d(Units.inchesToMeters(6.25), Units.inchesToMeters(10.75), Units.inchesToMeters(10), cameraToRobotOffsetRotation);
-  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2025ReefscapeWelded.loadAprilTagLayoutField();
-  private final PhotonVision.Context photonVisionContext = new PhotonVision.Context("Limelight4", cameraToRobotOffset, aprilTagFieldLayout);
+  private final Transform3d cameraToRobotOffset1 = new Transform3d(Units.inchesToMeters(5.3125), Units.inchesToMeters(10.1875), Units.inchesToMeters(10.25), cameraToRobotOffsetRotation);
+  private final Transform3d cameraToRobotOffset2 = new Transform3d(Units.inchesToMeters(-5.125), Units.inchesToMeters(10.1875), Units.inchesToMeters(10.25), cameraToRobotOffsetRotation);
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
+  private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
   private final PhotonVision m_visionPV = new PhotonVision(photonVisionContext);
   // private Limelight4Test m_limelight4Test = new Limelight4Test();
   private final AlignToPoleX m_alignToPoleX = new AlignToPoleX();

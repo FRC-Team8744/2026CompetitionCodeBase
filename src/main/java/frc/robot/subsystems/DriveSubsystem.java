@@ -121,7 +121,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Create Field2d for robot and trajectory visualizations.
   public Field2d m_field;    
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(PhotonVision m_visionPV,AlignToPoleX m_alignToPoleX, DriveModifier...driveModifiers) {
+    public DriveSubsystem(PhotonVision m_visionPV, AlignToPoleX m_alignToPoleX, DriveModifier...driveModifiers) {
       
       m_turnCtrl.setTolerance(10.00);
       // this.m_vision = m_vision;
@@ -230,14 +230,16 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    PhotonVision.Result visionResult = m_visionPV.getVisionResult();
-    if (visionResult.apriltag.isPresent()) {
-      if (visionResult.singleTag) {
-        if (visionResult.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
-          m_poseEstimator.addVisionMeasurement(visionResult.robotPose.get(), visionResult.apriltagTime);
+    PhotonVision.Result[] visionResult = m_visionPV.getVisionResult();
+    for (PhotonVision.Result visionRes : visionResult) {
+      if (visionRes.apriltag.isPresent()) {
+        if (visionRes.singleTag) {
+          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
+            m_poseEstimator.addVisionMeasurement(visionRes.robotPose.get(), visionRes.apriltagTime);
+          }
+        } else {
+          visionRes.robotPose.ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, visionRes.apriltagTime));
         }
-      } else {
-        visionResult.robotPose.ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, visionResult.apriltagTime));
       }
     }
 
