@@ -40,7 +40,6 @@ import frc.robot.Debug;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DriveModifier;
-import frc.robot.subsystems.alignment.AlignToPoleX;
 import frc.robot.subsystems.vision.PhotonVision;
 // import frc.robot.subsystems.vision.Limelight4Test;
 // import frc.robot.subsystems.vision.LimeLight4;
@@ -91,7 +90,6 @@ public class DriveSubsystem extends SubsystemBase {
   // The imu sensor
   public final static Pigeon2 m_imu = new Pigeon2(Constants.SwerveConstants.kIMU_ID);
   // private final LimeLight4 m_vision;
-  public final AlignToPoleX m_alignToPoleX;
   private PhotonVision m_visionPV;
 
   public RotationEnum isAutoRotate = RotationEnum.NONE;
@@ -121,11 +119,10 @@ public class DriveSubsystem extends SubsystemBase {
   // Create Field2d for robot and trajectory visualizations.
   public Field2d m_field;    
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(PhotonVision m_visionPV, AlignToPoleX m_alignToPoleX, DriveModifier...driveModifiers) {
+    public DriveSubsystem(PhotonVision m_visionPV, DriveModifier...driveModifiers) {
       
       m_turnCtrl.setTolerance(10.00);
       // this.m_vision = m_vision;
-      this.m_alignToPoleX = m_alignToPoleX;
       this.m_visionPV = m_visionPV;
     
     offset_FL = SwerveConstants.kFrontLeftMagEncoderOffsetDegrees;
@@ -272,7 +269,7 @@ public class DriveSubsystem extends SubsystemBase {
     double[] poseArray = {getEstimatedPose().getX(), getEstimatedPose().getY(), getEstimatedPose().getRotation().getRadians()};
     SmartDashboard.putNumberArray("Estimated Pose", poseArray);
 
-    SmartDashboard.putBoolean("yCheck", Constants.yCheck);
+    // SmartDashboard.putBoolean("yCheck", Constants.yCheck);
 
     SmartDashboard.putNumber("FL current Angle", m_frontLeft.getCurrentDriveAngle());
     SmartDashboard.putNumber("FL Drive Motor Position", m_frontLeft.getDriveMotorPosition());

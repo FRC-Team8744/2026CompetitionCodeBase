@@ -6,9 +6,9 @@ package frc.robot.subsystems.mechanisms;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Agitator extends SubsystemBase {
-  /** Creates a new Agitator. */
-  public Agitator() {}
+public class Spindexer extends SubsystemBase {
+  /** Creates a new Spindexer. */
+  public Spindexer() {}
 
   @Override
   public void periodic() {

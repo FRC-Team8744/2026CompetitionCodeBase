@@ -25,40 +25,8 @@ public final class Constants {
   public static final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   public static final Slot0Configs driveConfigPID = driveConfig.Slot0;
 
-  public static String scoringMode = "Coral";
-  public static String scoringLevel = "L4";
-  public static String algaeScoringLevel = "L3";
-  public static boolean leftPole = true;
-  public static double scoringMechGoalAngle = -200;
-  public static double scoringMechGoalAngleAlgae = -200;
-  public static double percentOfElevator = 0.9;
-  public static double percentOfElevatorAlgae = 0.5;
-  public static boolean visionElevator = true;
-  public static boolean sensorMode = true;
-  public static boolean stopNoTwoPieces = false;
-  public static boolean newAlgae = true;
-  public static boolean yCheck = false;
-
   // 17.55 is the distance of the field in meters
   // This gets the points of the triangles to calc if it can strafe 
-  public static final Pose2d[] redBorder6 = new Pose2d[]{new Pose2d(17.55 - 4.319, 3.67, new Rotation2d(0)), new Pose2d(17.55 - -0.191, 0.67, new Rotation2d(0)), new Pose2d(17.55 - 4.319, -0.33, new Rotation2d(0))};
-  public static final Pose2d[] redBorder7 = new Pose2d[]{new Pose2d(17.55 - 4.12, 4.0, new Rotation2d(0)), new Pose2d(17.55 - -0.38, 7.0, new Rotation2d(0)), new Pose2d(17.55 - -0.38, 1.0, new Rotation2d(0))};
-  public static final Pose2d[] redBorder8 = new Pose2d[]{new Pose2d(17.55 - 4.319, 4.33, new Rotation2d(0)), new Pose2d(17.55 - 4.319, 8.33, new Rotation2d(0)), new Pose2d(17.55 - -0.191, 7.33, new Rotation2d(0))};
-  public static final Pose2d[] redBorder9 = new Pose2d[]{new Pose2d(17.55 - 4.691, 4.33, new Rotation2d(0)), new Pose2d(17.55 - 10.191, 7.33, new Rotation2d(0)), new Pose2d(17.55 - 4.691, 8.33, new Rotation2d(0))};
-  public static final Pose2d[] redBorder10 = new Pose2d[]{new Pose2d(17.55 - 4.88, 4.0, new Rotation2d(0)), new Pose2d(17.55 - 10.38, 1.0, new Rotation2d(0)), new Pose2d(17.55 - 10.38, 7.0, new Rotation2d(0))};
-  public static final Pose2d[] redBorder11 = new Pose2d[]{new Pose2d(17.55 - 4.691, 3.67, new Rotation2d(0)), new Pose2d(17.55 - 4.691, -0.33, new Rotation2d(0)), new Pose2d(17.55 - 10.191, 0.67, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder17 = new Pose2d[]{new Pose2d(4.319, 3.67, new Rotation2d(0)), new Pose2d(4.319, -0.33, new Rotation2d(0)), new Pose2d(-0.191, 0.67, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder18 = new Pose2d[]{new Pose2d(4.12, 4.0, new Rotation2d(0)), new Pose2d(-0.38, 1.0, new Rotation2d(0)), new Pose2d(-0.38, 7.0, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder19 = new Pose2d[]{new Pose2d(4.319, 4.33, new Rotation2d(0)), new Pose2d(-0.191, 7.33, new Rotation2d(0)), new Pose2d(4.319, 8.33, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder20 = new Pose2d[]{new Pose2d(4.691, 4.33, new Rotation2d(0)), new Pose2d(4.691, 8.33, new Rotation2d(0)), new Pose2d(10.191, 7.33, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder21 = new Pose2d[]{new Pose2d(4.88, 4.0, new Rotation2d(0)), new Pose2d(10.38, 7.0, new Rotation2d(0)), new Pose2d(10.38, 1.0, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder22 = new Pose2d[]{new Pose2d(4.691, 3.67, new Rotation2d(0)), new Pose2d(10.191, 0.67, new Rotation2d(0)), new Pose2d(4.691, -0.33, new Rotation2d(0))};
-
-  public static final double[] rightPoint = {5.35, 4.2492}; // 4.25128984 4.2378 4.23 4.2492 Seven rivers: 4.2396
-  public static final double[] leftPoint = {5.35, 3.8428}; // 3.85128984 Seven rivers: 3.8428 3.83 3.8028 3.8028
-  public static double rightL1ScoringPoint = 4.52;
-  public static double leftL1ScoringPoint = 3.58;
-  public static final double[][] rotationMatrix = {{0.5, Math.sin(Math.PI / 3.0)}, {-Math.sin(Math.PI / 3.0), 0.5}};
 
   public static RotationEnum isAutoRotate = RotationEnum.NONE;
   public static boolean isAutoXSpeed = false;
@@ -98,6 +66,16 @@ public final class Constants {
     public static final int kRearRightMagEncoderPort = 9; // 21
 
     public static final int kAlgaeMechanism = 19;
+    public static int kIntakePivotMotorPort;
+    public static int kIntakeMotorPort;
+    public static int kShooterFlywheelLeftMotorPort;
+    public static int kShooterFlywheelRightMotorPort;
+    public static int kClimberMotorPort;
+    public static int kShooterHoodMotorPort;
+    public static int kTurretMotorPort;
+    public static int kSpindexerMotorPort;
+    public static int kIndexerLeftMotorPort;
+    public static int kIndexerRightMotorPort;
 
     // Only disable the steering angle optimizer when measuring the CANcoder offsets!
     public static final boolean DISABLE_ANGLE_OPTIMIZER = false;

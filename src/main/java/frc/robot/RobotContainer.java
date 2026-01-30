@@ -13,7 +13,6 @@ import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.alignment.AlignToPoleX;
 import frc.robot.subsystems.vision.PhotonVision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,8 +36,7 @@ public class RobotContainer {
   private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
   private final PhotonVision m_visionPV = new PhotonVision(photonVisionContext);
   // private Limelight4Test m_limelight4Test = new Limelight4Test();
-  private final AlignToPoleX m_alignToPoleX = new AlignToPoleX();
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV, m_alignToPoleX, m_alignToPoleX);
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV);
   // The driver's controller
   private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);

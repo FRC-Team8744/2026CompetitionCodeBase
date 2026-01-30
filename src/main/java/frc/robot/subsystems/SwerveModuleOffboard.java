@@ -161,11 +161,11 @@ public class SwerveModuleOffboard {
     } 
     else if (Math.abs(x) > 90.0 && Math.abs(y) <= 90.0) {
       state.angle = Rotation2d.fromDegrees((goalAngle + 360));
-      Constants.yCheck = true;
+      // Constants.yCheck = true;
     }
     else if (Math.abs(x) > 90.0 && Math.abs(z) <= 90.0) {
       state.angle = Rotation2d.fromDegrees((goalAngle - 360));
-      Constants.yCheck = true;
+      // Constants.yCheck = true;
     }
   }
 
