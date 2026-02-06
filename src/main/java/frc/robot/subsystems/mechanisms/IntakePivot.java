@@ -5,10 +5,8 @@
 package frc.robot.subsystems.mechanisms;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -65,7 +63,7 @@ public class IntakePivot extends SubsystemBase {
     return m_intakePivot.getPosition().getValueAsDouble() * 360;
   }
 
-  public void resetIntakePivot() {
+  public void stopIntakePivot() {
     m_intakePivot.stopMotor();
     // m_intakePivot.setPosition(-9.4262695312);
   }

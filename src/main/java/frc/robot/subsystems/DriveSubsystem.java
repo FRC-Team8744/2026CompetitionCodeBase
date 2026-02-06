@@ -121,9 +121,11 @@ public class DriveSubsystem extends SubsystemBase {
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem(PhotonVision m_visionPV, DriveModifier...driveModifiers) {
       
-      m_turnCtrl.setTolerance(10.00);
-      // this.m_vision = m_vision;
-      this.m_visionPV = m_visionPV;
+    m_turnCtrl.setTolerance(10.00);
+    // this.m_vision = m_vision;
+    this.m_visionPV = m_visionPV;
+
+    m_imu.reset();
     
     offset_FL = SwerveConstants.kFrontLeftMagEncoderOffsetDegrees;
     offset_RL = SwerveConstants.kRearLeftMagEncoderOffsetDegrees;
@@ -264,6 +266,9 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Estimated Pose X", m_poseEstimator.getEstimatedPosition().getX());
     SmartDashboard.putNumber("Estimated Pose Y", m_poseEstimator.getEstimatedPosition().getY());
 
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber("Battery Voltage", Constants.PDH.getVoltage());
+
     SmartDashboard.putNumber("Estimated Pose Rotation", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
     double[] poseArray = {getEstimatedPose().getX(), getEstimatedPose().getY(), getEstimatedPose().getRotation().getRadians()};
@@ -323,6 +328,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putBoolean("Is Right", !leftPoint);
     
+    calculateRobotAreaString(getEstimatedPose());
+
+    SmartDashboard.putString("Robot X Area", Constants.robotPositionXString);
+
     getRobotVelocityX();
     getRobotVelocityY();
   }
@@ -514,6 +523,36 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getEstimatedPoseAsRadians() {
     return new Pose2d(m_poseEstimator.getEstimatedPosition().getX(), m_poseEstimator.getEstimatedPosition().getY(), new Rotation2d(m_poseEstimator.getEstimatedPosition().getRotation().getRadians()));
+  }
+
+  public void calculateRobotAreaString(Pose2d robotPose) {
+    DriverStation.Alliance alliance = DriverStation.getAlliance().get();
+      // Calculate area for blue alliance
+    if (robotPose.getX() < 3.615) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "Alliance";
+      } else {
+        Constants.robotPositionXString = "Opponent";
+      }
+    } else if (robotPose.getX() > 5.65 && robotPose.getX() < 8.249) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "AllianceMidfield";
+      } else {
+        Constants.robotPositionXString = "OpponentMidfield";
+      }
+    } else if (robotPose.getX() > 8.251 && robotPose.getX() < 10.925) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "OpponentMidfield";
+      } else {
+        Constants.robotPositionXString = "AllianceMidfield";
+      }
+    } else if (robotPose.getX() > 12.95) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "Opponent";
+      } else {
+        Constants.robotPositionXString = "Alliance";
+      }
+    }
   }
 
   public void getRobotVelocityX() {

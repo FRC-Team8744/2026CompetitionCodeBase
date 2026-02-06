@@ -9,12 +9,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
 
 public final class Constants {
   public static final int kMaxSpeedPercentAuto = 100; //This effects Drive speed in telop DONT ASK ME WHY
@@ -25,6 +24,8 @@ public final class Constants {
   public static final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   public static final Slot0Configs driveConfigPID = driveConfig.Slot0;
 
+  public static final PowerDistribution PDH = new PowerDistribution(14, PowerDistribution.ModuleType.kRev);
+
   // 17.55 is the distance of the field in meters
   // This gets the points of the triangles to calc if it can strafe 
 
@@ -34,7 +35,8 @@ public final class Constants {
   public static double autoYSpeed = 0;
   public static double autoRotateSpeed = 0;
   public static boolean isAutoYSpeed = true;
-
+  public static String robotPositionXString = "Alliance";
+  public static String robotPositionYString = "None";
 
   public Constants() {
     configureKrakens();
@@ -76,6 +78,7 @@ public final class Constants {
     public static int kSpindexerMotorPort;
     public static int kIndexerLeftMotorPort;
     public static int kIndexerRightMotorPort;
+    public static int kTurretCANCoderID;
 
     // Only disable the steering angle optimizer when measuring the CANcoder offsets!
     public static final boolean DISABLE_ANGLE_OPTIMIZER = false;
