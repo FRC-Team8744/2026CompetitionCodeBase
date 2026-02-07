@@ -526,6 +526,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void calculateRobotAreaString(Pose2d robotPose) {
+    // TODO: Add check for left and right side of the field
     DriverStation.Alliance alliance = DriverStation.getAlliance().get();
       // Calculate area for blue alliance
     if (robotPose.getX() < 3.615) {

@@ -98,6 +98,7 @@ public class AutoCommandManager {
         // LimeLight4 m_visionGS,
         DriveSubsystem m_robotDrive
     ) {
+        // TODO: Add named commands for auto builder to use
         NamedCommands.registerCommand("AutoLineUp", Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.STRAFEONTARGET));
         NamedCommands.registerCommand("LeftPole", Commands.runOnce(() -> m_robotDrive.leftPoint = true));
         NamedCommands.registerCommand("RightPole", Commands.runOnce(() -> m_robotDrive.leftPoint = false));

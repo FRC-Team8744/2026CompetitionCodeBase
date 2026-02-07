@@ -18,7 +18,10 @@ public class Climber extends SubsystemBase {
   private final TalonFX m_climberMotor;
   private final TalonFXConfiguration climberConfig = new TalonFXConfiguration();
   private final Slot0Configs climberConfigPID = climberConfig.Slot0;
+  // TODO: Add gear ratio for the climber
+  private final double climberGearRatio = 0.0 / 1.0;
   // private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
+  // TODO: Figure out how climber works
 
   public Climber() {
     climberConfig.Voltage.PeakForwardVoltage = 12;

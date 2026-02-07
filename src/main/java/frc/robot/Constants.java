@@ -37,6 +37,10 @@ public final class Constants {
   public static boolean isAutoYSpeed = true;
   public static String robotPositionXString = "Alliance";
   public static String robotPositionYString = "None";
+  public static boolean shuttleMode = false;
+
+  //TODO: Add positions for shuttling presets
+  //TODO: Add turret and hood positions for shuttling presets
 
   public Constants() {
     configureKrakens();
@@ -52,6 +56,7 @@ public final class Constants {
     // The positive X axis points ahead, the positive Y axis points left, and the positive Z axis points up.
     // We use NWU here because the rest of the library, and math in general, use NWU axes convention.
     // https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html#axis-conventions
+    // TODO: Get all motor ids for the swerve modules and enure the orientation of the modules is correct
     public static final int kFrontLeftDriveMotorPort = 1; // 8
     public static final int kFrontRightDriveMotorPort = 4; // 3
     public static final int kRearLeftDriveMotorPort = 10; // 17
@@ -67,7 +72,7 @@ public final class Constants {
     public static final int kRearLeftMagEncoderPort = 12; // 18
     public static final int kRearRightMagEncoderPort = 9; // 21
 
-    public static final int kAlgaeMechanism = 19;
+    // TODO: Get all motor ids for the other mechanisms
     public static int kIntakePivotMotorPort;
     public static int kIntakeMotorPort;
     public static int kShooterFlywheelLeftMotorPort;
@@ -84,6 +89,7 @@ public final class Constants {
     public static final boolean DISABLE_ANGLE_OPTIMIZER = false;
 
     // Note: Zeroing the CanCoder in Tuner X doesn't seem to affect the reported absolute position.
+    // TODO: Get new offsets of swerve modules
     public static final double kFrontLeftMagEncoderOffsetDegrees = 1 - 0.125244; // 3
     public static final double kFrontRightMagEncoderOffsetDegrees = 1 - 0.846191; // 6
     public static final double kRearLeftMagEncoderOffsetDegrees = 1 - 0.224121; // 12
@@ -103,6 +109,7 @@ public final class Constants {
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),  // Rear Left Quadrant
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));  // Rear Right Quadrant
 
+    // TODO: Recalibrate pigeon 2
     public static final int kIMU_ID = 13;
 
     public static int kSwerveFL_enum = 0;

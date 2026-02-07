@@ -21,6 +21,7 @@ public class IntakePivot extends SubsystemBase {
   private final TalonFXConfiguration intakePivotConfig = new TalonFXConfiguration();
   private final Slot0Configs intakePivotConfigPID = intakePivotConfig.Slot0;
   private final double startingPositionRotations = 0;
+  // TODO: Change values for minimum and maximum angle of the intake
   private final double minimumAngle = -4600;
   private final double maximumAngle = 0;
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);

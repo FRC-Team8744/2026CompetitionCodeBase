@@ -22,10 +22,13 @@ public class Turret extends SubsystemBase {
   private final TalonFX m_turret;
   private final TalonFXConfiguration turretConfig = new TalonFXConfiguration();
   private final Slot0Configs turretConfigPID = turretConfig.Slot0;
+  // TODO: Add gear ratio for the turret
   private final double turretGearRatio = 0.0 / 1.0;
+  // TODO: Add values for minimum and maximum angle of the turret and starting position
   private final double startingPositionRotations = 0;
   private final double minimumAngle = -180;
   private final double maximumAngle = 180;
+  // TODO: Make turret go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
 
   public Turret() {
@@ -64,6 +67,10 @@ public class Turret extends SubsystemBase {
   // Returns the position of the intake
   public double getPositionAngle() {
     return m_turret.getPosition().getValueAsDouble() * 360;
+  }
+
+  public void shuttle() {
+    
   }
 
   public void stopTurret() {
