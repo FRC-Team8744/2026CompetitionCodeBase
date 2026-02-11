@@ -38,6 +38,9 @@ public final class Constants {
   public static String robotPositionXString = "Alliance";
   public static String robotPositionYString = "None";
   public static boolean shuttleMode = false;
+  public static int kTurretCANCoderID = 0;
+  public static int kHoodCancoderID = 0;
+  public static int khoodMotorPort;
 
   //TODO: Add positions for shuttling presets
   //TODO: Add turret and hood positions for shuttling presets

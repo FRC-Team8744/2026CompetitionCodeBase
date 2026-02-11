@@ -53,6 +53,6 @@ public class Spindexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Spindexer Motor Angle", m_spindexer.getPosition().getValueAsDouble() * 360);
+    SmartDashboard.putNumber("Spindexer Velocity", m_spindexer.getVelocity().getValueAsDouble());
   }
 }

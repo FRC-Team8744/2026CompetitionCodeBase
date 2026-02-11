@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems.mechanisms;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -30,6 +33,7 @@ public class Turret extends SubsystemBase {
   private final double maximumAngle = 180;
   // TODO: Make turret go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
+  CANcoder turretCancoder;  // https://github.com/CrossTheRoadElec/Phoenix6-Examples/blob/main/java/CANcoder/src/test/java/CANcoderTest.java
 
   public Turret() {
     turretConfig.Voltage.PeakForwardVoltage = 12;
@@ -53,6 +57,8 @@ public class Turret extends SubsystemBase {
     m_turret.getConfigurator().apply(turretConfig);
     m_turret.setNeutralMode(NeutralModeValue.Brake);
     m_turret.setPosition(startingPositionRotations);
+
+    turretCancoder = new CANcoder(Constants.kTurretCANCoderID);
   }
 
   /**
@@ -91,5 +97,6 @@ public class Turret extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Turret Motor Angle", getPositionAngle());
+    SmartDashboard.putNumber("Turret Abs Angle", turretCancoder.getPosition().getValueAsDouble());
   }
 }
