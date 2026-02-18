@@ -7,6 +7,7 @@ package frc.robot.subsystems.mechanisms;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 // import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -21,7 +22,8 @@ public class ShooterFlywheels extends SubsystemBase {
   private final TalonFX m_shooterFlywheelsRight;
   private final TalonFXConfiguration shooterFlywheelsConfig = new TalonFXConfiguration();
   private final Slot0Configs shooterFlywheelsConfigPID = shooterFlywheelsConfig.Slot0;
-  // private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
+  // private final VelocityVoltage goalVelocityLeft = new VelocityVoltage(0);
+  // private final VelocityVoltage goalVelocityRight = new VelocityVoltage(0);
 
   public ShooterFlywheels() {
     shooterFlywheelsConfig.Voltage.PeakForwardVoltage = 12;
@@ -55,7 +57,6 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight.stopMotor();
   }
   /**
-  *TEST IF LEFT AND RIGHT NEED OPPOSITE SPEEDS
   * @param speed Set the speed of the shooter flywheels 0-1
   **/ 
   public void setShooterFlywheelsSpeed(double speed) {
@@ -64,13 +65,13 @@ public class ShooterFlywheels extends SubsystemBase {
     // m_shooterFlywheelsRight.setControl(new Follower(m_shooterFlywheelsLeft.getDeviceID(), MotorAlignmentValue.Aligned));
     // Follower example: https://github.com/CrossTheRoadElec/Phoenix6-Examples/blob/main/java/CommandBasedDrive/src/main/java/frc/robot/subsystems/DriveSubsystem.java
     m_shooterFlywheelsLeft.set(speed);
-    m_shooterFlywheelsRight.set(speed);
+    m_shooterFlywheelsRight.set(-speed);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter Flywheels Left Motor Speed", m_shooterFlywheelsLeft.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Shooter Flywheels Right Motor Speed", m_shooterFlywheelsRight.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter Flywheels Left Motor Speed", m_shooterFlywheelsLeft.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("Shooter Flywheels Right Motor Speed", m_shooterFlywheelsRight.getVelocity().getValueAsDouble() * 60);
   }
 }

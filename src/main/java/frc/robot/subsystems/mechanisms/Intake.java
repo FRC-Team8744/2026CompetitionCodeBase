@@ -29,10 +29,10 @@ public class Intake extends SubsystemBase {
     intakeConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     intakeConfig.CurrentLimits.StatorCurrentLimit = 40.0;
-    intakeConfigPID.kS = 0.0005; // Add 0.25 V output to overcome static friction
+    intakeConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
     intakeConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     intakeConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    intakeConfigPID.kP = 0.0005; // A position error of 2.5 rotations results in 12 V output
+    intakeConfigPID.kP = 0.05; // A position error of 2.5 rotations results in 12 V output
     intakeConfigPID.kI = 0.0; // no output for integrated error
     intakeConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
     intakeConfig.withSlot0(intakeConfigPID);

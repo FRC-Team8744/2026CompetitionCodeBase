@@ -81,6 +81,7 @@ public class SwerveModuleOffboard {
     rotationConfig.Feedback.FeedbackRemoteSensorID = magEncoderID;
     rotationConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     rotationConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    rotationConfig.ClosedLoopGeneral.ContinuousWrap = true;
     rotationConfigPID.kV = Constants.ConstantsOffboard.KRAKENROTATION_V;
     rotationConfigPID.kP = Constants.ConstantsOffboard.KRAKENROTATION_P;
     rotationConfigPID.kI = Constants.ConstantsOffboard.KRAKENROTATION_I;
@@ -93,7 +94,7 @@ public class SwerveModuleOffboard {
     // }
 
     m_turningMotor.getConfigurator().apply(rotationConfig);
-    m_turningMotor.getConfigurator().setPosition(0);
+    // m_turningMotor.getConfigurator().setPosition(0);
     m_turningMotor.setNeutralMode(NeutralModeValue.Brake);
   }
 
@@ -138,36 +139,36 @@ public class SwerveModuleOffboard {
 
   public SwerveModuleState getState() {
     double velocity = m_driveMotor.getVelocity().getValueAsDouble();
-    Rotation2d rot = new Rotation2d(m_turningEncoder.getPosition().getValueAsDouble());
+    Rotation2d rot = Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble());
     return new SwerveModuleState(velocity, rot);
   }
 
-  public static double wrapTo360(double angleDeg) {
-    angleDeg %= 360.0;
-    if (angleDeg < 0) {
-        angleDeg += 360.0;
-    }
-    return angleDeg;
-  }
+  // public static double wrapTo360(double angleDeg) {
+  //   angleDeg %= 360.0;
+  //   if (angleDeg < 0) {
+  //       angleDeg += 360.0;
+  //   }
+  //   return angleDeg;
+  // }
 
-  public void optimize(double goalAngle, double currentAngle) {
-    double x = goalAngle - currentAngle;
-    double y = (goalAngle + 360) - currentAngle;
-    double z = goalAngle - (currentAngle + 360);
-    if (Math.abs(x) > 90.0 && Math.abs(y) > 90.0 && Math.abs(z) > 90.0) {
-      state.speedMetersPerSecond *= -1;
-      state.angle = Rotation2d.fromDegrees(goalAngle).rotateBy(Rotation2d.kPi);
-      // Constants.yCheck = true;
-    } 
-    else if (Math.abs(x) > 90.0 && Math.abs(y) <= 90.0) {
-      state.angle = Rotation2d.fromDegrees((goalAngle + 360));
-      // Constants.yCheck = true;
-    }
-    else if (Math.abs(x) > 90.0 && Math.abs(z) <= 90.0) {
-      state.angle = Rotation2d.fromDegrees((goalAngle - 360));
-      // Constants.yCheck = true;
-    }
-  }
+  // public void optimize(double goalAngle, double currentAngle) {
+  //   double x = goalAngle - currentAngle;
+  //   double y = (goalAngle + 360) - currentAngle;
+  //   double z = goalAngle - (currentAngle + 360);
+  //   if (Math.abs(x) > 90.0 && Math.abs(y) > 90.0 && Math.abs(z) > 90.0) {
+  //     state.speedMetersPerSecond *= -1;
+  //     state.angle = Rotation2d.fromDegrees(goalAngle).rotateBy(Rotation2d.kPi);
+  //     // Constants.yCheck = true;
+  //   } 
+  //   else if (Math.abs(x) > 90.0 && Math.abs(y) <= 90.0) {
+  //     state.angle = Rotation2d.fromDegrees((goalAngle + 360));
+  //     // Constants.yCheck = true;
+  //   }
+  //   else if (Math.abs(x) > 90.0 && Math.abs(z) <= 90.0) {
+  //     state.angle = Rotation2d.fromDegrees((goalAngle - 360));
+  //     // Constants.yCheck = true;
+  //   }
+  // }
 
   /**
    * Returns the CANcoder's measured turn angle in degrees.
@@ -188,7 +189,7 @@ public class SwerveModuleOffboard {
    * Returns the SparkMax internal encoder's measured turn angle in degrees.
    */
   public Rotation2d getAngle() {
-    return new Rotation2d(m_turningEncoder.getPosition().getValueAsDouble());
+    return new Rotation2d(m_canCoder.getAbsolutePosition().getValueAsDouble());
   }
 
   public double getDriveMotorPosition() {
@@ -229,7 +230,7 @@ public class SwerveModuleOffboard {
   private void configureDevices() {
     /* Configure CANcoder */
     var toApply = new CANcoderConfiguration();
-    toApply.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
+    toApply.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     toApply.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     toApply.MagnetSensor.MagnetOffset = m_canCoderOffsetDegrees;
     m_canCoder.getConfigurator().apply(toApply);

@@ -14,7 +14,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.mechanisms.Climber;
+// import frc.robot.subsystems.mechanisms.Climber;
 import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.Intake;
 import frc.robot.subsystems.mechanisms.IntakePivot;
@@ -39,16 +39,20 @@ public class RobotContainer {
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
   // TODO: Add new offsets for the cameras
-  private final Rotation3d cameraToRobotOffsetRotation = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(90.0));
-  private final Transform3d cameraToRobotOffset1 = new Transform3d(Units.inchesToMeters(5.3125), Units.inchesToMeters(10.1875), Units.inchesToMeters(10.25), cameraToRobotOffsetRotation);
-  private final Transform3d cameraToRobotOffset2 = new Transform3d(Units.inchesToMeters(-5.125), Units.inchesToMeters(10.1875), Units.inchesToMeters(10.25), cameraToRobotOffsetRotation);
+  private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(-130.0));
+  private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(130.0));
+
+  private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationLeft);
+  private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(-5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationRight);
+
   private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
-  private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
+  // private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
+  private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4Left", cameraToRobotOffsetLeft), new PhotonVision.CameraWithOffsets("Limelight4Right", cameraToRobotOffsetRight));
   private final PhotonVision m_visionPV = new PhotonVision(photonVisionContext);
-  // private Limelight4Test m_limelight4Test = new Limelight4Test();
+  // private Limelight4Test m_limelight4Test = new Limelight4Test();0
   private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV);
   // TODO: Add other subsystems
-  private final Climber m_climber = new Climber();
+  // private final Climber m_climber = new Climber();
   private final Indexer m_indexer = new Indexer();
   private final Intake m_intake = new Intake();
   private final IntakePivot m_intakePivot = new IntakePivot();
@@ -74,9 +78,9 @@ public class RobotContainer {
           new RunCommand(
               () ->
                   m_robotDrive.drive(
-                      -m_driver.getLeftY() * SwerveConstants.kMaxSpeedTeleop,
-                      -m_driver.getLeftX() * SwerveConstants.kMaxSpeedTeleop,
-                      m_driver.getRightX() * ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND,
+                      -m_driver.getLeftY(),
+                      -m_driver.getLeftX(),
+                      m_driver.getRightX(),
                       true),
               m_robotDrive));
     // m_autoChooser = AutoBuilder.buildAutoChooser();  // Default auto will be 'Commands.none()'
@@ -103,6 +107,20 @@ public class RobotContainer {
 
     m_driver.leftTrigger()
     .whileTrue(new IntakeCommand(m_intake, m_intakePivot, m_turret));
+    m_driver.leftBumper()
+    .whileTrue(Commands.run(() -> m_spindexer.setSpindexerSpeed(-0.3)))
+    .whileFalse(Commands.run(() -> m_spindexer.stopSpindexer()));
+    m_driver.rightBumper()
+    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(0.3)))
+    .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
+    m_driver.rightTrigger()
+    .whileTrue(Commands.run(() -> m_shooterHood.setShooterHoodAngle(60)));
+    m_driver.y()
+    .whileTrue(Commands.runOnce(() -> m_shooterHood.setHoodRollerSpeed(0.2)))
+    .whileFalse(Commands.runOnce(() -> m_shooterHood.stopHoodRollers()));
+    m_driver.x()
+    .whileTrue(Commands.runOnce(() -> m_shooterFlywheels.setShooterFlywheelsSpeed(1.0)))
+    .whileFalse(Commands.runOnce(() -> m_shooterFlywheels.stopShooterFlywheels()));
   }
 
   public Command getAutonomousCommand() {
