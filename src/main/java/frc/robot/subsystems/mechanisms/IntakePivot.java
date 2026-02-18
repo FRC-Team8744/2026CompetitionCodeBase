@@ -22,7 +22,7 @@ public class IntakePivot extends SubsystemBase {
   private final Slot0Configs intakePivotConfigPID = intakePivotConfig.Slot0;
   private final double startingPositionRotations = 0;
   // TODO: Change values for minimum and maximum angle of the intake
-  private final double minimumAngle = -4600;
+  private final double minimumAngle = -1244;
   private final double maximumAngle = 0;
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
 
@@ -31,22 +31,23 @@ public class IntakePivot extends SubsystemBase {
     intakePivotConfig.Voltage.PeakReverseVoltage = -12;
     intakePivotConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     intakePivotConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    intakePivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    // intakePivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     intakePivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     intakePivotConfig.CurrentLimits.StatorCurrentLimit = 40.0;
-    intakePivotConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
+    intakePivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    intakePivotConfigPID.kS = 8.5; // Add 0.25 V output to overcome static friction
     intakePivotConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     intakePivotConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    intakePivotConfigPID.kP = 0.05; // A position error of 2.5 rotations results in 12 V output
+    intakePivotConfigPID.kP = 1.0; // A position error of 2.5 rotations results in 12 V output
     intakePivotConfigPID.kI = 0.0; // no output for integrated error
     intakePivotConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
     intakePivotConfig.withSlot0(intakePivotConfigPID);
 
     m_intakePivot = new TalonFX(Constants.SwerveConstants.kIntakePivotMotorPort);
 
-    m_intakePivot.getConfigurator().apply(intakePivotConfig);
-    m_intakePivot.setNeutralMode(NeutralModeValue.Brake);
+    // m_intakePivot.setNeutralMode(NeutralModeValue.Brake);
     m_intakePivot.setPosition(startingPositionRotations);
+    m_intakePivot.getConfigurator().apply(intakePivotConfig);
   }
 
   /**
@@ -72,6 +73,6 @@ public class IntakePivot extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Intake Pivot Motor Angle", m_intakePivot.getPosition().getValueAsDouble() * 360);
+    SmartDashboard.putNumber("Intake Pivot Motor Angle", getPositionAngle());
   }
 }

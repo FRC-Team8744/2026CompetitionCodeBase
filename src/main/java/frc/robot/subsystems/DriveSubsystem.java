@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AutoCommandManager;
 import frc.robot.Constants;
 import frc.robot.Debug;
+import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DriveModifier;
@@ -267,7 +268,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Estimated Pose Y", m_poseEstimator.getEstimatedPosition().getY());
 
     SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-    SmartDashboard.putNumber("Battery Voltage", Constants.PDH.getVoltage());
+    // SmartDashboard.putNumber("Battery Voltage", Constants.PDH.getVoltage());
 
     SmartDashboard.putNumber("Estimated Pose Rotation", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
@@ -392,25 +393,22 @@ public class DriveSubsystem extends SubsystemBase {
       xSpeed = autoXSpeed;
     }
 
-    // if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
-    //   rot = Constants.autoRotateSpeed;
-    // }
-
-    // if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnY && driveModifier.shouldRun(this)))) {
-    //   ySpeed = Constants.autoYSpeed;
-    // }
-
-    // if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnX && driveModifier.shouldRun(this)))) {
-    //   xSpeed = Constants.autoXSpeed;
-    // }
-
-    SmartDashboard.putBoolean("Is Driving Slow", isDrivingSlow);
-    SmartDashboard.putNumber("FL Desired Position", m_frontLeft.getDesiredPosition());
+    SmartDashboard.putNumber("XSpeed", xSpeed);
+    SmartDashboard.putNumber("YSpeed", ySpeed);
+    SmartDashboard.putNumber("Rotation", rot);
 
     // Apply joystick deadband
     xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
     ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
     rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+
+    xSpeed *= SwerveConstants.kMaxSpeedTeleop;
+    ySpeed *= SwerveConstants.kMaxSpeedTeleop;
+    if (isAutoRotate != RotationEnum.NONE) {
+      rot = autoRotateSpeed;
+    } else {
+      rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
+    }
 
     // Apply speed scaling
     xSpeed = xSpeed * m_DriverSpeedScale;
@@ -422,10 +420,6 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeed = -ySpeed;
       xSpeed = -xSpeed;
     }
-
-    SmartDashboard.putNumber("XSpeed", xSpeed);
-    SmartDashboard.putNumber("YSpeed", ySpeed);
-    SmartDashboard.putNumber("Rotation", rot);
 
     var swerveModuleStates =
         SwerveConstants.kDriveKinematics.toSwerveModuleStates(

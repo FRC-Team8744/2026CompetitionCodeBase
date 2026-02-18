@@ -27,10 +27,10 @@ public class Spindexer extends SubsystemBase {
     spindexerConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     spindexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     spindexerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
-    spindexerConfigPID.kS = 0.0005; // Add 0.25 V output to overcome static friction
+    spindexerConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
     spindexerConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     spindexerConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    spindexerConfigPID.kP = 0.0005; // A position error of 2.5 rotations results in 12 V output
+    spindexerConfigPID.kP = 0.05; // A position error of 2.5 rotations results in 12 V output
     spindexerConfigPID.kI = 0.0; // no output for integrated error
     spindexerConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
     spindexerConfig.withSlot0(spindexerConfigPID);
@@ -47,7 +47,7 @@ public class Spindexer extends SubsystemBase {
   }
 
   public void setSpindexerSpeed(double speed) {
-    m_spindexer.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(speed));
+    m_spindexer.set(speed);
   }
 
   @Override

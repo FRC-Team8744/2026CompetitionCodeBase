@@ -24,7 +24,7 @@ public final class Constants {
   public static final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   public static final Slot0Configs driveConfigPID = driveConfig.Slot0;
 
-  public static final PowerDistribution PDH = new PowerDistribution(14, PowerDistribution.ModuleType.kRev);
+  // public static final PowerDistribution PDH = new PowerDistribution(30, PowerDistribution.ModuleType.kRev);
 
   // 17.55 is the distance of the field in meters
   // This gets the points of the triangles to calc if it can strafe 
@@ -73,27 +73,28 @@ public final class Constants {
     public static final int kRearRightMagEncoderPort = 9; // 21
 
     // TODO: Get all motor ids for the other mechanisms
-    public static int kIntakePivotMotorPort;
-    public static int kIntakeMotorPort;
-    public static int kShooterFlywheelLeftMotorPort;
-    public static int kShooterFlywheelRightMotorPort;
+    public static final int kIntakePivotMotorPort = 14;
+    public static final int kIntakeMotorPort = 15;
+    public static final int kSpindexerMotorPort = 16;
+    public static final int kIndexerMotorPort = 17;
+    public static final int kShooterFlywheelLeftMotorPort = 18;
+    public static final int kShooterFlywheelRightMotorPort = 19;
+    public static final int kHoodRollerMotorPort = 20;
+    public static final int kHoodRotateMotorPort = 21;
+    public static final int kHoodRotateCANCoderID = 22;
+    public static final int kTurretMotorPort = 23;
+    public static final int kTurretCANCoderID = 24;
     public static int kClimberMotorPort;
-    public static int kShooterHoodMotorPort;
-    public static int kTurretMotorPort;
-    public static int kSpindexerMotorPort;
-    public static int kIndexerLeftMotorPort;
-    public static int kIndexerRightMotorPort;
-    public static int kTurretCANCoderID;
 
     // Only disable the steering angle optimizer when measuring the CANcoder offsets!
     public static final boolean DISABLE_ANGLE_OPTIMIZER = false;
 
     // Note: Zeroing the CanCoder in Tuner X doesn't seem to affect the reported absolute position.
     // TODO: Get new offsets of swerve modules
-    public static final double kFrontLeftMagEncoderOffsetDegrees = 1 - 0.125244; // 3
-    public static final double kFrontRightMagEncoderOffsetDegrees = 1 - 0.846191; // 6
-    public static final double kRearLeftMagEncoderOffsetDegrees = 1 - 0.224121; // 12
-    public static final double kRearRightMagEncoderOffsetDegrees = 1 - 0.248779; // 9
+    public static final double kFrontLeftMagEncoderOffsetDegrees = 1 - 0.598877; // 0.125244; // 3
+    public static final double kFrontRightMagEncoderOffsetDegrees = 1 - 0.999023; // 0.846191; // 6
+    public static final double kRearLeftMagEncoderOffsetDegrees = 1 - 0.228516; // 0.224121; // 12 
+    public static final double kRearRightMagEncoderOffsetDegrees = 1 - 0.625; // 0.248779; // 9
 
     // Distance between centers of right and left wheels on robot
     public static final double kTrackWidth = Units.inchesToMeters(20.750);

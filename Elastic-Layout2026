@@ -5,120 +5,7 @@
     {
       "name": "Teleoperated",
       "grid_layout": {
-        "layouts": [
-          {
-            "title": "translation",
-            "x": 768.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "x",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "RobotPose",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "struct_meta": {
-                    "path": [
-                      "translation",
-                      "x"
-                    ],
-                    "schema_name": "Pose2d",
-                    "type": "double"
-                  },
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "y",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "RobotPose",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "struct_meta": {
-                    "path": [
-                      "translation",
-                      "y"
-                    ],
-                    "schema_name": "Pose2d",
-                    "type": "double"
-                  },
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
-            "title": "List Layout",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Estimated Pose X",
-                "x": 768.0,
-                "y": 128.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Estimated Pose X",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Estimated Pose Y",
-                "x": 896.0,
-                "y": 256.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Estimated Pose Y",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Estimated Pose Rotation",
-                "x": 768.0,
-                "y": 256.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/SmartDashboard/Estimated Pose Rotation",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          }
-        ],
+        "layouts": [],
         "containers": [
           {
             "title": "Field",
@@ -202,13 +89,126 @@
             "title": "photonvision2_Port_1182_Output_MJPEG_Server",
             "x": 1024.0,
             "y": 256.0,
-            "width": 384.0,
+            "width": 256.0,
             "height": 256.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/photonvision2_Port_1182_Output_MJPEG_Server",
               "period": 0.06,
               "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Match Time",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/SmartDashboard/Match Time",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 20,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Robot X Area",
+            "x": 1024.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Robot X Area",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "Shooter Hood Angle",
+            "x": 1280.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter Hood Angle",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Shooter Hood Angle Error",
+            "x": 1280.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter Hood Angle Error",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Shooter Flywheels Left Motor Speed",
+            "x": 1280.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter Flywheels Left Motor Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Shooter Flywheels Right Motor Speed",
+            "x": 1408.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter Flywheels Right Motor Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "XSpeed",
+            "x": 768.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/XSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "YSpeed",
+            "x": 896.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/YSpeed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           }
         ]
