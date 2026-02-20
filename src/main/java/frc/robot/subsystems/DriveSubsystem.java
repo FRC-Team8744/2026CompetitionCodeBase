@@ -234,7 +234,7 @@ public class DriveSubsystem extends SubsystemBase {
     for (PhotonVision.Result visionRes : visionResult) {
       if (visionRes.apriltag.isPresent()) {
         if (visionRes.singleTag) {
-          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
+          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2 && visionRes.robotPose.isPresent()) {
             m_poseEstimator.addVisionMeasurement(visionRes.robotPose.get(), visionRes.apriltagTime);
           }
         } else {
@@ -521,15 +521,25 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void calculateRobotAreaString(Pose2d robotPose) {
     // TODO: Add check for left and right side of the field
-    DriverStation.Alliance alliance = DriverStation.getAlliance().get();
+    DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
       // Calculate area for blue alliance
     if (robotPose.getX() < 3.615) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "Alliance";
+        Constants.hoodAngle = 60;
       } else {
         Constants.robotPositionXString = "Opponent";
       }
-    } else if (robotPose.getX() > 5.65 && robotPose.getX() < 8.249) {
+    } else if (robotPose.getX() > 3.615 && robotPose.getX() < 5.65) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "AllianceTrench";
+        // Constants.hoodAngle = 83.25;
+      } else {
+        Constants.robotPositionXString = "OpponentTrench";
+        // Constants.hoodAngle = 83.25;
+      }
+    } 
+    else if (robotPose.getX() > 5.65 && robotPose.getX() < 8.249) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "AllianceMidfield";
       } else {
@@ -541,7 +551,16 @@ public class DriveSubsystem extends SubsystemBase {
       } else {
         Constants.robotPositionXString = "AllianceMidfield";
       }
-    } else if (robotPose.getX() > 12.95) {
+    } else if (robotPose.getX() > 10.925 && robotPose.getX() < 12.95) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "OpponentTrench";
+        // Constants.hoodAngle = 83.25;
+      } else {
+        Constants.robotPositionXString = "AllianceTrench";
+        // Constants.hoodAngle = 83.25;
+      }
+    } 
+    else if (robotPose.getX() > 12.95) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "Opponent";
       } else {

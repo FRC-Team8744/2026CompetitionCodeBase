@@ -38,6 +38,7 @@ public final class Constants {
   public static String robotPositionXString = "Alliance";
   public static String robotPositionYString = "None";
   public static boolean shuttleMode = false;
+  public static double hoodAngle = 83.25;
 
   //TODO: Add positions for shuttling presets
   //TODO: Add turret and hood positions for shuttling presets
@@ -188,8 +189,8 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
-    public static final double kDeadband = 0.3;
-    public static final double kRotationDeadband = 1.8;
+    public static final double kDeadband = 0.05;
+    public static final double kRotationDeadband = 0.1;
   }
 
   public static final class AutoConstants {

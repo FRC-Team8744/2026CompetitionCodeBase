@@ -42,11 +42,11 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight = new TalonFX(Constants.SwerveConstants.kShooterFlywheelRightMotorPort);
 
     m_shooterFlywheelsLeft.getConfigurator().apply(shooterFlywheelsConfig);
-    m_shooterFlywheelsLeft.setNeutralMode(NeutralModeValue.Brake);
+    m_shooterFlywheelsLeft.setNeutralMode(NeutralModeValue.Coast);
     m_shooterFlywheelsLeft.setPosition(0);
 
     m_shooterFlywheelsRight.getConfigurator().apply(shooterFlywheelsConfig);
-    m_shooterFlywheelsRight.setNeutralMode(NeutralModeValue.Brake);
+    m_shooterFlywheelsRight.setNeutralMode(NeutralModeValue.Coast);
     m_shooterFlywheelsRight.setPosition(0);
   }
 

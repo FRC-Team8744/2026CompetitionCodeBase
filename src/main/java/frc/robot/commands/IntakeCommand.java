@@ -32,7 +32,8 @@ public class IntakeCommand extends Command {
   @Override
   public void initialize() {
     m_intake.setIntakeSpeed(1);
-    m_intakePivot.intakeDown(-1244);
+    m_intakePivot.intakeDown(-1500);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,7 +48,7 @@ public class IntakeCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     m_intake.stopIntake();
-    m_intakePivot.intakeDown(0);
+    m_intakePivot.intakeDown(-1150);
   }
 
   // Returns true when the command should end.
