@@ -18,14 +18,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ShooterHood extends SubsystemBase {
-  private final TalonFX m_hood;
+  // private final TalonFX m_hood;
   private final TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
   private final Slot0Configs hoodConfigPID = hoodConfig.Slot0;
-  private final double startingPositionRotations = 0;
+  // private final double startingPositionRotations = 0;
   // TODO: Change values for minimum and maximum angle of the hood
-  private final double minimumAngle = -4600;
-  private final double maximumAngle = 0;
-  private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
+  // private final double minimumAngle = -4600;
+  // private final double maximumAngle = 0;
+  // private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
 
   CANcoder hoodCancoder;
   /** Creates a new ShooterHood. */
