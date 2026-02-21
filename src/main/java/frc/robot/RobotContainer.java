@@ -15,6 +15,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.alignment.AlignToHub;
 // import frc.robot.subsystems.mechanisms.Climber;
 import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.Intake;
@@ -50,8 +51,9 @@ public class RobotContainer {
   // private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
   private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4Left", cameraToRobotOffsetLeft), new PhotonVision.CameraWithOffsets("Limelight4Right", cameraToRobotOffsetRight));
   private final PhotonVision m_visionPV = new PhotonVision(photonVisionContext);
-  // private Limelight4Test m_limelight4Test = new Limelight4Test();0
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV);
+  
+  private final AlignToHub m_alignToHub = new AlignToHub();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV, m_alignToHub);
   // TODO: Add other subsystems
   // private final Climber m_climber = new Climber();
   private final Indexer m_indexer = new Indexer();
@@ -99,12 +101,12 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // TODO: Add button bindings for the commands
     m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
-    m_driver.rightStick()
-    .toggleOnTrue(Commands.runOnce(() -> m_robotDrive.isAutoRotate = m_robotDrive.isAutoRotate == RotationEnum.STRAFEONTARGET ? RotationEnum.NONE : RotationEnum.STRAFEONTARGET));
     m_driver.a()
     .whileTrue(Commands.runOnce(() -> Constants.shuttleMode = !Constants.shuttleMode));
     m_driver.b()
     .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
+    m_driver.x()
+    .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-1.0)));
 
     m_driver.leftTrigger()
     .whileTrue(new IntakeCommand(m_intake, m_intakePivot, m_turret));
@@ -121,6 +123,9 @@ public class RobotContainer {
     .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
     m_driver.pov(0)
     .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(0)));
+
+    m_driver.rightStick()
+    .toggleOnTrue(Commands.runOnce(() -> Constants.isAutoRotate = Constants.isAutoRotate == RotationEnum.ALIGNTOHUB ? RotationEnum.NONE : RotationEnum.ALIGNTOHUB));
     // m_driver.rightTrigger()
     // .whileTrue(Commands.run(() -> m_shooterHood.setShooterHoodAngle(60)));
     // m_driver.y()

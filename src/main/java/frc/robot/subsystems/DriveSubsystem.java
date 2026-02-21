@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -121,7 +122,8 @@ public class DriveSubsystem extends SubsystemBase {
   public Field2d m_field;    
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem(PhotonVision m_visionPV, DriveModifier...driveModifiers) {
-      
+
+    this.driveModifiers = driveModifiers;
     m_turnCtrl.setTolerance(10.00);
     // this.m_vision = m_vision;
     this.m_visionPV = m_visionPV;
@@ -325,7 +327,7 @@ public class DriveSubsystem extends SubsystemBase {
       robotVector.add(0.0);
     }
 
-    // Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
+    Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
 
     SmartDashboard.putBoolean("Is Right", !leftPoint);
     
@@ -378,34 +380,49 @@ public class DriveSubsystem extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
+    // rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
 
     if (isDrivingSlow) {
       ySpeed *= 0.1;
       xSpeed *= 0.1;
     }
 
-    if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      ySpeed = autoYSpeed;
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
+      rot = Constants.autoRotateSpeed;
     }
 
-    if (isAutoXSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      xSpeed = autoXSpeed;
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnY && driveModifier.shouldRun(this)))) {
+      ySpeed = Constants.autoYSpeed;
+    }
+
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnX && driveModifier.shouldRun(this)))) {
+      xSpeed = Constants.autoXSpeed;
     }
 
     SmartDashboard.putNumber("XSpeed", xSpeed);
     SmartDashboard.putNumber("YSpeed", ySpeed);
     SmartDashboard.putNumber("Rotation", rot);
+    SmartDashboard.putNumber("Auto Rotate Speed", Constants.autoRotateSpeed);
 
     // Apply joystick deadband
-    xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
-    ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
-    rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+    // xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
+    // ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
+    // rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
-    xSpeed *= SwerveConstants.kMaxSpeedTeleop;
-    ySpeed *= SwerveConstants.kMaxSpeedTeleop;
-    if (isAutoRotate != RotationEnum.NONE) {
-      rot = autoRotateSpeed;
+    xSpeed = Constants.isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
+    ySpeed = Constants.isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
+    rot = Constants.isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+
+    if (!Constants.isAutoXSpeed) {
+      xSpeed *= SwerveConstants.kMaxSpeedTeleop;
+    }
+
+    if (!Constants.isAutoYSpeed) {
+      ySpeed *= SwerveConstants.kMaxSpeedTeleop;
+    }
+    
+    if (Constants.isAutoRotate != RotationEnum.NONE) {
+      rot = Constants.autoRotateSpeed;
     } else {
       rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
     }

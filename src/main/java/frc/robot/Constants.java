@@ -34,7 +34,7 @@ public final class Constants {
   public static double autoXSpeed = 0;
   public static double autoYSpeed = 0;
   public static double autoRotateSpeed = 0;
-  public static boolean isAutoYSpeed = true;
+  public static boolean isAutoYSpeed = false;
   public static String robotPositionXString = "Alliance";
   public static String robotPositionYString = "None";
   public static boolean shuttleMode = false;
