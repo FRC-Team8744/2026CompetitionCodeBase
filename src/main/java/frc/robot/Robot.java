@@ -38,6 +38,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    enableLiveWindowInTest(true);  // Motor control & PID tuning in Test mode
   }
 
   /**
@@ -104,6 +106,10 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+
+    // https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/test-mode-and-live-window/enabling-test-mode.html#enabling-livewindow-in-test-mode
+    // https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/test-mode-and-live-window/pid-tuning-with-smartdashboard.html
+    // https://docs.wpilib.org/en/stable/docs/software/dashboards/shuffleboard/advanced-usage/shuffleboard-tuning-pid.html#enable-functionality-in-the-new-pidcontroller
   }
 
   /** This function is called periodically during test mode. */
