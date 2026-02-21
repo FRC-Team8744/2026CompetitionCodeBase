@@ -27,12 +27,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    if (Constants.kDebugLevel == 3) {
-      DataLogManager.start();
-
+    // Debug.off();
+    
+    // Debug.run(() -> {
+      // DataLogManager.start();
       // Record both DS control and joystick data
-      DriverStation.startDataLog(DataLogManager.getLog());
-    }
+      // DriverStation.startDataLog(DataLogManager.getLog());
+    // });
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -75,7 +77,7 @@ public class Robot extends TimedRobot {
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
   }
 

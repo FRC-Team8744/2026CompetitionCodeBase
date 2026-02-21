@@ -15,25 +15,17 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.ExtendedKalmanFilter;
-import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -45,12 +37,14 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AutoCommandManager;
 import frc.robot.Constants;
+import frc.robot.Debug;
+import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DriveModifier;
-import frc.robot.subsystems.alignment.AlignToPoleX;
-import frc.robot.subsystems.vision.Limelight4Test;
-import frc.robot.subsystems.vision.PhotonVisionGS;
+import frc.robot.subsystems.vision.PhotonVision;
+// import frc.robot.subsystems.vision.Limelight4Test;
+// import frc.robot.subsystems.vision.LimeLight4;
 import frc.robot.RotationEnum;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -81,9 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public boolean leftPoint = true;
 
-  private double goalAngle = 0;
   private PIDController m_turnCtrl = new PIDController(0.03, 0.0065, 0.0035);
-  private boolean roboNoSpino = true;
   private Timer rotationTimer = new Timer();
 
   final Timer m_timerX = new Timer();
@@ -98,9 +90,9 @@ public class DriveSubsystem extends SubsystemBase {
   Joystick m_Joystick = new Joystick(OIConstants.kDriverControllerPort);
 
   // The imu sensor
-  public final Pigeon2 m_imu = new Pigeon2(Constants.SwerveConstants.kIMU_ID);
-  private final PhotonVisionGS m_vision;
-  public final AlignToPoleX m_alignToPoleX;
+  public final static Pigeon2 m_imu = new Pigeon2(Constants.SwerveConstants.kIMU_ID);
+  // private final LimeLight4 m_vision;
+  private PhotonVision m_visionPV;
 
   public RotationEnum isAutoRotate = RotationEnum.NONE;
   public boolean isAutoYSpeed = false;
@@ -127,14 +119,16 @@ public class DriveSubsystem extends SubsystemBase {
   SwerveDriveOdometry m_odometry;
 
   // Create Field2d for robot and trajectory visualizations.
-  public Field2d m_field;
-  
-  /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(PhotonVisionGS m_vision, AlignToPoleX m_alignToPoleX, Limelight4Test m_limelight, DriveModifier...driveModifiers) {
-    
+  public Field2d m_field;    
+    /** Creates a new DriveSubsystem. */
+    public DriveSubsystem(PhotonVision m_visionPV, DriveModifier...driveModifiers) {
+
+    this.driveModifiers = driveModifiers;
     m_turnCtrl.setTolerance(10.00);
-    this.m_vision = m_vision;
-    this.m_alignToPoleX = m_alignToPoleX;
+    // this.m_vision = m_vision;
+    this.m_visionPV = m_visionPV;
+
+    m_imu.reset();
     
     offset_FL = SwerveConstants.kFrontLeftMagEncoderOffsetDegrees;
     offset_RL = SwerveConstants.kRearLeftMagEncoderOffsetDegrees;
@@ -238,15 +232,21 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    if (m_vision.getTarget().isPresent()) {
-      if (m_vision.singleTag) {
-        if (m_vision.getTarget().map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
-          m_poseEstimator.addVisionMeasurement(m_vision.getRobotPose().get(), m_vision.getApriltagTime());
+    PhotonVision.Result[] visionResult = m_visionPV.getVisionResult();
+    for (PhotonVision.Result visionRes : visionResult) {
+      if (visionRes.apriltag.isPresent()) {
+        if (visionRes.singleTag) {
+          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2 && visionRes.robotPose.isPresent()) {
+            m_poseEstimator.addVisionMeasurement(visionRes.robotPose.get(), visionRes.apriltagTime);
+          }
+        } else {
+          visionRes.robotPose.ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, visionRes.apriltagTime));
         }
-      } else {
-        m_vision.getRobotPose().ifPresent((robotPose) -> m_poseEstimator.addVisionMeasurement(robotPose, m_vision.getApriltagTime()));
       }
     }
+
+    SmartDashboard.putNumber("Left Distance", m_frontLeft.getPosition().distanceMeters);
+    SmartDashboard.putNumber("Pigeon Yaw", m_imu.getYaw().getValueAsDouble());
 
     m_poseEstimator.update(m_imu.getRotation2d(), getModulePositions());
 
@@ -263,23 +263,24 @@ public class DriveSubsystem extends SubsystemBase {
         });
     
     // Update robot position on Field2d.
-    m_field.setRobotPose(getEstimatedPose());
-
-    // SmartDashboard.putNumber("Gyro angle", m_imu.getYaw().getValueAsDouble());
-    // SmartDashboard.putNumber("Gyro pitch", m_imu.getPitch().getValueAsDouble());
-    // SmartDashboard.putNumber("Gyro roll", m_imu.getRoll().getValueAsDouble());
+    // m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
     SmartDashboard.putNumber("Estimated Pose X", m_poseEstimator.getEstimatedPosition().getX());
     SmartDashboard.putNumber("Estimated Pose Y", m_poseEstimator.getEstimatedPosition().getY());
+
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    // SmartDashboard.putNumber("Battery Voltage", Constants.PDH.getVoltage());
 
     SmartDashboard.putNumber("Estimated Pose Rotation", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
     double[] poseArray = {getEstimatedPose().getX(), getEstimatedPose().getY(), getEstimatedPose().getRotation().getRadians()};
     SmartDashboard.putNumberArray("Estimated Pose", poseArray);
 
-    SmartDashboard.putBoolean("yCheck", Constants.yCheck);
+    // SmartDashboard.putBoolean("yCheck", Constants.yCheck);
 
     SmartDashboard.putNumber("FL current Angle", m_frontLeft.getCurrentDriveAngle());
+    SmartDashboard.putNumber("FL Drive Motor Position", m_frontLeft.getDriveMotorPosition());
 
     // SmartDashboard.putNumber("Yep", m_frontLeft.getVelocity());
 
@@ -293,26 +294,24 @@ public class DriveSubsystem extends SubsystemBase {
     
 
     // Diagnostics
+    Debug.dashboard(
+      Debug.Dashboard.of("FL Mag Enc", m_frontLeft.getCanCoder()),
+      Debug.Dashboard.of("FR Mag Enc", m_frontRight.getCanCoder()),
+      Debug.Dashboard.of("RL Mag Enc", m_rearLeft.getCanCoder()),
+      Debug.Dashboard.of("RR Mag Enc", m_rearRight.getCanCoder()),
 
-  if (Constants.kDebugLevel >=3) {
-      SmartDashboard.putNumber("FL Mag Enc", m_frontLeft.getCanCoder());
-      SmartDashboard.putNumber("FR Mag Enc", m_frontRight.getCanCoder());
-      SmartDashboard.putNumber("RL Mag Enc", m_rearLeft.getCanCoder());
-      SmartDashboard.putNumber("RR Mag Enc", m_rearRight.getCanCoder());
+      Debug.Dashboard.of("FL Angle State", m_frontLeft.getState().angle.getDegrees()),
+      Debug.Dashboard.of("FL Angle SparkMax", m_frontLeft.getAngle().getDegrees()),
+      Debug.Dashboard.of("FL Angle CanCoder", m_frontLeft.getCanCoder()),
+      Debug.Dashboard.of("FL Angle Offset", m_frontLeft.getCanCoder() - m_frontLeft.getAngle().getDegrees()),
+      Debug.Dashboard.of("FL Angle Current",m_frontLeft.getTurnCurrent()),
 
-      SmartDashboard.putNumber("FL Angle State", m_frontLeft.getState().angle.getDegrees());
-      SmartDashboard.putNumber("FL Angle SparkMax", m_frontLeft.getAngle().getDegrees());
-      SmartDashboard.putNumber("FL Angle CanCoder", m_frontLeft.getCanCoder());
-      SmartDashboard.putNumber("FL Angle Offset", m_frontLeft.getCanCoder() - m_frontLeft.getAngle().getDegrees());
-      SmartDashboard.putNumber("FL Angle Current",m_frontLeft.getTurnCurrent());
+      Debug.Dashboard.of("FL Turn Enc", m_frontLeft.getPosition().angle.getDegrees()),
+      Debug.Dashboard.of("FR Turn Enc", m_frontRight.getPosition().angle.getDegrees()),
+      Debug.Dashboard.of("RL Turn Enc", m_rearLeft.getPosition().angle.getDegrees()),
+      Debug.Dashboard.of("RR Turn Enc", m_rearRight.getPosition().angle.getDegrees()),
       
-      SmartDashboard.putNumber("FL Turn Enc", m_frontLeft.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber("FR Turn Enc", m_frontRight.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber("RL Turn Enc", m_rearLeft.getPosition().angle.getDegrees());
-      SmartDashboard.putNumber("RR Turn Enc", m_rearRight.getPosition().angle.getDegrees());
-
-      SmartDashboard.putNumber("RL Drive encoder", m_rearLeft.getPosition().distanceMeters);
-    }
+      Debug.Dashboard.of("RL Drive encoder", m_rearLeft.getPosition().distanceMeters));
 
     Vector<Double> robotVector = new Vector<>();
     if (Math.abs(xVelocity) <= 0.1) {
@@ -328,17 +327,16 @@ public class DriveSubsystem extends SubsystemBase {
       robotVector.add(0.0);
     }
 
-    // Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
+    Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
 
     SmartDashboard.putBoolean("Is Right", !leftPoint);
     
+    calculateRobotAreaString(getEstimatedPose());
+
+    SmartDashboard.putString("Robot X Area", Constants.robotPositionXString);
+
     getRobotVelocityX();
     getRobotVelocityY();
-
-    // SmartDashboard.putNumber("Estimated rotation", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-    // SmartDashboard.putNumber("X Speed", autoXSpeed);
-    // SmartDashboard.putNumber("Y Speed", autoYSpeed);
-    // SmartDashboard.putNumber("Goal Rotation Speed", autoRotateSpeed);
   }
 
   /**
@@ -382,44 +380,52 @@ public class DriveSubsystem extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
+    // rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
 
     if (isDrivingSlow) {
       ySpeed *= 0.1;
       xSpeed *= 0.1;
     }
 
-    if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      ySpeed = autoYSpeed;
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
+      rot = Constants.autoRotateSpeed;
     }
 
-    if (isAutoXSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      xSpeed = autoXSpeed;
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnY && driveModifier.shouldRun(this)))) {
+      ySpeed = Constants.autoYSpeed;
     }
 
-    // if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
-    //   rot = Constants.autoRotateSpeed;
-    // }
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnX && driveModifier.shouldRun(this)))) {
+      xSpeed = Constants.autoXSpeed;
+    }
 
-    // if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnY && driveModifier.shouldRun(this)))) {
-    //   ySpeed = Constants.autoYSpeed;
-    // }
-
-    // if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnX && driveModifier.shouldRun(this)))) {
-    //   xSpeed = Constants.autoXSpeed;
-    // }
-
-    SmartDashboard.putBoolean("Is Driving Slow", isDrivingSlow);
-    SmartDashboard.putNumber("FL Desired Position", m_frontLeft.getDesiredPosition());
+    SmartDashboard.putNumber("XSpeed", xSpeed);
+    SmartDashboard.putNumber("YSpeed", ySpeed);
+    SmartDashboard.putNumber("Rotation", rot);
+    SmartDashboard.putNumber("Auto Rotate Speed", Constants.autoRotateSpeed);
 
     // Apply joystick deadband
-    xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
-    ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
-    rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+    // xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
+    // ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
+    // rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
-    // xSpeed *= Constants.SwerveConstants.kMaxSpeedTeleop;
-    // ySpeed *= Constants.SwerveConstants.kMaxSpeedTeleop;
-    // rot *= Constants.ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
+    xSpeed = Constants.isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
+    ySpeed = Constants.isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
+    rot = Constants.isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+
+    if (!Constants.isAutoXSpeed) {
+      xSpeed *= SwerveConstants.kMaxSpeedTeleop;
+    }
+
+    if (!Constants.isAutoYSpeed) {
+      ySpeed *= SwerveConstants.kMaxSpeedTeleop;
+    }
+    
+    if (Constants.isAutoRotate != RotationEnum.NONE) {
+      rot = Constants.autoRotateSpeed;
+    } else {
+      rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
+    }
 
     // Apply speed scaling
     xSpeed = xSpeed * m_DriverSpeedScale;
@@ -432,37 +438,12 @@ public class DriveSubsystem extends SubsystemBase {
       xSpeed = -xSpeed;
     }
 
-    /*if (isAutoRotate == false && Math.abs(rot / ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND) <= 0.1 
-    && rotationTimer.hasElapsed(0.1)
-    ) {
-      if (roboNoSpino) {
-        goalAngle = m_poseEstimator.getEstimatedPosition().getRotation().getDegrees();
-        roboNoSpino = false;
-      }
-    
-      m_turnCtrl.setSetpoint(goalAngle);
-      double m_output = MathUtil.clamp(m_turnCtrl.calculate(m_poseEstimator.getEstimatedPosition().getRotation().getDegrees()), -1.0, 1.0);
-      rot = m_output;
-    }
-    else {
-      goalAngle = m_poseEstimator.getEstimatedPosition().getRotation().getDegrees();
-      m_turnCtrl.reset();
-      roboNoSpino = true;
-      rotationTimer.restart();
-    }
-    SmartDashboard.putNumber("Goal Angle", goalAngle);
-    */
-
-    SmartDashboard.putNumber("XSpeed", xSpeed);
-    SmartDashboard.putNumber("YSpeed", ySpeed);
-    SmartDashboard.putNumber("Rotation", rot);
-
     var swerveModuleStates =
         SwerveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_imu.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    SwerveDriveKinematics.desaturateWheelSpeeds( swerveModuleStates, SwerveConstants.kMaxSpeedMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveFL_enum]);
     m_frontRight.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveFR_enum]);
     m_rearLeft.setDesiredState(swerveModuleStates[SwerveConstants.kSwerveRL_enum]);
@@ -553,6 +534,56 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getEstimatedPoseAsRadians() {
     return new Pose2d(m_poseEstimator.getEstimatedPosition().getX(), m_poseEstimator.getEstimatedPosition().getY(), new Rotation2d(m_poseEstimator.getEstimatedPosition().getRotation().getRadians()));
+  }
+
+  public void calculateRobotAreaString(Pose2d robotPose) {
+    // TODO: Add check for left and right side of the field
+    DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
+      // Calculate area for blue alliance
+    if (robotPose.getX() < 3.615) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "Alliance";
+        Constants.hoodAngle = 60;
+      } else {
+        Constants.robotPositionXString = "Opponent";
+      }
+    } else if (robotPose.getX() > 3.615 && robotPose.getX() < 5.65) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "AllianceTrench";
+        // Constants.hoodAngle = 83.25;
+      } else {
+        Constants.robotPositionXString = "OpponentTrench";
+        // Constants.hoodAngle = 83.25;
+      }
+    } 
+    else if (robotPose.getX() > 5.65 && robotPose.getX() < 8.249) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "AllianceMidfield";
+      } else {
+        Constants.robotPositionXString = "OpponentMidfield";
+      }
+    } else if (robotPose.getX() > 8.251 && robotPose.getX() < 10.925) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "OpponentMidfield";
+      } else {
+        Constants.robotPositionXString = "AllianceMidfield";
+      }
+    } else if (robotPose.getX() > 10.925 && robotPose.getX() < 12.95) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "OpponentTrench";
+        // Constants.hoodAngle = 83.25;
+      } else {
+        Constants.robotPositionXString = "AllianceTrench";
+        // Constants.hoodAngle = 83.25;
+      }
+    } 
+    else if (robotPose.getX() > 12.95) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "Opponent";
+      } else {
+        Constants.robotPositionXString = "Alliance";
+      }
+    }
   }
 
   public void getRobotVelocityX() {

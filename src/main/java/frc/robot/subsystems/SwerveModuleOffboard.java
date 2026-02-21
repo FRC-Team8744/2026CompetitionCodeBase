@@ -10,22 +10,17 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import static edu.wpi.first.units.Units.Rotation;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.SwerveConstants;
@@ -34,13 +29,11 @@ public class SwerveModuleOffboard {
   // Drive motor
   private final TalonFX m_driveMotor;
   private final TalonFX m_driveEncoder;
-  private final int m_drivePID;
 
   private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
   private final PositionVoltage turnPosition =  new PositionVoltage(0);
 
   private static final TalonFXConfiguration rotationConfig = new TalonFXConfiguration();
-  private static final CANcoderConfiguration testCanCoderConfig = new CANcoderConfiguration();
   private static final Slot0Configs rotationConfigPID = rotationConfig.Slot0;
 
   private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(0.32, 1.51, 0.27);
@@ -48,12 +41,10 @@ public class SwerveModuleOffboard {
   // Turning motor
   private final TalonFX m_turningMotor;
   private final TalonFX m_turningEncoder;
-  private final int m_turningPID;
   
   // Swerve module absolute encoder (wheel angle)
   private final CANcoder m_canCoder;
   private final double m_canCoderOffsetDegrees;
-  private double lastAngle;
 
   SwerveModuleState state;
   private int DisplayCount = 0;
@@ -71,44 +62,14 @@ public class SwerveModuleOffboard {
     // Create drive motor objects
     m_driveMotor = new TalonFX(driveMotorID);
     m_driveEncoder = m_driveMotor;
-    m_drivePID = 0;
 
     // Create turning motor objects
     m_turningMotor = new TalonFX(turningMotorID);
     m_turningEncoder = m_turningMotor;
-    m_turningPID = 0;
 
     // Create steering encoder objects (high resolution encoder)
     m_canCoder = new CANcoder(magEncoderID, "rio");
     m_canCoderOffsetDegrees = magEncoderOffsetDegrees;
-
-    // driveConfig.Voltage.PeakForwardVoltage = 12;
-    // driveConfig.Voltage.PeakReverseVoltage = -12;
-    // driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
-    // driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    // driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    // driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    // driveConfig.CurrentLimits.StatorCurrentLimit = 40.0;
-    // // driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // driveConfigPID.kV = Constants.ConstantsOffboard.KRAKEN_V;
-    // driveConfigPID.kP = Constants.ConstantsOffboard.KRAKEN_P;
-    // driveConfigPID.kI = Constants.ConstantsOffboard.KRAKEN_I;
-    // driveConfigPID.kD = Constants.ConstantsOffboard.KRAKEN_D;
-    // driveConfig.withSlot0(driveConfigPID);
-
-    // driveConfigRear.Voltage.PeakForwardVoltage = 12;
-    // driveConfigRear.Voltage.PeakReverseVoltage = -12;
-    // driveConfigRear.TorqueCurrent.PeakForwardTorqueCurrent = 800;
-    // driveConfigRear.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    // driveConfigRear.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    // driveConfigRear.CurrentLimits.StatorCurrentLimitEnable = true;
-    // driveConfigRear.CurrentLimits.StatorCurrentLimit = 40.0;
-    // driveConfigRear.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // driveConfigRearPID.kV = Constants.ConstantsOffboard.KRAKEN_V;
-    // driveConfigRearPID.kP = Constants.ConstantsOffboard.KRAKEN_P;
-    // driveConfigRearPID.kI = Constants.ConstantsOffboard.KRAKEN_I;
-    // driveConfigRearPID.kD = Constants.ConstantsOffboard.KRAKEN_D;
-    // driveConfigRear.withSlot0(driveConfigRearPID);
 
     configureDevices();
 
@@ -120,22 +81,12 @@ public class SwerveModuleOffboard {
     rotationConfig.Feedback.FeedbackRemoteSensorID = magEncoderID;
     rotationConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     rotationConfig.CurrentLimits.StatorCurrentLimit = 40.0;
-    // rotationConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    // rotationConfig.Feedback.SensorToMechanismRatio = ConstantsOffboard.ANGLE_GEAR_RATIO;
+    rotationConfig.ClosedLoopGeneral.ContinuousWrap = true;
     rotationConfigPID.kV = Constants.ConstantsOffboard.KRAKENROTATION_V;
     rotationConfigPID.kP = Constants.ConstantsOffboard.KRAKENROTATION_P;
     rotationConfigPID.kI = Constants.ConstantsOffboard.KRAKENROTATION_I;
     rotationConfigPID.kD = Constants.ConstantsOffboard.KRAKENROTATION_D;
     rotationConfig.withSlot0(rotationConfigPID);
-
-    lastAngle = getState().angle.getRadians();
-
-
-    // if (driveMotorID == 7 || driveMotorID == 10) {
-    //   m_driveMotor.getConfigurator().apply(driveConfigRear);
-    //   m_driveMotor.getConfigurator().setPosition(0);
-    //   m_driveMotor.setNeutralMode(NeutralModeValue.Brake);
-    // } else {
 
     m_driveMotor.getConfigurator().apply(Constants.driveConfig);
     m_driveMotor.getConfigurator().setPosition(0);
@@ -143,7 +94,7 @@ public class SwerveModuleOffboard {
     // }
 
     m_turningMotor.getConfigurator().apply(rotationConfig);
-    m_turningMotor.getConfigurator().setPosition(0);
+    // m_turningMotor.getConfigurator().setPosition(0);
     m_turningMotor.setNeutralMode(NeutralModeValue.Brake);
   }
 
@@ -162,20 +113,13 @@ public class SwerveModuleOffboard {
       }
     } else {
       // Optimize the reference state to avoid spinning further than 90 degrees
-      // state = SwerveModuleState.optimize(desiredState, new Rotation2d(m_turningEncoder.getPosition()));
-      // m_turningEncoder.setPosition(Units.degreesToRadians(m_canCoder.getAbsolutePosition().getValueAsDouble() * 360.0 - m_canCoderOffsetDegrees));
-      // m_turningEncoder.setPosition(Units.rotationsToRadians(m_turningEncoder.getPosition().getValueAsDouble()));
-      // state.optimize(new Rotation2d(m_turningEncoder.getPosition()));
-      // state.angle = Rotation2d.fromDegrees(wrapTo360(state.angle.getDegrees()));
-      // state.angle = Rotation2d.fromDegrees(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360.0));
-      // optimize(state.angle.getDegrees(), Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble()).getDegrees());
       state.optimize(Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble()));
     }
 
     // Scale speed by cosine of angle error. This scales down movement perpendicular to the desired
     // direction of travel that can occur when modules change directions. This results in smoother
     // driving.
-    state.speedMetersPerSecond *= state.angle.minus(Rotation2d.fromRotations(m_turningEncoder.getPosition().getValueAsDouble())).getCos();
+    state.speedMetersPerSecond *= state.angle.minus(Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble())).getCos();
 
     // Set the PID reference states
     driveVelocity.Velocity = (state.speedMetersPerSecond * 60) / Constants.ConstantsOffboard.WHEEL_CIRCUMFERENCE;
@@ -195,36 +139,36 @@ public class SwerveModuleOffboard {
 
   public SwerveModuleState getState() {
     double velocity = m_driveMotor.getVelocity().getValueAsDouble();
-    Rotation2d rot = new Rotation2d(m_turningEncoder.getPosition().getValueAsDouble());
+    Rotation2d rot = Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble());
     return new SwerveModuleState(velocity, rot);
   }
 
-  public static double wrapTo360(double angleDeg) {
-    angleDeg %= 360.0;
-    if (angleDeg < 0) {
-        angleDeg += 360.0;
-    }
-    return angleDeg;
-  }
+  // public static double wrapTo360(double angleDeg) {
+  //   angleDeg %= 360.0;
+  //   if (angleDeg < 0) {
+  //       angleDeg += 360.0;
+  //   }
+  //   return angleDeg;
+  // }
 
-  public void optimize(double goalAngle, double currentAngle) {
-    double x = goalAngle - currentAngle;
-    double y = (goalAngle + 360) - currentAngle;
-    double z = goalAngle - (currentAngle + 360);
-    if (Math.abs(x) > 90.0 && Math.abs(y) > 90.0 && Math.abs(z) > 90.0) {
-      state.speedMetersPerSecond *= -1;
-      state.angle = Rotation2d.fromDegrees(goalAngle).rotateBy(Rotation2d.kPi);
-      // Constants.yCheck = true;
-    } 
-    else if (Math.abs(x) > 90.0 && Math.abs(y) <= 90.0) {
-      state.angle = Rotation2d.fromDegrees((goalAngle + 360));
-      Constants.yCheck = true;
-    }
-    else if (Math.abs(x) > 90.0 && Math.abs(z) <= 90.0) {
-      state.angle = Rotation2d.fromDegrees((goalAngle - 360));
-      Constants.yCheck = true;
-    }
-  }
+  // public void optimize(double goalAngle, double currentAngle) {
+  //   double x = goalAngle - currentAngle;
+  //   double y = (goalAngle + 360) - currentAngle;
+  //   double z = goalAngle - (currentAngle + 360);
+  //   if (Math.abs(x) > 90.0 && Math.abs(y) > 90.0 && Math.abs(z) > 90.0) {
+  //     state.speedMetersPerSecond *= -1;
+  //     state.angle = Rotation2d.fromDegrees(goalAngle).rotateBy(Rotation2d.kPi);
+  //     // Constants.yCheck = true;
+  //   } 
+  //   else if (Math.abs(x) > 90.0 && Math.abs(y) <= 90.0) {
+  //     state.angle = Rotation2d.fromDegrees((goalAngle + 360));
+  //     // Constants.yCheck = true;
+  //   }
+  //   else if (Math.abs(x) > 90.0 && Math.abs(z) <= 90.0) {
+  //     state.angle = Rotation2d.fromDegrees((goalAngle - 360));
+  //     // Constants.yCheck = true;
+  //   }
+  // }
 
   /**
    * Returns the CANcoder's measured turn angle in degrees.
@@ -245,15 +189,20 @@ public class SwerveModuleOffboard {
    * Returns the SparkMax internal encoder's measured turn angle in degrees.
    */
   public Rotation2d getAngle() {
-    return new Rotation2d(m_turningEncoder.getPosition().getValueAsDouble());
+    return new Rotation2d(m_canCoder.getAbsolutePosition().getValueAsDouble());
+  }
+
+  public double getDriveMotorPosition() {
+    return m_driveMotor.getPosition().getValueAsDouble();
   }
 
   /**
    * Returns the SparkMax internal encoder's measured position in meters.
    */
   public SwerveModulePosition getPosition() {
-    double distance = m_driveMotor.getPosition().getValueAsDouble() / (5.27 / (Units.inchesToMeters(4) * Math.PI));
-    Rotation2d rot = new Rotation2d(m_turningEncoder.getPosition().getValueAsDouble() * ConstantsOffboard.ANGLE_GEAR_RATIO);
+    double distance = m_driveMotor.getPosition().getValueAsDouble() * ConstantsOffboard.DRIVE_ROTATIONS_TO_METERS;
+    // Rotation2d rot = new Rotation2d(m_driveEncoder.getPosition().getValueAsDouble() * ConstantsOffboard.ANGLE_GEAR_RATIO);
+    Rotation2d rot = Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble());
     return new SwerveModulePosition(distance, rot);
   }
 
@@ -281,7 +230,7 @@ public class SwerveModuleOffboard {
   private void configureDevices() {
     /* Configure CANcoder */
     var toApply = new CANcoderConfiguration();
-    toApply.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
+    toApply.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     toApply.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     toApply.MagnetSensor.MagnetOffset = m_canCoderOffsetDegrees;
     m_canCoder.getConfigurator().apply(toApply);
@@ -289,40 +238,6 @@ public class SwerveModuleOffboard {
     /* Speed up signals to an appropriate rate */
     m_canCoder.getPosition().setUpdateFrequency(100);
     m_canCoder.getVelocity().setUpdateFrequency(100);
-
-    // SparkBaseConfig m_turningMotorConfig = new SparkMaxConfig()
-    //   .inverted(ConstantsOffboard.ANGLE_MOTOR_INVERSION)
-    //   .smartCurrentLimit(ConstantsOffboard.ANGLE_CURRENT_LIMIT);
-
-    // if (ConstantsOffboard.ANGLE_MOTOR_PROFILED_MODE) {
-    //   m_turningMotorConfig.closedLoop.pidf(
-    //   ConstantsOffboard.ANGLE_KP_PROFILED, 
-    //   ConstantsOffboard.ANGLE_KI_PROFILED, 
-    //   ConstantsOffboard.ANGLE_KD_PROFILED, 
-    //   ConstantsOffboard.ANGLE_KF_PROFILED);
-    // } else {
-    //   m_turningMotorConfig.closedLoop.pidf(
-    //   ConstantsOffboard.ANGLE_KP, 
-    //   ConstantsOffboard.ANGLE_KI, 
-    //   ConstantsOffboard.ANGLE_KD, 
-    //   ConstantsOffboard.ANGLE_KF);
-    // }
-
-    // m_turningMotorConfig.closedLoop
-    //   .positionWrappingEnabled(true)
-    //   .positionWrappingMaxInput(2 * Math.PI)
-    //   .positionWrappingMinInput(0)
-
-    //   .maxMotion
-    //     .maxVelocity(ConstantsOffboard.ANGLE_MAX_VEL_PROFILED)
-    //     .maxAcceleration(ConstantsOffboard.ANGLE_MAX_ACC_PROFILED)
-    //     .allowedClosedLoopError(ConstantsOffboard.ANGLE_MAX_ERR_PROFILED);
-
-    // m_turningMotorConfig.encoder
-    //   .positionConversionFactor(ConstantsOffboard.ANGLE_ROTATIONS_TO_RADIANS)
-    //   .velocityConversionFactor(ConstantsOffboard.ANGLE_RPM_TO_RADIANS_PER_SECOND);
-
-    // m_turningMotor.configure(m_turningMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     // According to this:
     // https://www.chiefdelphi.com/t/ctre-phoenix-pro-to-phoenix-6-looking-back-and-looking-ahead/437313/27

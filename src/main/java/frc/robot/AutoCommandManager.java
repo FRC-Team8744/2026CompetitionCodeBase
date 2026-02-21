@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.vision.PhotonVisionGS;
+// import frc.robot.subsystems.vision.LimeLight4;
 
 /** Add your docs here. */
 public class AutoCommandManager {
@@ -35,12 +35,12 @@ public class AutoCommandManager {
     public TrajectoryConfig reverseConfig;
 
     public AutoCommandManager(
-        PhotonVisionGS m_visionGS,
+        // LimeLight4 m_visionGS,
         DriveSubsystem m_robotDrive)
          {
 
         configureNamedCommands(
-            m_visionGS,
+            // m_visionGS,
             m_robotDrive
       );
 
@@ -95,9 +95,10 @@ public class AutoCommandManager {
     }
 
     public void configureNamedCommands(
-        PhotonVisionGS m_visionGS,
+        // LimeLight4 m_visionGS,
         DriveSubsystem m_robotDrive
     ) {
+        // TODO: Add named commands for auto builder to use
         NamedCommands.registerCommand("AutoLineUp", Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.STRAFEONTARGET));
         NamedCommands.registerCommand("LeftPole", Commands.runOnce(() -> m_robotDrive.leftPoint = true));
         NamedCommands.registerCommand("RightPole", Commands.runOnce(() -> m_robotDrive.leftPoint = false));

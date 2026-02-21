@@ -4,23 +4,18 @@
 
 package frc.robot;
 
-import java.io.NotActiveException;
-
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
 
 public final class Constants {
-  public static final int kDebugLevel = 0; // 0 = None, 1 = Errors, 2 = Info, 3 = Debug and USB data log
-  
   public static final int kMaxSpeedPercentAuto = 100; //This effects Drive speed in telop DONT ASK ME WHY
   public static final int kMaxSpeedPercentTeleop = 65; // 65
   public static final int kMaxAccelerationPercent = 100;
@@ -29,48 +24,24 @@ public final class Constants {
   public static final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
   public static final Slot0Configs driveConfigPID = driveConfig.Slot0;
 
-  public static String scoringMode = "Coral";
-  public static String scoringLevel = "L4";
-  public static String algaeScoringLevel = "L3";
-  public static boolean leftPole = true;
-  public static double scoringMechGoalAngle = -200;
-  public static double scoringMechGoalAngleAlgae = -200;
-  public static double percentOfElevator = 0.9;
-  public static double percentOfElevatorAlgae = 0.5;
-  public static boolean visionElevator = true;
-  public static boolean sensorMode = true;
-  public static boolean stopNoTwoPieces = false;
-  public static boolean newAlgae = true;
-  public static boolean yCheck = false;
+  // public static final PowerDistribution PDH = new PowerDistribution(30, PowerDistribution.ModuleType.kRev);
 
   // 17.55 is the distance of the field in meters
   // This gets the points of the triangles to calc if it can strafe 
-  public static final Pose2d[] redBorder6 = new Pose2d[]{new Pose2d(17.55 - 4.319, 3.67, new Rotation2d(0)), new Pose2d(17.55 - -0.191, 0.67, new Rotation2d(0)), new Pose2d(17.55 - 4.319, -0.33, new Rotation2d(0))};
-  public static final Pose2d[] redBorder7 = new Pose2d[]{new Pose2d(17.55 - 4.12, 4.0, new Rotation2d(0)), new Pose2d(17.55 - -0.38, 7.0, new Rotation2d(0)), new Pose2d(17.55 - -0.38, 1.0, new Rotation2d(0))};
-  public static final Pose2d[] redBorder8 = new Pose2d[]{new Pose2d(17.55 - 4.319, 4.33, new Rotation2d(0)), new Pose2d(17.55 - 4.319, 8.33, new Rotation2d(0)), new Pose2d(17.55 - -0.191, 7.33, new Rotation2d(0))};
-  public static final Pose2d[] redBorder9 = new Pose2d[]{new Pose2d(17.55 - 4.691, 4.33, new Rotation2d(0)), new Pose2d(17.55 - 10.191, 7.33, new Rotation2d(0)), new Pose2d(17.55 - 4.691, 8.33, new Rotation2d(0))};
-  public static final Pose2d[] redBorder10 = new Pose2d[]{new Pose2d(17.55 - 4.88, 4.0, new Rotation2d(0)), new Pose2d(17.55 - 10.38, 1.0, new Rotation2d(0)), new Pose2d(17.55 - 10.38, 7.0, new Rotation2d(0))};
-  public static final Pose2d[] redBorder11 = new Pose2d[]{new Pose2d(17.55 - 4.691, 3.67, new Rotation2d(0)), new Pose2d(17.55 - 4.691, -0.33, new Rotation2d(0)), new Pose2d(17.55 - 10.191, 0.67, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder17 = new Pose2d[]{new Pose2d(4.319, 3.67, new Rotation2d(0)), new Pose2d(4.319, -0.33, new Rotation2d(0)), new Pose2d(-0.191, 0.67, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder18 = new Pose2d[]{new Pose2d(4.12, 4.0, new Rotation2d(0)), new Pose2d(-0.38, 1.0, new Rotation2d(0)), new Pose2d(-0.38, 7.0, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder19 = new Pose2d[]{new Pose2d(4.319, 4.33, new Rotation2d(0)), new Pose2d(-0.191, 7.33, new Rotation2d(0)), new Pose2d(4.319, 8.33, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder20 = new Pose2d[]{new Pose2d(4.691, 4.33, new Rotation2d(0)), new Pose2d(4.691, 8.33, new Rotation2d(0)), new Pose2d(10.191, 7.33, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder21 = new Pose2d[]{new Pose2d(4.88, 4.0, new Rotation2d(0)), new Pose2d(10.38, 7.0, new Rotation2d(0)), new Pose2d(10.38, 1.0, new Rotation2d(0))};
-  public static final Pose2d[] blueBorder22 = new Pose2d[]{new Pose2d(4.691, 3.67, new Rotation2d(0)), new Pose2d(10.191, 0.67, new Rotation2d(0)), new Pose2d(4.691, -0.33, new Rotation2d(0))};
-
-  public static final double[] rightPoint = {5.35, 4.2492}; // 4.25128984 4.2378 4.23 4.2492 Seven rivers: 4.2396
-  public static final double[] leftPoint = {5.35, 3.8428}; // 3.85128984 Seven rivers: 3.8428 3.83 3.8028 3.8028
-  public static double rightL1ScoringPoint = 4.52;
-  public static double leftL1ScoringPoint = 3.58;
-  public static final double[][] rotationMatrix = {{0.5, Math.sin(Math.PI / 3.0)}, {-Math.sin(Math.PI / 3.0), 0.5}};
 
   public static RotationEnum isAutoRotate = RotationEnum.NONE;
   public static boolean isAutoXSpeed = false;
   public static double autoXSpeed = 0;
   public static double autoYSpeed = 0;
   public static double autoRotateSpeed = 0;
-  public static boolean isAutoYSpeed = true;
+  public static boolean isAutoYSpeed = false;
+  public static String robotPositionXString = "Alliance";
+  public static String robotPositionYString = "None";
+  public static boolean shuttleMode = false;
+  public static double hoodAngle = 83.25;
 
+  //TODO: Add positions for shuttling presets
+  //TODO: Add turret and hood positions for shuttling presets
 
   public Constants() {
     configureKrakens();
@@ -86,6 +57,7 @@ public final class Constants {
     // The positive X axis points ahead, the positive Y axis points left, and the positive Z axis points up.
     // We use NWU here because the rest of the library, and math in general, use NWU axes convention.
     // https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html#axis-conventions
+    // TODO: Get all motor ids for the swerve modules and enure the orientation of the modules is correct
     public static final int kFrontLeftDriveMotorPort = 1; // 8
     public static final int kFrontRightDriveMotorPort = 4; // 3
     public static final int kRearLeftDriveMotorPort = 10; // 17
@@ -101,22 +73,35 @@ public final class Constants {
     public static final int kRearLeftMagEncoderPort = 12; // 18
     public static final int kRearRightMagEncoderPort = 9; // 21
 
-    public static final int kAlgaeMechanism = 19;
+    // TODO: Get all motor ids for the other mechanisms
+    public static final int kIntakePivotMotorPort = 14;
+    public static final int kIntakeMotorPort = 15;
+    public static final int kSpindexerMotorPort = 16;
+    public static final int kIndexerMotorPort = 17;
+    public static final int kShooterFlywheelLeftMotorPort = 18;
+    public static final int kShooterFlywheelRightMotorPort = 19;
+    public static final int kHoodRollerMotorPort = 20;
+    public static final int kHoodRotateMotorPort = 21;
+    public static final int kHoodRotateCANCoderID = 22;
+    public static final int kTurretMotorPort = 23;
+    public static final int kTurretCANCoderID = 24;
+    public static int kClimberMotorPort;
 
     // Only disable the steering angle optimizer when measuring the CANcoder offsets!
     public static final boolean DISABLE_ANGLE_OPTIMIZER = false;
 
     // Note: Zeroing the CanCoder in Tuner X doesn't seem to affect the reported absolute position.
-    public static final double kFrontLeftMagEncoderOffsetDegrees = 1 - 0.125244; // 3
-    public static final double kFrontRightMagEncoderOffsetDegrees = 1 - 0.846191; // 6
-    public static final double kRearLeftMagEncoderOffsetDegrees = 1 - 0.224121; // 12
-    public static final double kRearRightMagEncoderOffsetDegrees = 1 - 0.248779; // 9
+    // TODO: Get new offsets of swerve modules
+    public static final double kFrontLeftMagEncoderOffsetDegrees = 1 - 0.598877; // 0.125244; // 3
+    public static final double kFrontRightMagEncoderOffsetDegrees = 1 - 0.999023; // 0.846191; // 6
+    public static final double kRearLeftMagEncoderOffsetDegrees = 1 - 0.228516; // 0.224121; // 12 
+    public static final double kRearRightMagEncoderOffsetDegrees = 1 - 0.625; // 0.248779; // 9
 
     // Distance between centers of right and left wheels on robot
-    public static final double kTrackWidth = Units.inchesToMeters(20.472);
+    public static final double kTrackWidth = Units.inchesToMeters(20.750);
 
     // Distance between front and back wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(20.472);
+    public static final double kWheelBase = Units.inchesToMeters(20.750);
 
     public static final SwerveDriveKinematics kDriveKinematics =
         new SwerveDriveKinematics(
@@ -126,6 +111,7 @@ public final class Constants {
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),  // Rear Left Quadrant
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));  // Rear Right Quadrant
 
+    // TODO: Recalibrate pigeon 2
     public static final int kIMU_ID = 13;
 
     public static int kSwerveFL_enum = 0;
@@ -203,8 +189,8 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
-    public static final double kDeadband = 0.3;
-    public static final double kRotationDeadband = 1.8;
+    public static final double kDeadband = 0.05;
+    public static final double kRotationDeadband = 0.1;
   }
 
   public static final class AutoConstants {
