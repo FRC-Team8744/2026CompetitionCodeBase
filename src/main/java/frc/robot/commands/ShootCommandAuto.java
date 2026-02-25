@@ -4,8 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.mechanisms.Indexer;
@@ -14,15 +12,13 @@ import frc.robot.subsystems.mechanisms.ShooterHood;
 import frc.robot.subsystems.mechanisms.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ShootCommand extends Command {
+public class ShootCommandAuto extends Command {
   /** Creates a new ShootCommand. */
   private final ShooterHood m_shooterHood;
   private final Spindexer m_spindexer;
   private final ShooterFlywheels m_shooterFlywheels;
   private final Indexer m_indexer;
-  private double timeStart;
-
-  public ShootCommand(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx) {
+  public ShootCommandAuto(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx) {
     m_shooterHood = hd;
     m_spindexer = sp;
     m_shooterFlywheels = sf;
@@ -37,13 +33,13 @@ public class ShootCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // m_spindexer.setSpindexerSpeed(-0.8);
-    // m_indexer.setIndexerSpeed(0.8);
-    m_shooterHood.setShooterHoodAngle(55);
+    Constants.autoShoot = true;
+    m_spindexer.setSpindexerSpeed(-0.8);
+    m_indexer.setIndexerSpeed(0.8);
+    m_shooterHood.setShooterHoodAngle(60);
     m_shooterHood.setHoodRollerSpeed(0.2);
     m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
 
-    timeStart = Timer.getTimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,18 +50,10 @@ public class ShootCommand extends Command {
     } else {
       m_shooterHood.setShooterHoodAngle(60);
     }
-    if (Timer.getTimestamp() > timeStart + 0.6) {
-    m_indexer.setIndexerSpeed(0.8);
     m_spindexer.setSpindexerSpeed(-0.8);
-
-    }
-    //m_spindexer.setSpindexerSpeed(-0.8);
-    //m_indexer.setIndexerSpeed(0.8);
+    m_indexer.setIndexerSpeed(0.8);
     m_shooterHood.setHoodRollerSpeed(0.2);
     m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
-
-    SmartDashboard.putNumber("TimerStart", timeStart);
-    SmartDashboard.putNumber("Time", Timer.getTimestamp());
   }
 
   // Called once the command ends or is interrupted.
@@ -81,6 +69,6 @@ public class ShootCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !Constants.autoShoot;
   }
 }

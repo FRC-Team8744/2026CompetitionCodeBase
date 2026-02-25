@@ -3,35 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.740578313253012,
-        "y": 5.291686746987953
+        "x": 1.8554337349397594,
+        "y": 2.1445060240963856
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5766626506024095,
-        "y": 4.854578313253012
+        "x": 1.6478072289156627,
+        "y": 3.0733614457831333
       },
       "isLocked": false,
-      "linkedName": "BL1.2"
+      "linkedName": "TR1.2"
     },
     {
       "anchor": {
         "x": 1.6040963855421686,
-        "y": 4.47210843373494
+        "y": 2.996867469879518
       },
       "prevControl": {
-        "x": 2.456457831325301,
-        "y": 4.701590361445783
+        "x": 1.789867469879518,
+        "y": 2.330277108433736
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BL1.3"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "TurnOffShoot",
+      "waypointRelativePos": 0.3200000000000001,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "TurnOffShoot"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
@@ -42,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 178.93908830973572
   },
   "reversed": false,
-  "folder": "Bump Left",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -133.210089391754
+    "rotation": 129.36931724236467
   },
   "useDefaultConstraints": true
 }

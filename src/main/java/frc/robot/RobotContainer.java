@@ -66,7 +66,7 @@ public class RobotContainer {
   // The driver's controller
   private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
-  private final AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive);
+  private final AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive, m_shooterFlywheels, m_shooterHood, m_intake, m_indexer, m_spindexer, m_intakePivot, m_turret);
   
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -106,12 +106,13 @@ public class RobotContainer {
     m_driver.b()
     .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
     m_driver.x()
-    .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-1.0)));
+    .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-1.0)))
+    .whileFalse(Commands.runOnce(() -> m_intake.stopIntake()));
 
     m_driver.leftTrigger()
     .whileTrue(new IntakeCommand(m_intake, m_intakePivot, m_turret));
     m_driver.rightTrigger()
-    .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer));
+      .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer));
     m_driver.leftBumper()
     .whileTrue(Commands.run(() -> m_spindexer.setSpindexerSpeed(-0.8)))
     .whileFalse(Commands.run(() -> m_spindexer.stopSpindexer()));
