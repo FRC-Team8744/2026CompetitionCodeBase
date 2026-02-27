@@ -350,7 +350,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void zeroIMU() {
     m_imu.setYaw(0.0);
-    m_poseEstimator.resetPosition(m_imu.getRotation2d(), getModulePositions(), getPose());
+    m_poseEstimator.resetPosition(m_imu.getRotation2d(), getModulePositions(), getEstimatedPose());
   }
 
   /**
@@ -490,7 +490,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Apply speed scaling
     speeds.vxMetersPerSecond = speeds.vxMetersPerSecond * m_AutoSpeedScale;
     speeds.vyMetersPerSecond = speeds.vyMetersPerSecond * m_AutoSpeedScale;
-    speeds.omegaRadiansPerSecond = -speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
+    speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
     
     // SmartDashboard.putNumber("Robot Auto X After align", speeds.vxMetersPerSecond);
 
