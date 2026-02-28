@@ -39,6 +39,9 @@ public final class Constants {
   public static String robotPositionYString = "None";
   public static boolean shuttleMode = false;
   public static double hoodAngle = 83.25;
+  public static boolean autoIntake = true;
+  public static boolean autoShoot = true;
+  public static int kPDH_ID = 30;
 
   //TODO: Add positions for shuttling presets
   //TODO: Add turret and hood positions for shuttling presets

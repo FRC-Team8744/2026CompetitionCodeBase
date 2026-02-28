@@ -29,10 +29,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AutoCommandManager;
@@ -93,6 +96,8 @@ public class DriveSubsystem extends SubsystemBase {
   public final static Pigeon2 m_imu = new Pigeon2(Constants.SwerveConstants.kIMU_ID);
   // private final LimeLight4 m_vision;
   private PhotonVision m_visionPV;
+
+  PowerDistribution m_pdh = new PowerDistribution(Constants.kPDH_ID, ModuleType.kRev);
 
   public RotationEnum isAutoRotate = RotationEnum.NONE;
   public boolean isAutoYSpeed = false;
@@ -337,6 +342,18 @@ public class DriveSubsystem extends SubsystemBase {
 
     getRobotVelocityX();
     getRobotVelocityY();
+
+    SmartDashboard.putNumber("Voltage", m_pdh.getVoltage());
+
+    SmartDashboard.putNumber("temperature", m_pdh.getTemperature());
+
+    SmartDashboard.putNumber("Total Current", m_pdh.getTotalPower());
+
+    SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
+
+    for (int i = 0; i < 24; i++) {
+    SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
+    }
   }
 
   /**

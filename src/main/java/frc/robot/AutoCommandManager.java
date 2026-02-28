@@ -21,8 +21,19 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeCommandAuto;
+import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShootCommandAuto;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.mechanisms.Indexer;
+import frc.robot.subsystems.mechanisms.Intake;
+import frc.robot.subsystems.mechanisms.IntakePivot;
 // import frc.robot.subsystems.vision.LimeLight4;
+import frc.robot.subsystems.mechanisms.ShooterFlywheels;
+import frc.robot.subsystems.mechanisms.ShooterHood;
+import frc.robot.subsystems.mechanisms.Spindexer;
+import frc.robot.subsystems.mechanisms.Turret;
 
 /** Add your docs here. */
 public class AutoCommandManager {
@@ -36,12 +47,26 @@ public class AutoCommandManager {
 
     public AutoCommandManager(
         // LimeLight4 m_visionGS,
-        DriveSubsystem m_robotDrive)
+        DriveSubsystem m_robotDrive,
+        ShooterFlywheels m_shooterFlywheels,
+        ShooterHood m_shooterHood,
+        Intake m_intake,
+        Indexer m_indexer,
+        Spindexer m_spindexer,
+        IntakePivot m_intakePivot,
+        Turret m_turret)
          {
 
         configureNamedCommands(
             // m_visionGS,
-            m_robotDrive
+            m_robotDrive,
+            m_shooterFlywheels,
+            m_shooterHood,
+            m_intake,
+            m_indexer,
+            m_spindexer,
+            m_intakePivot,
+            m_turret
       );
 
       m_chooser = AutoBuilder.buildAutoChooserWithOptionsModifier(((p) -> p.filter((a) -> a.getName().startsWith("!"))));
@@ -96,11 +121,19 @@ public class AutoCommandManager {
 
     public void configureNamedCommands(
         // LimeLight4 m_visionGS,
-        DriveSubsystem m_robotDrive
+        DriveSubsystem m_robotDrive,
+        ShooterFlywheels m_shooterFlywheels,
+        ShooterHood m_shooterHood,
+        Intake m_intake,
+        Indexer m_indexer,
+        Spindexer m_spindexer,
+        IntakePivot m_intakePivot,
+        Turret m_turret
     ) {
         // TODO: Add named commands for auto builder to use
-        NamedCommands.registerCommand("AutoLineUp", Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.STRAFEONTARGET));
-        NamedCommands.registerCommand("LeftPole", Commands.runOnce(() -> m_robotDrive.leftPoint = true));
-        NamedCommands.registerCommand("RightPole", Commands.runOnce(() -> m_robotDrive.leftPoint = false));
+        NamedCommands.registerCommand("Shoot", new ShootCommandAuto(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer));
+        NamedCommands.registerCommand("Intake", new IntakeCommandAuto(m_intake, m_intakePivot, m_turret));
+        NamedCommands.registerCommand("TurnOffIntake", Commands.runOnce(() -> Constants.autoIntake = false));
+        NamedCommands.registerCommand("TurnOffShoot", Commands.runOnce(() -> Constants.autoShoot = false));
     }
 }
