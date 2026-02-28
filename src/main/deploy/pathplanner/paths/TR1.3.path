@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4477992957746466,
-        "y": 1.049
+        "x": 1.8554337349397594,
+        "y": 2.1445060240963856
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.206746736648512,
-        "y": 1.6063187976527944
+        "x": 1.6478072289156627,
+        "y": 3.0733614457831333
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TR1.2"
     },
     {
       "anchor": {
-        "x": 2.624119718309858,
-        "y": 1.942
+        "x": 1.6040963855421686,
+        "y": 2.996867469879518
       },
       "prevControl": {
-        "x": 2.463422815888223,
-        "y": 1.750488889220255
+        "x": 1.789867469879518,
+        "y": 2.330277108433736
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "",
-      "waypointRelativePos": 0,
+      "name": "TurnOffShoot",
+      "waypointRelativePos": 0.3200000000000001,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": null
+          "name": "TurnOffShoot"
         }
       }
     }
@@ -53,14 +53,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": -119.99999999999999
+    "velocity": 0,
+    "rotation": 178.93908830973572
   },
   "reversed": false,
-  "folder": "4pfirrsRight",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -132.0
+    "rotation": 129.36931724236467
   },
   "useDefaultConstraints": true
 }

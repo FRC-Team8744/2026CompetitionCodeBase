@@ -46,7 +46,7 @@ public class ShooterHood extends SubsystemBase {
   private final double startingPositionRotations = 0.233;
 
   private final double minimumAngle = 0;
-  private final double maximumAngle = 90;
+  private final double maximumAngle = 83.25;
   // TODO: Make shooter hood go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
 
@@ -95,7 +95,7 @@ public class ShooterHood extends SubsystemBase {
     m_shooterHood.setPosition(startingPositionRotations);
 
     m_hoodRollers.getConfigurator().apply(hoodRollersConfig);
-    m_hoodRollers.setNeutralMode(NeutralModeValue.Brake);
+    m_hoodRollers.setNeutralMode(NeutralModeValue.Coast);
   }
 
   /**
@@ -103,6 +103,11 @@ public class ShooterHood extends SubsystemBase {
    */
   // Moves the shooter hood to the position given  
   public void setShooterHoodAngle(double angle) {
+    if (angle < minimumAngle) {
+      angle = minimumAngle;
+    } else if (angle > maximumAngle) {
+      angle = maximumAngle;
+    }
     m_shooterHood.setControl(goalPosition.withEnableFOC(false).withSlot(0).withPosition(angle / 360));
   }
 

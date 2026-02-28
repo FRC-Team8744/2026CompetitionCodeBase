@@ -46,12 +46,12 @@ public class PhotonVision extends SubsystemBase {
         Transform3d multiTagResult = result.getMultiTagResult().map(((m) -> m.estimatedPose.best)).orElse(null);
 
         var id = resultAprilTag.getFiducialId();
-        Pose3d aprilTagPose3d = context.aprilTagFieldLayout.getTagPose(id).get();
+        Optional<Pose3d> aprilTagPose3d = context.aprilTagFieldLayout.getTagPose(id);
 
-        if (multiTagResult == null) {
+        if (multiTagResult == null && aprilTagPose3d.isPresent()) {
           resultBuilder[i].singleTag = true;
           Transform3d cameraToTarget = resultAprilTag.getBestCameraToTarget();
-          resultBuilder[i].robotPose = Optional.of(PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d, cameraWithOffsets.cameraToRobotOffset).toPose2d());
+          resultBuilder[i].robotPose = Optional.of(PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d.get(), cameraWithOffsets.cameraToRobotOffset).toPose2d());
         } else {
           resultBuilder[i].singleTag = false;
           resultBuilder[i].robotPose = Optional.of(new Pose3d().plus(multiTagResult.plus(cameraWithOffsets.cameraToRobotOffset)).toPose2d());

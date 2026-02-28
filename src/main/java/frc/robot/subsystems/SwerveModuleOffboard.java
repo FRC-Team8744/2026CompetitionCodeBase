@@ -73,14 +73,14 @@ public class SwerveModuleOffboard {
 
     configureDevices();
 
-    rotationConfig.Voltage.PeakForwardVoltage = 12;
-    rotationConfig.Voltage.PeakReverseVoltage = -12;
+    rotationConfig.Voltage.PeakForwardVoltage = 10;
+    rotationConfig.Voltage.PeakReverseVoltage = -10;
     rotationConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     rotationConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     rotationConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     rotationConfig.Feedback.FeedbackRemoteSensorID = magEncoderID;
     rotationConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    rotationConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    rotationConfig.CurrentLimits.StatorCurrentLimit = 30.0;
     rotationConfig.ClosedLoopGeneral.ContinuousWrap = true;
     rotationConfigPID.kV = Constants.ConstantsOffboard.KRAKENROTATION_V;
     rotationConfigPID.kP = Constants.ConstantsOffboard.KRAKENROTATION_P;

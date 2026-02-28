@@ -34,10 +34,14 @@ public final class Constants {
   public static double autoXSpeed = 0;
   public static double autoYSpeed = 0;
   public static double autoRotateSpeed = 0;
-  public static boolean isAutoYSpeed = true;
+  public static boolean isAutoYSpeed = false;
   public static String robotPositionXString = "Alliance";
   public static String robotPositionYString = "None";
   public static boolean shuttleMode = false;
+  public static double hoodAngle = 83.25;
+  public static boolean autoIntake = true;
+  public static boolean autoShoot = true;
+  public static int kPDH_ID = 30;
   public static int kTurretCANCoderID = 0;
   public static int kHoodCancoderID = 0;
   public static int khoodMotorPort;
@@ -191,8 +195,8 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
-    public static final double kDeadband = 0.3;
-    public static final double kRotationDeadband = 1.8;
+    public static final double kDeadband = 0.05;
+    public static final double kRotationDeadband = 0.1;
   }
 
   public static final class AutoConstants {

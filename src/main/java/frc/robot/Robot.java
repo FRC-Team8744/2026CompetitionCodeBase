@@ -30,9 +30,9 @@ public class Robot extends TimedRobot {
     // Debug.off();
     
     // Debug.run(() -> {
-      // DataLogManager.start();
+      DataLogManager.start();
       // Record both DS control and joystick data
-      // DriverStation.startDataLog(DataLogManager.getLog());
+      DriverStation.startDataLog(DataLogManager.getLog());
     // });
 
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
