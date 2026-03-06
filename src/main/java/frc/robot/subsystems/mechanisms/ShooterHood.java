@@ -42,7 +42,7 @@ public class ShooterHood extends SubsystemBase {
   public final double ballVelocityToFlywheels = 0.0;
   public double timeToShoot = 0.0;
 
-  private final double shooterHoodGearRatio = 2.0 / 1.0;
+  private final double shooterHoodGearRatio = 15.0 / 36.0;
   private final double startingPositionRotations = 0.233;
 
   private final double minimumAngle = 0;
@@ -58,7 +58,7 @@ public class ShooterHood extends SubsystemBase {
     shooterHoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     shooterHoodConfig.Feedback.FeedbackRemoteSensorID = Constants.SwerveConstants.kHoodRotateCANCoderID;
     // shooterHoodConfig.Feedback.FeedbackRotorOffset = 0.0;
-    shooterHoodConfig.Feedback.SensorToMechanismRatio = shooterHoodGearRatio;
+    shooterHoodConfig.Feedback.SensorToMechanismRatio = 1; // motor to abs encoder is 1:1 shooterHoodGearRatio;
     shooterHoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;

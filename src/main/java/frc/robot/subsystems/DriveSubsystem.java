@@ -352,7 +352,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
 
     for (int i = 0; i < 24; i++) {
-    SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
+      SmartDashboard.putNumber("Current Ch" + Integer.toString(i), m_pdh.getCurrent(i));
     }
   }
 
