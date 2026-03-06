@@ -97,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
   // private final LimeLight4 m_vision;
   private PhotonVision m_visionPV;
 
-  PowerDistribution m_pdh = new PowerDistribution(Constants.kPDH_ID, ModuleType.kRev);
+  // PowerDistribution m_pdh = new PowerDistribution(Constants.kPDH_ID, ModuleType.kRev);
 
   public RotationEnum isAutoRotate = RotationEnum.NONE;
   public boolean isAutoYSpeed = false;
@@ -343,17 +343,17 @@ public class DriveSubsystem extends SubsystemBase {
     getRobotVelocityX();
     getRobotVelocityY();
 
-    SmartDashboard.putNumber("Voltage", m_pdh.getVoltage());
+    // SmartDashboard.putNumber("Voltage", m_pdh.getVoltage());
 
-    SmartDashboard.putNumber("temperature", m_pdh.getTemperature());
+    // SmartDashboard.putNumber("temperature", m_pdh.getTemperature());
 
-    SmartDashboard.putNumber("Total Current", m_pdh.getTotalPower());
+    // SmartDashboard.putNumber("Total Current", m_pdh.getTotalPower());
 
-    SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
+    // SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
 
-    for (int i = 0; i < 24; i++) {
-    SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
-    }
+    // for (int i = 0; i < 24; i++) {
+    // SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
+    // }
   }
 
   /**

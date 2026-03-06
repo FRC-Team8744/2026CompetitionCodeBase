@@ -41,6 +41,8 @@ public final class Constants {
   public static double hoodAngle = 83.25;
   public static boolean autoIntake = true;
   public static boolean autoShoot = true;
+  public static double turretAngle = 0;
+  public static double timeToShoot = 1;
   public static int kPDH_ID = 30;
 
   //TODO: Add positions for shuttling presets

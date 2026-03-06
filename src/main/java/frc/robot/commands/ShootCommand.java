@@ -12,6 +12,7 @@ import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.ShooterFlywheels;
 import frc.robot.subsystems.mechanisms.ShooterHood;
 import frc.robot.subsystems.mechanisms.Spindexer;
+import frc.robot.subsystems.mechanisms.Turret;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
@@ -20,17 +21,20 @@ public class ShootCommand extends Command {
   private final Spindexer m_spindexer;
   private final ShooterFlywheels m_shooterFlywheels;
   private final Indexer m_indexer;
+  private final Turret m_turret;
   private double timeStart;
 
-  public ShootCommand(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx) {
+  public ShootCommand(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx, Turret turret) {
     m_shooterHood = hd;
     m_spindexer = sp;
     m_shooterFlywheels = sf;
     m_indexer = idx;
+    m_turret = turret;
     addRequirements(m_shooterHood);
     addRequirements(m_spindexer);
     addRequirements(m_shooterFlywheels);
     addRequirements(m_indexer);
+    addRequirements(m_turret);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -52,16 +56,16 @@ public class ShootCommand extends Command {
     if (Constants.robotPositionXString == "OpponentTrench" || Constants.robotPositionXString == "AllianceTrench") {
       m_shooterHood.stopHoodAngle();
     } else {
-      m_shooterHood.setShooterHoodAngle(60);
+      m_shooterHood.setShooterHoodAngle(55.7);
+      m_turret.setTurretAngle(Constants.turretAngle);
     }
-    if (Timer.getTimestamp() > timeStart + 0.6) {
-    m_indexer.setIndexerSpeed(0.8);
-    m_spindexer.setSpindexerSpeed(-0.8);
-
+    if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= 4250 && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= 4250) {
+      m_indexer.setIndexerSpeed(1.0);
+      m_spindexer.setSpindexerSpeed(-0.5);
     }
     //m_spindexer.setSpindexerSpeed(-0.8);
     //m_indexer.setIndexerSpeed(0.8);
-    m_shooterHood.setHoodRollerSpeed(0.2);
+    m_shooterHood.setHoodRollerSpeed(0.7);
     m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
 
     SmartDashboard.putNumber("TimerStart", timeStart);
@@ -76,6 +80,7 @@ public class ShootCommand extends Command {
       m_shooterHood.setHoodRollerSpeed(0);
       m_shooterFlywheels.stopShooterFlywheels();
       m_shooterHood.stopHoodAngle();
+      m_turret.stopTurret();
   }
 
   // Returns true when the command should end.

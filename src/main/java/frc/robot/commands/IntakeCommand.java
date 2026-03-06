@@ -17,21 +17,21 @@ public class IntakeCommand extends Command {
   /** Creates a new TeleopIntake. */
   private final Intake m_intake;
   private final IntakePivot m_intakePivot;
-  private final Turret m_turret;
-  public IntakeCommand(Intake in, IntakePivot inp, Turret tur) {
+  // private final Turret m_turret;
+  public IntakeCommand(Intake in, IntakePivot inp) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_intake = in;
     addRequirements(m_intake);
     m_intakePivot = inp;
     addRequirements(m_intakePivot);
-    m_turret = tur;
-    addRequirements(m_turret);
+    // m_turret = tur;
+    // addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeSpeed(1);
+    m_intake.setIntakeSpeed(0.5);
     m_intakePivot.intakeDown(-1500);
 
   }
@@ -40,7 +40,7 @@ public class IntakeCommand extends Command {
   @Override
   public void execute() {
     if (Constants.shuttleMode) {
-      m_turret.shuttle();
+      // m_turret.shuttle();
     }
   }
 

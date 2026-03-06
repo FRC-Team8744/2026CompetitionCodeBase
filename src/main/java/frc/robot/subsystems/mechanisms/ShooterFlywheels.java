@@ -70,10 +70,20 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight.set(-speed);
   }
 
+  public double getLeftFlywheelVelocity() {
+    return m_shooterFlywheelsLeft.getVelocity().getValueAsDouble() * 60;
+  }
+
+  public double getRightFlywheelVelocity() {
+    return m_shooterFlywheelsRight.getVelocity().getValueAsDouble() * 60;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Shooter Flywheels Left Motor Speed", m_shooterFlywheelsLeft.getVelocity().getValueAsDouble() * 60);
     SmartDashboard.putNumber("Shooter Flywheels Right Motor Speed", m_shooterFlywheelsRight.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("Shooter Flywheels Left Motor Current", m_shooterFlywheelsLeft.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter Flywheels Right Motor Current", m_shooterFlywheelsRight.getSupplyCurrent().getValueAsDouble());
   }
 }

@@ -14,6 +14,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShooterHoodToZero;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.alignment.AlignToHub;
 // import frc.robot.subsystems.mechanisms.Climber;
@@ -62,7 +63,7 @@ public class RobotContainer {
   private final ShooterFlywheels m_shooterFlywheels = new ShooterFlywheels();
   private final ShooterHood m_shooterHood = new ShooterHood();
   private final Spindexer m_spindexer = new Spindexer();
-  private final Turret m_turret = new Turret();
+  private final Turret m_turret = new Turret(m_robotDrive);
   // The driver's controller
   private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
@@ -101,29 +102,47 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // TODO: Add button bindings for the commands
     m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
-    m_driver.a()
-    .whileTrue(Commands.runOnce(() -> Constants.shuttleMode = !Constants.shuttleMode));
     m_driver.b()
     .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
-    m_driver.x()
-    .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-1.0)))
-    .whileFalse(Commands.runOnce(() -> m_intake.stopIntake()));
 
     m_driver.leftTrigger()
-    .whileTrue(new IntakeCommand(m_intake, m_intakePivot, m_turret));
+    .whileTrue(new IntakeCommand(m_intake, m_intakePivot));
     m_driver.rightTrigger()
-      .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer));
+    .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret));
+    // m_driver.leftBumper()
+    // .whileTrue(Commands.run(() -> m_spindexer.setSpindexerSpeed(-1)))
+    // .whileFalse(Commands.run(() -> m_spindexer.stopSpindexer()));
     m_driver.leftBumper()
-    .whileTrue(Commands.run(() -> m_spindexer.setSpindexerSpeed(-0.8)))
-    .whileFalse(Commands.run(() -> m_spindexer.stopSpindexer()));
+    .whileTrue(Commands.runOnce(() -> Constants.shuttleMode = !Constants.shuttleMode));
+    // m_driver.rightBumper()
+    // .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(46.7)))
+    // .whileFalse(new ShooterHoodToZero(m_shooterHood)); // 84
     m_driver.pov(270)
-    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(0.8)))
+    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(1)))
     .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
     m_driver.pov(90)
-    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(-0.8)))
+    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(-1)))
     .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
     m_driver.pov(0)
     .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(0)));
+    m_driver.pov(180)
+    .whileTrue(Commands.runOnce(() -> m_shooterHood.setHoodRollerSpeed(0.1)))
+    .whileFalse(Commands.runOnce(() -> m_shooterHood.stopHoodRollers()));
+    // m_driver.y()
+    // .whileTrue(Commands.runOnce(() -> m_shooterFlywheels.setShooterFlywheelsSpeed(0.1)))
+    // .whileFalse(Commands.runOnce(() -> m_shooterFlywheels.stopShooterFlywheels()));
+    m_driver.x()
+    .whileTrue(Commands.runOnce(() -> Constants.turretAngle = 90))
+    .whileFalse(Commands.runOnce(() -> Constants.turretAngle = 0));
+
+    m_driver.y()
+    .whileTrue(Commands.runOnce(() -> Constants.turretAngle += 2));
+    // m_driver.a()
+    // .whileTrue(Commands.runOnce(() -> Constants.turretAngle -= 2));
+
+    m_driver.a()
+    .whileTrue(Commands.run(() -> m_turret.setTurretAngle(Constants.turretAngle)))
+    .whileFalse(Commands.runOnce(() -> m_turret.stopTurret()));
 
     m_driver.rightStick()
     .toggleOnTrue(Commands.runOnce(() -> Constants.isAutoRotate = Constants.isAutoRotate == RotationEnum.ALIGNTOHUB ? RotationEnum.NONE : RotationEnum.ALIGNTOHUB));

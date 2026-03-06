@@ -3,16 +3,7 @@
   "robotLength": 0.864,
   "holonomicMode": true,
   "pathFolders": [
-    "3 Piece Auto",
-    "4pfilrs",
-    "4plrs",
-    "4prrs",
-    "4psilrs",
-    "5 piece top source",
-    "Fake Autos",
-    "Ground Intake Left",
-    "4pfirrsRight",
-    "Test for 1 score"
+    "Fake Autos"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.5,
