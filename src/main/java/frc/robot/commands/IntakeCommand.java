@@ -31,18 +31,14 @@ public class IntakeCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeSpeed(0.5);
+    m_intake.setIntakeSpeed(Constants.intakeSpeed);
     m_intakePivot.intakeDown(-1500);
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    if (Constants.shuttleMode) {
-      // m_turret.shuttle();
-    }
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

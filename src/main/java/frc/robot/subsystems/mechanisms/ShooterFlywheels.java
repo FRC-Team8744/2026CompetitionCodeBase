@@ -24,7 +24,8 @@ public class ShooterFlywheels extends SubsystemBase {
   private final TalonFX m_shooterFlywheelsRight;
   private final TalonFXConfiguration shooterFlywheelsConfig = new TalonFXConfiguration();
   private final Slot0Configs shooterFlywheelsConfigPID = shooterFlywheelsConfig.Slot0;
-  // private final VelocityVoltage goalVelocityLeft = new VelocityVoltage(0);
+  public final double defaultSpeed = 0.3;
+  private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
   // private final VelocityVoltage goalVelocityRight = new VelocityVoltage(0);
 
   public ShooterFlywheels() {
@@ -35,9 +36,9 @@ public class ShooterFlywheels extends SubsystemBase {
     shooterFlywheelsConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     shooterFlywheelsConfig.CurrentLimits.StatorCurrentLimit = 40.0;
     shooterFlywheelsConfigPID.kS = 0.0005; // Add 0.25 V output to overcome static friction
-    shooterFlywheelsConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+    shooterFlywheelsConfigPID.kV = 0.13; // A velocity target of 1 rps results in 0.12 V output
     shooterFlywheelsConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterFlywheelsConfigPID.kP = 0.0005; // A position error of 2.5 rotations results in 12 V output
+    shooterFlywheelsConfigPID.kP = 0.0; // A position error of 2.5 rotations results in 12 V output
     shooterFlywheelsConfigPID.kI = 0.0; // no output for integrated error
     shooterFlywheelsConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
     shooterFlywheelsConfig.withSlot0(shooterFlywheelsConfigPID);
@@ -53,7 +54,7 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight.setNeutralMode(NeutralModeValue.Coast);
     m_shooterFlywheelsRight.setPosition(0);
 
-    setDefaultCommand(Commands.run(()->setShooterFlywheelsSpeed(0.3), this));
+    // setDefaultCommand(Commands.run(()->setShooterFlywheelsSpeed(defaultSpeed), this));
   }
 
   public void stopShooterFlywheels() {
@@ -70,6 +71,11 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight.set(-speed);
   }
 
+  public void setShooterFlywheelsRps(double rps) {
+    m_shooterFlywheelsLeft.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(rps));
+    m_shooterFlywheelsRight.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(-rps));
+  }
+
   public double getLeftFlywheelVelocity() {
     return m_shooterFlywheelsLeft.getVelocity().getValueAsDouble() * 60;
   }
@@ -81,8 +87,8 @@ public class ShooterFlywheels extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter Flywheels Left Motor Speed", m_shooterFlywheelsLeft.getVelocity().getValueAsDouble() * 60);
-    SmartDashboard.putNumber("Shooter Flywheels Right Motor Speed", m_shooterFlywheelsRight.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("Shooter Flywheels Left Motor Speed", m_shooterFlywheelsLeft.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter Flywheels Right Motor Speed", m_shooterFlywheelsRight.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Shooter Flywheels Left Motor Current", m_shooterFlywheelsLeft.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter Flywheels Right Motor Current", m_shooterFlywheelsRight.getSupplyCurrent().getValueAsDouble());
   }

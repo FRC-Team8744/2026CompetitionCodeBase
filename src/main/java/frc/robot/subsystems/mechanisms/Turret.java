@@ -17,6 +17,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,14 +36,13 @@ public class Turret extends SubsystemBase {
   private final Slot0Configs turretConfigPID = turretConfig.Slot0;
   private final Timer m_shootTimer = new Timer();
   private final Timer m_shuttleTimer = new Timer();
-  // TODO: Add gear ratio for the turret
-  private final double turretGearRatio = 0.0 / 1.0;
   private final double turretMotorToSensorGearRatio = 15 / 116;
-  // TODO: Add values for minimum and maximum angle of the turret and starting position
   private final double startingPositionRotations = 0;
-  private final double minimumAngle = -180;
-  private final double maximumAngle = 180;
-  private Pose2d targetPose;
+  private final double minimumAngle = -60;
+  private final double maximumAngle = 310;
+  private Translation3d targetPose;
+  private Double robotXWhenShotLands;
+  private Double robotYWhenShotLands;
   private final DriveSubsystem m_drive;
   // private PIDController m_turnCtrl = new PIDController(0.014, 0.015, 0.0013);
   private double heading;
@@ -56,6 +56,8 @@ public class Turret extends SubsystemBase {
   public Turret(DriveSubsystem drive) {
     initialPoseShoot = drive.getEstimatedPose();
     initialPoseShuttle = drive.getEstimatedPose();
+    robotXWhenShotLands = drive.getEstimatedPose().getX();
+    robotYWhenShotLands = drive.getEstimatedPose().getY();
     m_shootTimer.start();
     m_shuttleTimer.start();
     turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.3716666667;
@@ -119,21 +121,38 @@ public class Turret extends SubsystemBase {
     } else if (targetAngle < minimumAngle) {
       targetAngle += 360;
     }
+    if (Math.abs(getPositionAngle() - targetAngle) > 45) {
+      Constants.shouldShoot = false;
+    } else {
+      Constants.shouldShoot = true;
+    }
     return targetAngle;
+  }
+
+  private void calculateHubPose() {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.get() == DriverStation.Alliance.Red) {
+      Constants.targetHubPosition = Constants.redHubPosition;
+    } else {
+      Constants.targetHubPosition = Constants.blueHubPosition;
+    }
+  }
+
+  public double[] getPoseWhenShotLands() {
+    if (robotXWhenShotLands == null || robotYWhenShotLands == null) {
+      robotXWhenShotLands = m_drive.getEstimatedPose().getX();
+      robotYWhenShotLands = m_drive.getEstimatedPose().getY();
+    }
+    return new double[] {robotXWhenShotLands, robotYWhenShotLands};
   }
 
   public void calculateGoalAngleShoot() {
     var alliance = DriverStation.getAlliance();
     Pose2d newPose;
 
-    if (alliance.get() == DriverStation.Alliance.Blue) {
-      targetPose = new Pose2d(4.620, 4.035, new Rotation2d());
-    }
-    else {
-      targetPose = new Pose2d(11.920, 4.035, new Rotation2d());
-    }
+    targetPose = Constants.targetHubPosition;
 
-    // double distanceToTargetX = m_drive.getEstimatedPose().getX() - targetPose.getX();
+    /*  double distanceToTargetX = m_drive.getEstimatedPose().getX() - targetPose.getX();
     // double distanceToTargetY = m_drive.getEstimatedPose().getY() - targetPose.getY();
 
     // if (alliance.get() == DriverStation.Alliance.Red) {
@@ -143,7 +162,7 @@ public class Turret extends SubsystemBase {
     //   goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)));
     // }
     // goalAngle -= m_drive.getEstimatedPose().getRotation().getDegrees();
-
+    */
 
     if (m_shootTimer.hasElapsed(0.04)) {
       newPose = m_drive.getEstimatedPose();
@@ -157,6 +176,9 @@ public class Turret extends SubsystemBase {
       double distanceToTargetWhenShotLandsX = positionWhenShotLandsX - targetPose.getX();
       double distanceToTargetWhenShotLandsY = positionWhenShotLandsY - targetPose.getY();
 
+      robotXWhenShotLands = positionWhenShotLandsX;
+      robotYWhenShotLands = positionWhenShotLandsY;
+
       if (alliance.get() == DriverStation.Alliance.Red) {
         goalAngle = (Math.toDegrees(Math.atan(distanceToTargetWhenShotLandsY / distanceToTargetWhenShotLandsX)) - 180);
       }
@@ -169,39 +191,93 @@ public class Turret extends SubsystemBase {
       m_shootTimer.reset();
 
       initialPoseShoot = m_drive.getEstimatedPose();
-    } else {
-      
+    }
+    Constants.turretAngle = goalAngle;
+    // return goalAngle;
+  }
+
+  public void calculateGoalAngleShuttle() {
+    var alliance = DriverStation.getAlliance();
+    Pose2d newPose;
+
+    Translation3d targetShuttlePose = Constants.targetShuttlePosition;
+
+  /* double distanceToTargetX = m_drive.getEstimatedPose().getX() - targetShuttlePose.getX();
+  // double distanceToTargetY = m_drive.getEstimatedPose().getY() - targetShuttlePose.getY();
+
+  // if (alliance.get() == DriverStation.Alliance.Red) {
+  //   goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)));
+  // }
+  // else {
+  //   goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)) - 180);
+  // }
+  // goalAngle -= m_drive.getEstimatedPose().getRotation().getDegrees();
+    */
+  
+    if (m_shuttleTimer.hasElapsed(0.04)) {
+      newPose = m_drive.getEstimatedPose();
+
+      double xVelocity = (newPose.getX() - initialPoseShuttle.getX()) / m_shuttleTimer.get();
+      double yVelocity = (newPose.getY() - initialPoseShuttle.getY()) / m_shuttleTimer.get();
+
+      double positionWhenShotLandsX = xVelocity * Constants.timeToShoot + initialPoseShuttle.getX();
+      double positionWhenShotLandsY = yVelocity * Constants.timeToShoot + initialPoseShuttle.getY();
+
+      double distanceToTargetWhenShotLandsX = positionWhenShotLandsX - targetShuttlePose.getX();
+      double distanceToTargetWhenShotLandsY = positionWhenShotLandsY - targetShuttlePose.getY();
+
+      robotXWhenShotLands = positionWhenShotLandsX;
+      robotYWhenShotLands = positionWhenShotLandsY;
+
+      if (alliance.get() == DriverStation.Alliance.Red) {
+        goalAngle = (Math.toDegrees(Math.atan(distanceToTargetWhenShotLandsY / distanceToTargetWhenShotLandsX)));
+      }
+      else {
+        goalAngle = (Math.toDegrees(Math.atan(distanceToTargetWhenShotLandsY / distanceToTargetWhenShotLandsX)) - 180);
+      }
+
+      goalAngle -= m_drive.getEstimatedPose().getRotation().getDegrees();
+
+      m_shuttleTimer.reset();
+
+      initialPoseShuttle = m_drive.getEstimatedPose();
     }
 
     Constants.turretAngle = goalAngle;
     // return goalAngle;
   }
 
-    public void calculateGoalAngleShuttle() {
+  public void calculateGoalShuttlePosition() {
     var alliance = DriverStation.getAlliance();
-
     if (alliance.get() == DriverStation.Alliance.Blue) {
-      targetPose = new Pose2d(4.620, 4.035, new Rotation2d());
+      if (Constants.targetShuttleRelativePosition == "Close") {
+        if (Constants.robotPositionYString == "Left") {
+          Constants.targetShuttlePosition = Constants.blueLeftCloseShuttle;
+        } else if (Constants.robotPositionYString == "Right") {
+          Constants.targetShuttlePosition = Constants.blueRightCloseShuttle;
+        }
+      } else if (Constants.targetShuttleRelativePosition == "Far") {
+        if (Constants.robotPositionYString == "Left") {
+          Constants.targetShuttlePosition = Constants.blueLeftFarShuttle;
+        } else if (Constants.robotPositionYString == "Right") {
+          Constants.targetShuttlePosition = Constants.blueRightFarShuttle;
+        }
+      }
+    } else if (alliance.get() == DriverStation.Alliance.Red) {
+      if (Constants.targetShuttleRelativePosition == "Close") {
+        if (Constants.robotPositionYString == "Left") {
+          Constants.targetShuttlePosition = Constants.redLeftCloseShuttle;
+        } else if (Constants.robotPositionYString == "Right") {
+          Constants.targetShuttlePosition = Constants.redRightCloseShuttle;
+        }
+      } else if (Constants.targetShuttleRelativePosition == "Far") {
+        if (Constants.robotPositionYString == "Left") {
+          Constants.targetShuttlePosition = Constants.redLeftFarShuttle;
+        } else if (Constants.robotPositionYString == "Right") {
+          Constants.targetShuttlePosition = Constants.redRightFarShuttle;
+        }
+      }
     }
-    else {
-      targetPose = new Pose2d(11.920, 4.035, new Rotation2d());
-    }
-
-    double distanceToTargetX = m_drive.getEstimatedPose().getX() - targetPose.getX();
-    double distanceToTargetY = m_drive.getEstimatedPose().getY() - targetPose.getY();
-
-    if (alliance.get() == DriverStation.Alliance.Red) {
-      goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)));
-    }
-    else {
-      goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)) - 180);
-    }
-    goalAngle -= m_drive.getEstimatedPose().getRotation().getDegrees();
-
-    
-
-    Constants.turretAngle = goalAngle;
-    // return goalAngle;
   }
 
   @Override
@@ -210,11 +286,21 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("Turret Motor Angle", getPositionAngle());
     SmartDashboard.putNumber("Turret Motor Voltage", m_turret.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Turret goal angle", Constants.turretAngle);
+
+    calculateHubPose();
+    calculateGoalShuttlePosition();
+
     if (Constants.shuttleMode) {
       calculateGoalAngleShuttle();
     } else {
       calculateGoalAngleShoot();
     }
     SmartDashboard.putNumber("Shoot Timer Time", m_shootTimer.get());
+    SmartDashboard.putNumber("Target Pose when shot lands x", getPoseWhenShotLands()[0]);
+    SmartDashboard.putNumber("Target Pose when shot lands y", getPoseWhenShotLands()[1]);
+    SmartDashboard.putBoolean("Should Shoot", Constants.shouldShoot);
+
+    SmartDashboard.putBoolean("Shuttle Mode", Constants.shuttleMode);
+    SmartDashboard.putBoolean("Shoot While Intake", Constants.shootWhileIntake);
   }
 }

@@ -13,23 +13,29 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class ShooterHood extends SubsystemBase {
   /** Creates a new ShooterHood. */
   private final TalonFX m_shooterHood;
   private final TalonFX m_hoodRollers;
+  private final CANcoder m_shooterHoodCANCoder;
 
   private final TalonFXConfiguration shooterHoodConfig = new TalonFXConfiguration();
   private final TalonFXConfiguration hoodRollersConfig = new TalonFXConfiguration();
+  private final CANcoderConfiguration shooterHoodCANCoderConfig = new CANcoderConfiguration();
 
   private final Slot0Configs shooterHoodConfigPID = shooterHoodConfig.Slot0;
   private final Slot0Configs hoodRollersConfigPID = hoodRollersConfig.Slot0;
 
-  private final double heightDifferenceToTarget = 1.6;
-  public final double ballVelocityToFlywheels = 0.0;
+  private final double heightDifferenceToTarget = 1.11; // Meters
+  public final double ballVelocityToFlywheels = 4.75;
   // public double timeToShoot = 0.0;
 
   private final double shooterHoodGearRatio = 2.0 / 1.0;
@@ -37,11 +43,21 @@ public class ShooterHood extends SubsystemBase {
   private final double startingPositionRotations = 0.233;
 
   private final double minimumAngle = 0;
-  private final double maximumAngle = 83.25;
+  private final double maximumAngle = 88.5;
+
+  private final DriveSubsystem m_robotDrive;
   // TODO: Make shooter hood go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
+  private final Turret m_turret;
 
-  public ShooterHood() {
+  public ShooterHood(DriveSubsystem drive, Turret turret) {
+    m_robotDrive = drive;
+    m_turret = turret;
+
+    shooterHoodCANCoderConfig.MagnetSensor.MagnetOffset = 0.8888888;
+    m_shooterHoodCANCoder = new CANcoder(Constants.SwerveConstants.kHoodRotateCANCoderID);
+    m_shooterHoodCANCoder.getConfigurator().apply(shooterHoodCANCoderConfig);
+
     shooterHoodConfig.Voltage.PeakForwardVoltage = 12;
     shooterHoodConfig.Voltage.PeakReverseVoltage = -12;
     shooterHoodConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
@@ -76,11 +92,9 @@ public class ShooterHood extends SubsystemBase {
     hoodRollersConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
     hoodRollersConfig.withSlot0(hoodRollersConfigPID);
 
-    // hoodRotateCANCoderConfig.MagnetSensor.MagnetOffset = 0.0;
-
     m_shooterHood = new TalonFX(Constants.SwerveConstants.kHoodRotateMotorPort);
     m_hoodRollers = new TalonFX(Constants.SwerveConstants.kHoodRollerMotorPort);
-    // m_hoodRotateCANCoder = new CANcoder(Constants.SwerveConstants.kHoodRotateCANCoderID);
+
 
     m_shooterHood.getConfigurator().apply(shooterHoodConfig);
     // m_shooterHood.setNeutralMode(NeutralModeValue.Brake);
@@ -113,20 +127,39 @@ public class ShooterHood extends SubsystemBase {
     return m_shooterHood.getPosition().getValueAsDouble();
   }
 
-  public void shuttle() {
-    
+  public double getPositionRadians() {
+    if (m_shooterHood.getPosition().getValue() == null) {
+      return 60.0 / 180.0 * Math.PI;
+    }
+    return m_shooterHood.getPosition().getValueAsDouble() * 2 * Math.PI;
+  }
+
+  public void resetHood() {
+    m_shooterHood.setPosition(startingPositionRotations);
   }
 
   public void setHoodRollerSpeed(double speed) {
+    if (speed > 1.0) {speed = 1.0;}
     m_hoodRollers.set(speed);
   }
 
   /**
   *Calculates the angle of the shooter hood and the speed of the flywheels for the optimal shot based on lowest required velocity of the ball
-  @param distanceToTarget the hypotenuse of the robot's position from the target
+  @param robotPose The pose of the robot when the shot lands
   @return Returns an array of doubles [theta, flywheelVelocity]
   */
-  public double[] calculateShooterHoodAngleFlywheelSpeeds(double distanceToTarget) {
+  public double[] calculateShooterHoodAngleFlywheelSpeeds(double[] robotPose) {
+    Translation3d targetPose;
+    if (Constants.shuttleMode) {
+      targetPose = Constants.targetShuttlePosition;
+    } else {
+      targetPose = Constants.targetHubPosition;
+    }
+    double distanceToTargetX = targetPose.getX() - robotPose[0];
+    double distanceToTargetY = targetPose.getY() - robotPose[1];
+
+    double distanceToTarget = Math.sqrt(distanceToTargetX * distanceToTargetX + distanceToTargetY * distanceToTargetY);
+
     double theta = 0.0;
     double thetaOffset45 = 0.0;
     double ballInitialVelocity = 0.0;
@@ -135,11 +168,26 @@ public class ShooterHood extends SubsystemBase {
     theta = Math.atan((heightDifferenceToTarget + Math.sqrt(heightDifferenceToTarget * heightDifferenceToTarget + distanceToTarget * distanceToTarget)) / distanceToTarget);
     thetaOffset45 = theta + (theta - Math.toRadians(45));
 
-    ballInitialVelocity = (distanceToTarget / Math.cos(theta)) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(theta) - heightDifferenceToTarget)));
+    theta += Math.toRadians(5);
+
+    if (Double.isNaN(theta)) {
+      theta = 60.0;
+    }
+
+    ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));
 
     flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
 
-    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(theta));
+    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians()));
+
+    Constants.hoodAngle = Math.toDegrees(theta);
+    Constants.flywheelSpeed = flyWheelVelocity;
+
+    SmartDashboard.putNumber("TargetPoseX", targetPose.getX());
+    SmartDashboard.putNumber("DistanceToTargetX", distanceToTargetX);
+    SmartDashboard.putNumber("DistanceToTarget", distanceToTarget);
+    SmartDashboard.putNumber("BallInitalVelocty", ballInitialVelocity);
+    SmartDashboard.putNumber("ShooterHoodRadians", getPositionRadians());
 
     return new double[] {theta, flyWheelVelocity};
   }
@@ -155,5 +203,10 @@ public class ShooterHood extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Hood Angle Error", m_shooterHood.getClosedLoopError().getValueAsDouble() * 360);
     SmartDashboard.putNumber("Shooter Hood Rollers RPM", m_hoodRollers.getVelocity().getValueAsDouble() * 60);
     SmartDashboard.putNumber("Shooter Hood Rollers Current", m_hoodRollers.getSupplyCurrent().getValueAsDouble());
+
+    SmartDashboard.putNumber("Constants Hood Angle", Constants.hoodAngle);
+    SmartDashboard.putNumber("Constants Flywheel Speed", Constants.flywheelSpeed);
+    SmartDashboard.putNumber("Time To Shoot", Constants.timeToShoot);
+    calculateShooterHoodAngleFlywheelSpeeds(m_turret.getPoseWhenShotLands());
   }
 }
