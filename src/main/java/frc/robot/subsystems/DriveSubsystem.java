@@ -473,7 +473,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Apply speed scaling
     speeds.vxMetersPerSecond = speeds.vxMetersPerSecond * m_AutoSpeedScale;
     speeds.vyMetersPerSecond = speeds.vyMetersPerSecond * m_AutoSpeedScale;
-    speeds.omegaRadiansPerSecond = -speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
+    speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
     
     // SmartDashboard.putNumber("Robot Auto X After align", speeds.vxMetersPerSecond);
 
