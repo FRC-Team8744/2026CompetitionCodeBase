@@ -8,5 +8,5 @@ package frc.robot;
 public enum RotationEnum {
     NONE,
     STRAFEONTARGET,
-    ALIGNTOCLIMB
+    ALIGNTOHUB
 }

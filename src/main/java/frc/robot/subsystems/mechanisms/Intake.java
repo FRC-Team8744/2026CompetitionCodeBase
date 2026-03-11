@@ -38,7 +38,7 @@ public class Intake extends SubsystemBase {
     m_intakeMotor = new TalonFX(Constants.SwerveConstants.kIntakeMotorPort);
 
     m_intakeMotor.getConfigurator().apply(intakeConfig);
-    m_intakeMotor.setNeutralMode(NeutralModeValue.Brake);
+    m_intakeMotor.setNeutralMode(NeutralModeValue.Coast);
     m_intakeMotor.setPosition(0);
   }
 

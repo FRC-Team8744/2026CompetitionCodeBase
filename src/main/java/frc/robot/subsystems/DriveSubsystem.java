@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -28,10 +29,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AutoCommandManager;
@@ -93,6 +97,8 @@ public class DriveSubsystem extends SubsystemBase {
   // private final LimeLight4 m_vision;
   private PhotonVision m_visionPV;
 
+  // PowerDistribution m_pdh = new PowerDistribution(Constants.kPDH_ID, ModuleType.kRev);
+
   public RotationEnum isAutoRotate = RotationEnum.NONE;
   public boolean isAutoYSpeed = false;
   public boolean isAutoXSpeed = false;
@@ -121,7 +127,8 @@ public class DriveSubsystem extends SubsystemBase {
   public Field2d m_field;    
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem(PhotonVision m_visionPV, DriveModifier...driveModifiers) {
-      
+
+    this.driveModifiers = driveModifiers;
     m_turnCtrl.setTolerance(10.00);
     // this.m_vision = m_vision;
     this.m_visionPV = m_visionPV;
@@ -234,7 +241,7 @@ public class DriveSubsystem extends SubsystemBase {
     for (PhotonVision.Result visionRes : visionResult) {
       if (visionRes.apriltag.isPresent()) {
         if (visionRes.singleTag) {
-          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2) {
+          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2 && visionRes.robotPose.isPresent()) {
             m_poseEstimator.addVisionMeasurement(visionRes.robotPose.get(), visionRes.apriltagTime);
           }
         } else {
@@ -325,7 +332,7 @@ public class DriveSubsystem extends SubsystemBase {
       robotVector.add(0.0);
     }
 
-    // Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
+    Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
 
     SmartDashboard.putBoolean("Is Right", !leftPoint);
     
@@ -335,6 +342,18 @@ public class DriveSubsystem extends SubsystemBase {
 
     getRobotVelocityX();
     getRobotVelocityY();
+
+    // SmartDashboard.putNumber("Voltage", m_pdh.getVoltage());
+
+    // SmartDashboard.putNumber("temperature", m_pdh.getTemperature());
+
+    // SmartDashboard.putNumber("Total Current", m_pdh.getTotalPower());
+
+    // SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
+
+    // for (int i = 0; i < 24; i++) {
+    // SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
+    // }
   }
 
   /**
@@ -348,7 +367,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void zeroIMU() {
     m_imu.setYaw(0.0);
-    m_poseEstimator.resetPosition(m_imu.getRotation2d(), getModulePositions(), getPose());
+    m_poseEstimator.resetPosition(m_imu.getRotation2d(), getModulePositions(), getEstimatedPose());
   }
 
   /**
@@ -378,34 +397,49 @@ public class DriveSubsystem extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
+    // rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
 
     if (isDrivingSlow) {
       ySpeed *= 0.1;
       xSpeed *= 0.1;
     }
 
-    if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      ySpeed = autoYSpeed;
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
+      rot = Constants.autoRotateSpeed;
     }
 
-    if (isAutoXSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      xSpeed = autoXSpeed;
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnY && driveModifier.shouldRun(this)))) {
+      ySpeed = Constants.autoYSpeed;
+    }
+
+    if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnX && driveModifier.shouldRun(this)))) {
+      xSpeed = Constants.autoXSpeed;
     }
 
     SmartDashboard.putNumber("XSpeed", xSpeed);
     SmartDashboard.putNumber("YSpeed", ySpeed);
     SmartDashboard.putNumber("Rotation", rot);
+    SmartDashboard.putNumber("Auto Rotate Speed", Constants.autoRotateSpeed);
 
     // Apply joystick deadband
-    xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
-    ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
-    rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+    // xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
+    // ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
+    // rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
-    xSpeed *= SwerveConstants.kMaxSpeedTeleop;
-    ySpeed *= SwerveConstants.kMaxSpeedTeleop;
-    if (isAutoRotate != RotationEnum.NONE) {
-      rot = autoRotateSpeed;
+    xSpeed = Constants.isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
+    ySpeed = Constants.isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
+    rot = Constants.isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
+
+    if (!Constants.isAutoXSpeed) {
+      xSpeed *= SwerveConstants.kMaxSpeedTeleop;
+    }
+
+    if (!Constants.isAutoYSpeed) {
+      ySpeed *= SwerveConstants.kMaxSpeedTeleop;
+    }
+    
+    if (Constants.isAutoRotate != RotationEnum.NONE) {
+      rot = Constants.autoRotateSpeed;
     } else {
       rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
     }
@@ -521,15 +555,25 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void calculateRobotAreaString(Pose2d robotPose) {
     // TODO: Add check for left and right side of the field
-    DriverStation.Alliance alliance = DriverStation.getAlliance().get();
+    DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
       // Calculate area for blue alliance
     if (robotPose.getX() < 3.615) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "Alliance";
+        Constants.hoodAngle = 60;
       } else {
         Constants.robotPositionXString = "Opponent";
       }
-    } else if (robotPose.getX() > 5.65 && robotPose.getX() < 8.249) {
+    } else if (robotPose.getX() > 3.615 && robotPose.getX() < 5.65) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "AllianceTrench";
+        // Constants.hoodAngle = 83.25;
+      } else {
+        Constants.robotPositionXString = "OpponentTrench";
+        // Constants.hoodAngle = 83.25;
+      }
+    } 
+    else if (robotPose.getX() > 5.65 && robotPose.getX() < 8.249) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "AllianceMidfield";
       } else {
@@ -541,7 +585,16 @@ public class DriveSubsystem extends SubsystemBase {
       } else {
         Constants.robotPositionXString = "AllianceMidfield";
       }
-    } else if (robotPose.getX() > 12.95) {
+    } else if (robotPose.getX() > 10.925 && robotPose.getX() < 12.95) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionXString = "OpponentTrench";
+        // Constants.hoodAngle = 83.25;
+      } else {
+        Constants.robotPositionXString = "AllianceTrench";
+        // Constants.hoodAngle = 83.25;
+      }
+    } 
+    else if (robotPose.getX() > 12.95) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "Opponent";
       } else {

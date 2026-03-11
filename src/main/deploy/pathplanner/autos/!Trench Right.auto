@@ -7,31 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ER4Right"
+            "pathName": "TR1.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "4pfirrs2Right"
+            "pathName": "TR1.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "4pfirrs3Right"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4pfirrs4Right"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4pfirrs5Right"
+            "pathName": "TR1.3"
           }
         }
       ]

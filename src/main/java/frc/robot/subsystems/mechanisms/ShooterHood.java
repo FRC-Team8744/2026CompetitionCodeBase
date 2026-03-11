@@ -30,13 +30,14 @@ public class ShooterHood extends SubsystemBase {
 
   private final double heightDifferenceToTarget = 1.6;
   public final double ballVelocityToFlywheels = 0.0;
-  public double timeToShoot = 0.0;
+  // public double timeToShoot = 0.0;
 
   private final double shooterHoodGearRatio = 2.0 / 1.0;
+  private final double shooterMotorToCANCoderRatio = 1.0 / 1.0;
   private final double startingPositionRotations = 0.233;
 
   private final double minimumAngle = 0;
-  private final double maximumAngle = 90;
+  private final double maximumAngle = 83.25;
   // TODO: Make shooter hood go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
 
@@ -49,15 +50,16 @@ public class ShooterHood extends SubsystemBase {
     shooterHoodConfig.Feedback.FeedbackRemoteSensorID = Constants.SwerveConstants.kHoodRotateCANCoderID;
     // shooterHoodConfig.Feedback.FeedbackRotorOffset = 0.0;
     shooterHoodConfig.Feedback.SensorToMechanismRatio = shooterHoodGearRatio;
+    shooterHoodConfig.Feedback.RotorToSensorRatio = shooterMotorToCANCoderRatio;
     shooterHoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;
     shooterHoodConfigPID.kS = 8.0; // Add 0.25 V output to overcome static friction
     shooterHoodConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     shooterHoodConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterHoodConfigPID.kP = 100.0; // A position error of 2.5 rotations results in 12 V output
-    shooterHoodConfigPID.kI = 0.2; // no output for integrated error
-    shooterHoodConfigPID.kD = 3.0; // A velocity error of 1 rps results in 0.1 V output
+    shooterHoodConfigPID.kP = 60.0; // A position error of 2.5 rotations results in 12 V output
+    shooterHoodConfigPID.kI = 0.0; // no output for integrated error
+    shooterHoodConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
     shooterHoodConfig.withSlot0(shooterHoodConfigPID);
 
     hoodRollersConfig.Voltage.PeakForwardVoltage = 12;
@@ -85,7 +87,7 @@ public class ShooterHood extends SubsystemBase {
     m_shooterHood.setPosition(startingPositionRotations);
 
     m_hoodRollers.getConfigurator().apply(hoodRollersConfig);
-    m_hoodRollers.setNeutralMode(NeutralModeValue.Brake);
+    m_hoodRollers.setNeutralMode(NeutralModeValue.Coast);
   }
 
   /**
@@ -93,6 +95,11 @@ public class ShooterHood extends SubsystemBase {
    */
   // Moves the shooter hood to the position given  
   public void setShooterHoodAngle(double angle) {
+    if (angle < minimumAngle) {
+      angle = minimumAngle;
+    } else if (angle > maximumAngle) {
+      angle = maximumAngle;
+    }
     m_shooterHood.setControl(goalPosition.withEnableFOC(false).withSlot(0).withPosition(angle / 360));
   }
 
@@ -132,7 +139,7 @@ public class ShooterHood extends SubsystemBase {
 
     flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
 
-    timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(theta));
+    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(theta));
 
     return new double[] {theta, flyWheelVelocity};
   }
@@ -146,5 +153,7 @@ public class ShooterHood extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Shooter Hood Angle", getPositionAngle() * 360);
     SmartDashboard.putNumber("Shooter Hood Angle Error", m_shooterHood.getClosedLoopError().getValueAsDouble() * 360);
+    SmartDashboard.putNumber("Shooter Hood Rollers RPM", m_hoodRollers.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("Shooter Hood Rollers Current", m_hoodRollers.getSupplyCurrent().getValueAsDouble());
   }
 }

@@ -38,7 +38,7 @@ public class Spindexer extends SubsystemBase {
     m_spindexer = new TalonFX(Constants.SwerveConstants.kSpindexerMotorPort);
 
     m_spindexer.getConfigurator().apply(spindexerConfig);
-    m_spindexer.setNeutralMode(NeutralModeValue.Brake);
+    m_spindexer.setNeutralMode(NeutralModeValue.Coast);
     m_spindexer.setPosition(0);
   }
 

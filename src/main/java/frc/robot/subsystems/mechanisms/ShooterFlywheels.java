@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.mechanisms;
 
+import javax.security.auth.kerberos.DelegationPermission;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -11,6 +13,8 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -42,12 +46,14 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight = new TalonFX(Constants.SwerveConstants.kShooterFlywheelRightMotorPort);
 
     m_shooterFlywheelsLeft.getConfigurator().apply(shooterFlywheelsConfig);
-    m_shooterFlywheelsLeft.setNeutralMode(NeutralModeValue.Brake);
+    m_shooterFlywheelsLeft.setNeutralMode(NeutralModeValue.Coast);
     m_shooterFlywheelsLeft.setPosition(0);
 
     m_shooterFlywheelsRight.getConfigurator().apply(shooterFlywheelsConfig);
-    m_shooterFlywheelsRight.setNeutralMode(NeutralModeValue.Brake);
+    m_shooterFlywheelsRight.setNeutralMode(NeutralModeValue.Coast);
     m_shooterFlywheelsRight.setPosition(0);
+
+    setDefaultCommand(Commands.run(()->setShooterFlywheelsSpeed(0.3), this));
   }
 
   public void stopShooterFlywheels() {
@@ -64,10 +70,20 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight.set(-speed);
   }
 
+  public double getLeftFlywheelVelocity() {
+    return m_shooterFlywheelsLeft.getVelocity().getValueAsDouble() * 60;
+  }
+
+  public double getRightFlywheelVelocity() {
+    return m_shooterFlywheelsRight.getVelocity().getValueAsDouble() * 60;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Shooter Flywheels Left Motor Speed", m_shooterFlywheelsLeft.getVelocity().getValueAsDouble() * 60);
     SmartDashboard.putNumber("Shooter Flywheels Right Motor Speed", m_shooterFlywheelsRight.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("Shooter Flywheels Left Motor Current", m_shooterFlywheelsLeft.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter Flywheels Right Motor Current", m_shooterFlywheelsRight.getSupplyCurrent().getValueAsDouble());
   }
 }
