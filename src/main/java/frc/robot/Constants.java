@@ -67,10 +67,10 @@ public final class Constants {
   public static final Translation3d blueLeftFarShuttle = new Translation3d(2.062, 6.970, 0);
   public static final Translation3d blueLeftCloseShuttle = new Translation3d(2.062, 5.370, 0);
 
-  public static final Translation3d redRightFarShuttle = new Translation3d(14.513, 6.970, 0);
-  public static final Translation3d redRightCloseShuttle = new Translation3d(14.513, 5.370, 0);
-  public static final Translation3d redLeftFarShuttle = new Translation3d(14.513, 1.100, 0);
-  public static final Translation3d redLeftCloseShuttle = new Translation3d(14.513, 2.700, 0);
+  public static final Translation3d redRightFarShuttle = new Translation3d(15.4, 6.970, 0); // 14.513
+  public static final Translation3d redRightCloseShuttle = new Translation3d(15.4, 5.370, 0);
+  public static final Translation3d redLeftFarShuttle = new Translation3d(15.4, 1.100, 0);
+  public static final Translation3d redLeftCloseShuttle = new Translation3d(15.4, 2.700, 0);
 
   public static Translation3d targetHubPosition = new Translation3d(4.620, 4.035, 1.6);
 
@@ -78,7 +78,7 @@ public final class Constants {
   public static final Translation3d redHubPosition = new Translation3d(11.920, 4.035, 1.6);
 
   public static Translation3d targetShuttlePosition = new Translation3d(2.062, 1.100, 0);
-  public static String targetShuttleRelativePosition = "Close";
+  public static String targetShuttleRelativePosition = "Far";
 
   //TODO: Add positions for shuttling presets
   //TODO: Add turret and hood positions for shuttling presets

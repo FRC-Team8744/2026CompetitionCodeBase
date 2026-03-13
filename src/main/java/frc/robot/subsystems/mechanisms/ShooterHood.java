@@ -35,7 +35,7 @@ public class ShooterHood extends SubsystemBase {
   private final Slot0Configs hoodRollersConfigPID = hoodRollersConfig.Slot0;
 
   private final double heightDifferenceToTarget = 1.11; // Meters
-  public final double ballVelocityToFlywheels = 4.75;
+  public double ballVelocityToFlywheels = 6.07;
   // public double timeToShoot = 0.0;
 
   private final double shooterHoodGearRatio = 2.0 / 1.0;
@@ -160,6 +160,8 @@ public class ShooterHood extends SubsystemBase {
 
     double distanceToTarget = Math.sqrt(distanceToTargetX * distanceToTargetX + distanceToTargetY * distanceToTargetY);
 
+    SmartDashboard.putNumber("DistanceToTarget", distanceToTarget);
+
     double theta = 0.0;
     double thetaOffset45 = 0.0;
     double ballInitialVelocity = 0.0;
@@ -168,17 +170,23 @@ public class ShooterHood extends SubsystemBase {
     theta = Math.atan((heightDifferenceToTarget + Math.sqrt(heightDifferenceToTarget * heightDifferenceToTarget + distanceToTarget * distanceToTarget)) / distanceToTarget);
     thetaOffset45 = theta + (theta - Math.toRadians(45));
 
-    theta += Math.toRadians(5);
+    theta += Math.toRadians(5.5);
 
     if (Double.isNaN(theta)) {
-      theta = 60.0;
+      theta = Math.toDegrees(60.0);
     }
 
     ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));
 
+    if (distanceToTarget < 3.0) {
+      ballVelocityToFlywheels = 6.25;
+    } else {
+      ballVelocityToFlywheels = 6.07;
+    }
+
     flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
 
-    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians()));
+    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians())) * 1.42; // 1.5833
 
     Constants.hoodAngle = Math.toDegrees(theta);
     Constants.flywheelSpeed = flyWheelVelocity;

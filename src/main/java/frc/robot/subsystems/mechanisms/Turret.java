@@ -84,7 +84,7 @@ public class Turret extends SubsystemBase {
 
     m_turret.getConfigurator().apply(turretConfig);
     m_turret.setNeutralMode(NeutralModeValue.Brake);
-    m_turret.setPosition(startingPositionRotations);
+    // m_turret.setPosition(startingPositionRotations);
 
     // this.setDefaultCommand(Commands.run(() -> setTurretAngle(calculateGoalAngle()), this));
 

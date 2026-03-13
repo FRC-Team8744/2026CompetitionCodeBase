@@ -47,7 +47,7 @@ public class IntakeAndShootCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeSpeed(0.4);
+    m_intake.setIntakeSpeed(0.9);
     m_intakePivot.intakeDown(-1500); // -1500
 
   }
@@ -62,7 +62,7 @@ public class IntakeAndShootCommand extends Command {
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9)) {
         if (Constants.shouldShoot) {
-          m_indexer.setIndexerSpeed(0.7);
+          m_indexer.setIndexerSpeed(1.0);
           m_spindexer.setSpindexerSpeed(-0.5);
         } else {
           m_indexer.stopIndexer();

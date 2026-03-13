@@ -29,6 +29,7 @@ public class ShootCommand extends Command {
   private final Intake m_intake;
   private final IntakePivot m_intakePivot;
   private Timer m_timer;
+  private boolean intakeUp = false;
 
   public ShootCommand(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx, Turret turret, ShooterHoodToZero shtz, Intake in, IntakePivot inp) {
     m_shooterHood = hd;
@@ -58,6 +59,7 @@ public class ShootCommand extends Command {
     // m_shooterHood.setShooterHoodAngle(55);
     // m_shooterHood.setHoodRollerSpeed(0.2);
     // m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
+    m_timer.start();
 
   }
 
@@ -87,12 +89,15 @@ public class ShootCommand extends Command {
         m_spindexer.setSpindexerSpeed(-0.5);
       }
     }
-    m_intake.setIntakeSpeed(0.4);
-    if (m_timer.hasElapsed(0.4)) {
-      m_intakePivot.intakeDown(-650);
+    m_intake.setIntakeSpeed(0.5);
+    if (m_timer.hasElapsed(0.5) && intakeUp == false) {
+      m_intakePivot.intakeDown(-800);
+      intakeUp = true;
       m_timer.restart();
-    } else {
+    } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
       m_intakePivot.intakeDown(-1100);
+      intakeUp = false;
+      m_timer.restart();
     }
   }
 

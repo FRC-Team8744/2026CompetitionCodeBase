@@ -45,13 +45,22 @@ public class RobotContainer {
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
   // TODO: Add new offsets for the cameras
-  private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(-148.0));
-  private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(148.0));
+  // private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-139.8));
+  // private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20.2), Units.degreesToRadians(141.7));
+  // private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-147.4));
+  // private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20.2), Units.degreesToRadians(146.0));
+  private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-147.4));
+  private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20.9), Units.degreesToRadians(146.0));
 
   // private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationLeft);
   // private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(-5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationRight);
-  private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-8.705), Units.inchesToMeters(6.942), Units.inchesToMeters(11.202), cameraToRobotOffsetRotationLeft);
-  private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-8.705), Units.inchesToMeters(-6.942), Units.inchesToMeters(11.202), cameraToRobotOffsetRotationRight);
+  // private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-8.705), Units.inchesToMeters(-6.942), Units.inchesToMeters(11.202), cameraToRobotOffsetRotationRight);
+  // private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-7.25), Units.inchesToMeters(8.75), Units.inchesToMeters(15), cameraToRobotOffsetRotationLeft);
+  // private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-7.25), Units.inchesToMeters(-8.75), Units.inchesToMeters(15), cameraToRobotOffsetRotationRight);
+  private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(0), Units.inchesToMeters(15), cameraToRobotOffsetRotationLeft);
+  private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(0), Units.inchesToMeters(15), cameraToRobotOffsetRotationRight);
+  // private final Transform3d cameraToRobotOffsetLeft = new Transform3d(0, 0, 0, cameraToRobotOffsetRotationLeft);
+  // private final Transform3d cameraToRobotOffsetRight = new Transform3d(0, 0, 0, cameraToRobotOffsetRotationRight);
 
   private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
   // private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
@@ -122,7 +131,7 @@ public class RobotContainer {
     .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero));
 
     m_driver.pov(0)
-    .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(0)));
+    .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(-400)));
     m_driver.pov(90)
     .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(-1)))
     .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
@@ -132,8 +141,8 @@ public class RobotContainer {
     // m_driver.pov(270)
 
     m_driver.x()
-    .whileTrue(Commands.runOnce(() -> Constants.intakeSpeed = -0.7))
-    .whileFalse(Commands.runOnce(() -> Constants.intakeSpeed = 0.7));
+    .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-0.7)))
+    .whileFalse(Commands.runOnce(() -> m_intake.stopIntake()));
     m_driver.b()
     .whileTrue(Commands.runOnce(() -> m_turret.setTurretAngle(180)));
     // m_driver.a()
