@@ -236,6 +236,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+     checkPosediff();
+
+
+
+
     // Update the odometry in the periodic block
     PhotonVision.Result[] visionResult = m_visionPV.getVisionResult();
     for (PhotonVision.Result visionRes : visionResult) {
@@ -294,10 +299,11 @@ public class DriveSubsystem extends SubsystemBase {
             m_frontLeft.getState(),
             m_frontRight.getState(),
             m_rearLeft.getState(),
-            m_rearRight.getState() } ); // :3
-
-    
-
+            m_rearRight.getState() } ); 
+                                                    
+                                             
+                                           
+                                                                  
     // Diagnostics
     Debug.dashboard(
       Debug.Dashboard.of("FL Mag Enc", m_frontLeft.getCanCoder()),
@@ -364,6 +370,21 @@ public class DriveSubsystem extends SubsystemBase {
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
   }
+
+  public void checkPosediff(){
+
+ double xdifference = m_odometry.getPoseMeters().getX() - m_poseEstimator.getEstimatedPosition().getX();
+ double ydifference = m_odometry.getPoseMeters().getY() - m_poseEstimator.getEstimatedPosition().getY();
+ double Rotationdifference = m_odometry.getPoseMeters().getRotation().minus(m_poseEstimator.getEstimatedPosition().getRotation()).getDegrees(); 
+ 
+ SmartDashboard.putNumber("Rotation Difference", Rotationdifference);
+ SmartDashboard.putNumber("X Difference", xdifference);
+ SmartDashboard.putNumber("Y Difference", ydifference);
+
+
+  }
+
+
 
   public void zeroIMU() {
     m_imu.setYaw(0.0);
@@ -510,7 +531,7 @@ public class DriveSubsystem extends SubsystemBase {
     speeds.omegaRadiansPerSecond = -speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
     
     // SmartDashboard.putNumber("Robot Auto X After align", speeds.vxMetersPerSecond);
-
+    // this doesnt do anything right now?
     this.drive(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond,false);
     // SmartDashboard.putNumber("DriveVelX", speeds.vxMetersPerSecond);
     // SmartDashboard.putNumber("DriveVelY", speeds.vyMetersPerSecond);
