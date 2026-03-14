@@ -51,9 +51,9 @@ public class IntakePivot extends SubsystemBase {
   }
 
   /**
+   * Moves the intake to the position given  
    * @param angle Give the angle in degrees 
    */
-  // Moves the intake to the position given  
   public void intakeDown(double angle) {
     if (angle < minimumAngle) {angle = minimumAngle;}
     if (angle > maximumAngle) {angle = maximumAngle;}

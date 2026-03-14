@@ -97,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
   // private final LimeLight4 m_vision;
   private PhotonVision m_visionPV;
 
-  PowerDistribution m_pdh = new PowerDistribution(Constants.kPDH_ID, ModuleType.kRev);
+  // PowerDistribution m_pdh = new PowerDistribution(Constants.kPDH_ID, ModuleType.kRev);
 
   public RotationEnum isAutoRotate = RotationEnum.NONE;
   public boolean isAutoYSpeed = false;
@@ -192,8 +192,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-          new PIDConstants(7.0, 0.0, 0.0), // Translation PID constants
-          new PIDConstants(10.0, 0.0, 0.0)), // Rotation PID constants
+          new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
+          new PIDConstants(1, 0.0, 0.0)), // Rotation PID constants
         RobotConfig.fromGUISettings(),
             ()->{
         // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -334,26 +334,28 @@ public class DriveSubsystem extends SubsystemBase {
 
     Arrays.stream(driveModifiers).forEach(((driveModifier) -> driveModifier.execute(this)));
 
-    SmartDashboard.putBoolean("Is Right", !leftPoint);
+    // SmartDashboard.putBoolean("Is Right", !leftPoint);
     
-    calculateRobotAreaString(getEstimatedPose());
+    calculateRobotAreaStringX(getEstimatedPose());
+    calculateRobotAreaStringY(getEstimatedPose());
 
     SmartDashboard.putString("Robot X Area", Constants.robotPositionXString);
+    SmartDashboard.putString("Robot Y Area", Constants.robotPositionYString);
 
-    getRobotVelocityX();
-    getRobotVelocityY();
+    // getRobotVelocityX();
+    // getRobotVelocityY();
 
-    SmartDashboard.putNumber("Voltage", m_pdh.getVoltage());
+    // SmartDashboard.putNumber("Voltage", m_pdh.getVoltage());
 
-    SmartDashboard.putNumber("temperature", m_pdh.getTemperature());
+    // SmartDashboard.putNumber("temperature", m_pdh.getTemperature());
 
-    SmartDashboard.putNumber("Total Current", m_pdh.getTotalPower());
+    // SmartDashboard.putNumber("Total Current", m_pdh.getTotalPower());
 
-    SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
+    // SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
 
-    for (int i = 0; i < 24; i++) {
-    SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
-    }
+    // for (int i = 0; i < 24; i++) {
+    // SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
+    // }
   }
 
   /**
@@ -367,7 +369,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void zeroIMU() {
     m_imu.setYaw(0.0);
-    m_poseEstimator.resetPosition(m_imu.getRotation2d(), getModulePositions(), getPose());
+    m_poseEstimator.resetPosition(m_imu.getRotation2d(), getModulePositions(), getEstimatedPose());
   }
 
   /**
@@ -396,7 +398,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rot Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean auto) {
     // rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
 
     if (isDrivingSlow) {
@@ -441,7 +443,9 @@ public class DriveSubsystem extends SubsystemBase {
     if (Constants.isAutoRotate != RotationEnum.NONE) {
       rot = Constants.autoRotateSpeed;
     } else {
-      rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
+      if (!auto) {
+        rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
+      }
     }
 
     // Apply speed scaling
@@ -488,7 +492,7 @@ public class DriveSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Auto Rotate Speed", autoRotateSpeed);
     // SmartDashboard.putBoolean("Auto Rotate", isAutoRotate == RotationEnum.STRAFEONTARGET);
 
-    speeds.omegaRadiansPerSecond = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : speeds.omegaRadiansPerSecond;
+    // speeds.omegaRadiansPerSecond = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : speeds.omegaRadiansPerSecond;
 
     if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
       speeds.vyMetersPerSecond = autoYSpeed;
@@ -507,14 +511,14 @@ public class DriveSubsystem extends SubsystemBase {
     // Apply speed scaling
     speeds.vxMetersPerSecond = speeds.vxMetersPerSecond * m_AutoSpeedScale;
     speeds.vyMetersPerSecond = speeds.vyMetersPerSecond * m_AutoSpeedScale;
-    speeds.omegaRadiansPerSecond = -speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
+    speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
     
     // SmartDashboard.putNumber("Robot Auto X After align", speeds.vxMetersPerSecond);
 
-    this.drive(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond,false);
+    this.drive(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond,false, true);
     // SmartDashboard.putNumber("DriveVelX", speeds.vxMetersPerSecond);
     // SmartDashboard.putNumber("DriveVelY", speeds.vyMetersPerSecond);
-    // SmartDashboard.putNumber("DriveRotZ", speeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("DriveRotZ", speeds.omegaRadiansPerSecond);
   }
   
   public ChassisSpeeds getRobotRelativeSpeeds(){
@@ -553,24 +557,20 @@ public class DriveSubsystem extends SubsystemBase {
     return new Pose2d(m_poseEstimator.getEstimatedPosition().getX(), m_poseEstimator.getEstimatedPosition().getY(), new Rotation2d(m_poseEstimator.getEstimatedPosition().getRotation().getRadians()));
   }
 
-  public void calculateRobotAreaString(Pose2d robotPose) {
-    // TODO: Add check for left and right side of the field
+  public void calculateRobotAreaStringX(Pose2d robotPose) {
     DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
       // Calculate area for blue alliance
     if (robotPose.getX() < 3.615) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "Alliance";
-        Constants.hoodAngle = 60;
       } else {
         Constants.robotPositionXString = "Opponent";
       }
     } else if (robotPose.getX() > 3.615 && robotPose.getX() < 5.65) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "AllianceTrench";
-        // Constants.hoodAngle = 83.25;
       } else {
         Constants.robotPositionXString = "OpponentTrench";
-        // Constants.hoodAngle = 83.25;
       }
     } 
     else if (robotPose.getX() > 5.65 && robotPose.getX() < 8.249) {
@@ -588,10 +588,8 @@ public class DriveSubsystem extends SubsystemBase {
     } else if (robotPose.getX() > 10.925 && robotPose.getX() < 12.95) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionXString = "OpponentTrench";
-        // Constants.hoodAngle = 83.25;
       } else {
         Constants.robotPositionXString = "AllianceTrench";
-        // Constants.hoodAngle = 83.25;
       }
     } 
     else if (robotPose.getX() > 12.95) {
@@ -603,23 +601,41 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void getRobotVelocityX() {
-    if (m_timerX.hasElapsed(0.1)) {
-      double newX = m_poseEstimator.getEstimatedPosition().getX();
-      xVelocity = (newX - originalX) / m_timerX.get();
-      originalX = newX;
-      m_timerX.restart();
-    }
+  public void calculateRobotAreaStringY(Pose2d robotPose) {
+    DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
+      // Calculate area for blue alliance
+    if (robotPose.getY() < 3.904) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionYString = "Right";
+      } else {
+        Constants.robotPositionYString = "Left";
+      }
+    } else if (robotPose.getY() > 4.208) {
+      if (alliance == DriverStation.Alliance.Blue) {
+        Constants.robotPositionYString = "Left";
+      } else {
+        Constants.robotPositionYString = "Right";
+      }
+    } 
   }
 
-  public void getRobotVelocityY() {
-    if (m_timerY.hasElapsed(0.1)) {
-      double newY = m_poseEstimator.getEstimatedPosition().getY();
-      yVelocity = (newY - originalY) / m_timerY.get();
-      originalY = newY;
-      m_timerY.restart();
-    }
-  }
+  // public void getRobotVelocityX() {
+  //   if (m_timerX.hasElapsed(0.1)) {
+  //     double newX = m_poseEstimator.getEstimatedPosition().getX();
+  //     xVelocity = (newX - originalX) / m_timerX.get();
+  //     originalX = newX;
+  //     m_timerX.restart();
+  //   }
+  // }
+
+  // public void getRobotVelocityY() {
+  //   if (m_timerY.hasElapsed(0.1)) {
+  //     double newY = m_poseEstimator.getEstimatedPosition().getY();
+  //     yVelocity = (newY - originalY) / m_timerY.get();
+  //     originalY = newY;
+  //     m_timerY.restart();
+  //   }
+  // }
 
   public void zeroGyro() {
     m_imu.setYaw(0);

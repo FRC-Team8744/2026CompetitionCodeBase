@@ -45,7 +45,7 @@
     "rotation": 178.85423716182493
   },
   "reversed": false,
-  "folder": "Hub",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

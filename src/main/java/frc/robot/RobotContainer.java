@@ -12,8 +12,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.IntakeAndShootCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShooterHoodToZero;
+import frc.robot.commands.ToggleShootWhileIntakeMode;
+import frc.robot.commands.ToggleShuttleMode;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.alignment.AlignToHub;
 // import frc.robot.subsystems.mechanisms.Climber;
@@ -41,11 +45,22 @@ public class RobotContainer {
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
   // TODO: Add new offsets for the cameras
-  private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(-148.0));
-  private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(148.0));
+  // private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-139.8));
+  // private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20.2), Units.degreesToRadians(141.7));
+  // private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-147.4));
+  // private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20.2), Units.degreesToRadians(146.0));
+  private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-147.4));
+  private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20.9), Units.degreesToRadians(146.0));
 
-  private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationLeft);
-  private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(-5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationRight);
+  // private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationLeft);
+  // private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-10.59), Units.inchesToMeters(-5.474), Units.inchesToMeters(14.142), cameraToRobotOffsetRotationRight);
+  // private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-8.705), Units.inchesToMeters(-6.942), Units.inchesToMeters(11.202), cameraToRobotOffsetRotationRight);
+  // private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-7.25), Units.inchesToMeters(8.75), Units.inchesToMeters(15), cameraToRobotOffsetRotationLeft);
+  // private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-7.25), Units.inchesToMeters(-8.75), Units.inchesToMeters(15), cameraToRobotOffsetRotationRight);
+  private final Transform3d cameraToRobotOffsetLeft = new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(0), Units.inchesToMeters(15), cameraToRobotOffsetRotationLeft);
+  private final Transform3d cameraToRobotOffsetRight = new Transform3d(Units.inchesToMeters(-8.75), Units.inchesToMeters(0), Units.inchesToMeters(15), cameraToRobotOffsetRotationRight);
+  // private final Transform3d cameraToRobotOffsetLeft = new Transform3d(0, 0, 0, cameraToRobotOffsetRotationLeft);
+  // private final Transform3d cameraToRobotOffsetRight = new Transform3d(0, 0, 0, cameraToRobotOffsetRotationRight);
 
   private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2026RebuiltAndymark.loadAprilTagLayoutField();
   // private final PhotonVision.Context photonVisionContext = new PhotonVision.Context(aprilTagFieldLayout, new PhotonVision.CameraWithOffsets("Limelight4.1", cameraToRobotOffset1), new PhotonVision.CameraWithOffsets("Limelight4.2", cameraToRobotOffset2));
@@ -60,9 +75,10 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final IntakePivot m_intakePivot = new IntakePivot();
   private final ShooterFlywheels m_shooterFlywheels = new ShooterFlywheels();
-  private final ShooterHood m_shooterHood = new ShooterHood();
   private final Spindexer m_spindexer = new Spindexer();
-  private final Turret m_turret = new Turret();
+  private final Turret m_turret = new Turret(m_robotDrive);
+  private final ShooterHood m_shooterHood = new ShooterHood(m_robotDrive, m_turret);
+  private final ShooterHoodToZero m_shooterHoodToZero = new ShooterHoodToZero(m_shooterHood);
   // The driver's controller
   private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
@@ -84,7 +100,8 @@ public class RobotContainer {
                       -m_driver.getLeftY(),
                       -m_driver.getLeftX(),
                       -m_driver.getRightX(),
-                      true),
+                      true,
+                      false),
               m_robotDrive));
     // m_autoChooser = AutoBuilder.buildAutoChooser();  // Default auto will be 'Commands.none()'
 
@@ -101,40 +118,40 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // TODO: Add button bindings for the commands
     m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
-    m_driver.a()
-    .whileTrue(Commands.runOnce(() -> Constants.shuttleMode = !Constants.shuttleMode));
-    m_driver.b()
-    .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
-    m_driver.x()
-    .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-1.0)))
-    .whileFalse(Commands.runOnce(() -> m_intake.stopIntake()));
+    // m_driver.b()
+    // .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
 
     m_driver.leftTrigger()
-    .whileTrue(new IntakeCommand(m_intake, m_intakePivot, m_turret));
+    .whileTrue(new IntakeAndShootCommand(m_intake, m_intakePivot, m_turret, m_indexer, m_shooterFlywheels, m_shooterHood, m_spindexer));
     m_driver.rightTrigger()
-      .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer));
+    .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret, m_shooterHoodToZero, m_intake, m_intakePivot));
+
     m_driver.leftBumper()
-    .whileTrue(Commands.run(() -> m_spindexer.setSpindexerSpeed(-0.8)))
-    .whileFalse(Commands.run(() -> m_spindexer.stopSpindexer()));
-    m_driver.pov(270)
-    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(0.8)))
-    .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
-    m_driver.pov(90)
-    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(-0.8)))
-    .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
+    .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));
+    m_driver.rightBumper()
+    .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero));
+
     m_driver.pov(0)
-    .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(0)));
+    .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(-400)));
+    m_driver.pov(90)
+    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(-1)))
+    .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
+    m_driver.pov(180)
+    .whileTrue(Commands.runOnce(() -> m_shooterHood.setHoodRollerSpeed(0.1)))
+    .whileFalse(Commands.runOnce(() -> m_shooterHood.stopHoodRollers()));
+    m_driver.pov(270)
+    .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
+    .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));
+
+    m_driver.x()
+    .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-0.7)))
+    .whileFalse(Commands.runOnce(() -> m_intake.stopIntake()));
+    m_driver.b()
+    .whileTrue(Commands.runOnce(() -> m_turret.setTurretAngle(180)));
+    // m_driver.a()
 
     m_driver.rightStick()
     .toggleOnTrue(Commands.runOnce(() -> Constants.isAutoRotate = Constants.isAutoRotate == RotationEnum.ALIGNTOHUB ? RotationEnum.NONE : RotationEnum.ALIGNTOHUB));
-    // m_driver.rightTrigger()
-    // .whileTrue(Commands.run(() -> m_shooterHood.setShooterHoodAngle(60)));
-    // m_driver.y()
-    // .whileTrue(Commands.runOnce(() -> m_shooterHood.setHoodRollerSpeed(0.2)))
-    // .whileFalse(Commands.runOnce(() -> m_shooterHood.stopHoodRollers()));
-    // m_driver.x()
-    // .whileTrue(Commands.runOnce(() -> m_shooterFlywheels.setShooterFlywheelsSpeed(1.0)))
-    // .whileFalse(Commands.runOnce(() -> m_shooterFlywheels.stopShooterFlywheels()));
   }
 
   public Command getAutonomousCommand() {

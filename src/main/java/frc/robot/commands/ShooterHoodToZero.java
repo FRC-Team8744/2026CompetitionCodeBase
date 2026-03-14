@@ -5,35 +5,23 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.subsystems.mechanisms.Indexer;
-import frc.robot.subsystems.mechanisms.Intake;
-import frc.robot.subsystems.mechanisms.IntakePivot;
-import frc.robot.subsystems.mechanisms.Turret;
-import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.mechanisms.ShooterHood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class IntakeCommand extends Command {
-  /** Creates a new TeleopIntake. */
-  private final Intake m_intake;
-  private final IntakePivot m_intakePivot;
-  // private final Turret m_turret;
-  public IntakeCommand(Intake in, IntakePivot inp) {
+public class ShooterHoodToZero extends Command {
+  /** Creates a new ShooterHoodToZero. */
+  private final ShooterHood m_shooterHood;
+  public ShooterHoodToZero(ShooterHood sh) {
+    m_shooterHood = sh;
+    addRequirements(m_shooterHood);
     // Use addRequirements() here to declare subsystem dependencies.
-    m_intake = in;
-    addRequirements(m_intake);
-    m_intakePivot = inp;
-    addRequirements(m_intakePivot);
-    // m_turret = tur;
-    // addRequirements(m_turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeSpeed(Constants.intakeSpeed);
-    m_intakePivot.intakeDown(-1500);
-
+    m_shooterHood.setShooterHoodAngle(-15.0); // 75
+    m_shooterHood.stopHoodRollers();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,14 +30,14 @@ public class IntakeCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_intake.stopIntake();
-    m_intakePivot.intakeDown(-1150);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (m_shooterHood.getPositionAngle() * 360 >= -15.5) { // 74.5
+      return true;
+    }
     return false;
   }
 }

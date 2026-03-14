@@ -9,7 +9,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -35,13 +38,47 @@ public final class Constants {
   public static double autoYSpeed = 0;
   public static double autoRotateSpeed = 0;
   public static boolean isAutoYSpeed = false;
+
   public static String robotPositionXString = "Alliance";
   public static String robotPositionYString = "None";
+
   public static boolean shuttleMode = false;
+  public static boolean shootWhileIntake = false;
+
   public static double hoodAngle = 83.25;
+  public static double turretAngle = 0;
+  public static double timeToShoot = 1;
+  public static double flywheelSpeed = 0.0;
+  public static double intakeSpeed = 0.7;
+
+  public static double presetHoodAngle = 60;
+  public static double presetFlywheelSpeed = 30.0;
+
+  public static boolean shouldShoot = true;
+  public static boolean visionShoot = true;
+
   public static boolean autoIntake = true;
   public static boolean autoShoot = true;
+
   public static int kPDH_ID = 30;
+
+  public static final Translation3d blueRightFarShuttle = new Translation3d(2.062, 1.100, 0);
+  public static final Translation3d blueRightCloseShuttle = new Translation3d(2.062, 2.700, 0);
+  public static final Translation3d blueLeftFarShuttle = new Translation3d(2.062, 6.970, 0);
+  public static final Translation3d blueLeftCloseShuttle = new Translation3d(2.062, 5.370, 0);
+
+  public static final Translation3d redRightFarShuttle = new Translation3d(15.4, 6.970, 0); // 14.513
+  public static final Translation3d redRightCloseShuttle = new Translation3d(15.4, 5.370, 0);
+  public static final Translation3d redLeftFarShuttle = new Translation3d(15.4, 1.100, 0);
+  public static final Translation3d redLeftCloseShuttle = new Translation3d(15.4, 2.700, 0);
+
+  public static Translation3d targetHubPosition = new Translation3d(4.620, 4.035, 1.6);
+
+  public static final Translation3d blueHubPosition = new Translation3d(4.620, 4.035, 1.6);
+  public static final Translation3d redHubPosition = new Translation3d(11.920, 4.035, 1.6);
+
+  public static Translation3d targetShuttlePosition = new Translation3d(2.062, 1.100, 0);
+  public static String targetShuttleRelativePosition = "Far";
 
   //TODO: Add positions for shuttling presets
   //TODO: Add turret and hood positions for shuttling presets
