@@ -100,7 +100,8 @@ public class RobotContainer {
                       -m_driver.getLeftY(),
                       -m_driver.getLeftX(),
                       -m_driver.getRightX(),
-                      true),
+                      true,
+                      false),
               m_robotDrive));
     // m_autoChooser = AutoBuilder.buildAutoChooser();  // Default auto will be 'Commands.none()'
 
@@ -126,7 +127,7 @@ public class RobotContainer {
     .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret, m_shooterHoodToZero, m_intake, m_intakePivot));
 
     m_driver.leftBumper()
-    .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero));
+    .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));
     m_driver.rightBumper()
     .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero));
 
@@ -138,7 +139,9 @@ public class RobotContainer {
     m_driver.pov(180)
     .whileTrue(Commands.runOnce(() -> m_shooterHood.setHoodRollerSpeed(0.1)))
     .whileFalse(Commands.runOnce(() -> m_shooterHood.stopHoodRollers()));
-    // m_driver.pov(270)
+    m_driver.pov(270)
+    .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
+    .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));
 
     m_driver.x()
     .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-0.7)))

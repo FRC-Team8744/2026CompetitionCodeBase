@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -42,8 +43,8 @@ public class ShooterHood extends SubsystemBase {
   private final double shooterMotorToCANCoderRatio = 1.0 / 1.0;
   private final double startingPositionRotations = 0.233;
 
-  private final double minimumAngle = 0;
-  private final double maximumAngle = 88.5;
+  private final double minimumAngle = -88.50;
+  private final double maximumAngle = 0;
 
   private final DriveSubsystem m_robotDrive;
   // TODO: Make shooter hood go to a position
@@ -54,7 +55,7 @@ public class ShooterHood extends SubsystemBase {
     m_robotDrive = drive;
     m_turret = turret;
 
-    shooterHoodCANCoderConfig.MagnetSensor.MagnetOffset = 0.8888888;
+    shooterHoodCANCoderConfig.MagnetSensor.MagnetOffset = 0.3888888;
     m_shooterHoodCANCoder = new CANcoder(Constants.SwerveConstants.kHoodRotateCANCoderID);
     m_shooterHoodCANCoder.getConfigurator().apply(shooterHoodCANCoderConfig);
 
@@ -70,12 +71,14 @@ public class ShooterHood extends SubsystemBase {
     shooterHoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    shooterHoodConfigPID.GravityType = GravityTypeValue.Arm_Cosine;
+    shooterHoodConfigPID.kG = -2.0; // Add 0.25 V output to overcome static friction
     shooterHoodConfigPID.kS = 8.0; // Add 0.25 V output to overcome static friction
     shooterHoodConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     shooterHoodConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
     shooterHoodConfigPID.kP = 60.0; // A position error of 2.5 rotations results in 12 V output
-    shooterHoodConfigPID.kI = 0.0; // no output for integrated error
-    shooterHoodConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+    shooterHoodConfigPID.kI = 1.20; // no output for integrated error
+    shooterHoodConfigPID.kD = 0.435; // A velocity error of 1 rps results in 0.1 V output
     shooterHoodConfig.withSlot0(shooterHoodConfigPID);
 
     hoodRollersConfig.Voltage.PeakForwardVoltage = 12;
@@ -176,7 +179,7 @@ public class ShooterHood extends SubsystemBase {
       theta = Math.toDegrees(60.0);
     }
 
-    ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));
+    ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians() + 90.0 * Math.PI / 180.0) - heightDifferenceToTarget)));
 
     if (distanceToTarget < 3.0) {
       ballVelocityToFlywheels = 6.25;
@@ -184,11 +187,15 @@ public class ShooterHood extends SubsystemBase {
       ballVelocityToFlywheels = 6.07;
     }
 
+    if (!Constants.shuttleMode) {
+      ballVelocityToFlywheels = 6.16 - (distanceToTarget - 2.5) * 0.1;
+    }
+
     flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
 
-    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians())) * 1.42; // 1.5833
+    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
 
-    Constants.hoodAngle = Math.toDegrees(theta);
+    Constants.hoodAngle = Math.toDegrees(theta) - 90.0;
     Constants.flywheelSpeed = flyWheelVelocity;
 
     SmartDashboard.putNumber("TargetPoseX", targetPose.getX());

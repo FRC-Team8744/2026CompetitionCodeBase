@@ -192,8 +192,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-          new PIDConstants(7.0, 0.0, 0.0), // Translation PID constants
-          new PIDConstants(10.0, 0.0, 0.0)), // Rotation PID constants
+          new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
+          new PIDConstants(1, 0.0, 0.0)), // Rotation PID constants
         RobotConfig.fromGUISettings(),
             ()->{
         // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -398,7 +398,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rot Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean auto) {
     // rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
 
     if (isDrivingSlow) {
@@ -443,7 +443,9 @@ public class DriveSubsystem extends SubsystemBase {
     if (Constants.isAutoRotate != RotationEnum.NONE) {
       rot = Constants.autoRotateSpeed;
     } else {
-      rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
+      if (!auto) {
+        rot *= ConstantsOffboard.MAX_ANGULAR_RADIANS_PER_SECOND;
+      }
     }
 
     // Apply speed scaling
@@ -490,7 +492,7 @@ public class DriveSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Auto Rotate Speed", autoRotateSpeed);
     // SmartDashboard.putBoolean("Auto Rotate", isAutoRotate == RotationEnum.STRAFEONTARGET);
 
-    speeds.omegaRadiansPerSecond = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : speeds.omegaRadiansPerSecond;
+    // speeds.omegaRadiansPerSecond = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : speeds.omegaRadiansPerSecond;
 
     if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
       speeds.vyMetersPerSecond = autoYSpeed;
@@ -513,10 +515,10 @@ public class DriveSubsystem extends SubsystemBase {
     
     // SmartDashboard.putNumber("Robot Auto X After align", speeds.vxMetersPerSecond);
 
-    this.drive(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond,false);
+    this.drive(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond,false, true);
     // SmartDashboard.putNumber("DriveVelX", speeds.vxMetersPerSecond);
     // SmartDashboard.putNumber("DriveVelY", speeds.vyMetersPerSecond);
-    // SmartDashboard.putNumber("DriveRotZ", speeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("DriveRotZ", speeds.omegaRadiansPerSecond);
   }
   
   public ChassisSpeeds getRobotRelativeSpeeds(){

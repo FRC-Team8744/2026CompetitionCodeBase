@@ -20,7 +20,7 @@ public class ShooterHoodToZero extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooterHood.setShooterHoodAngle(75.0);
+    m_shooterHood.setShooterHoodAngle(-15.0); // 75
     m_shooterHood.stopHoodRollers();
   }
 
@@ -35,7 +35,7 @@ public class ShooterHoodToZero extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (m_shooterHood.getPositionAngle() * 360 >= 74.5) {
+    if (m_shooterHood.getPositionAngle() * 360 >= -15.5) { // 74.5
       return true;
     }
     return false;
