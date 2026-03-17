@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8554337349397594,
-        "y": 2.1445060240963856
+        "x": 6.171879518072289,
+        "y": 3.3028433734939733
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6478072289156627,
-        "y": 3.0733614457831333
+        "x": 6.259301204819276,
+        "y": 2.2319277108433733
       },
       "isLocked": false,
-      "linkedName": "TR1.2"
+      "linkedName": "SRT2.1 end"
     },
     {
       "anchor": {
-        "x": 1.6040963855421686,
-        "y": 2.996867469879518
+        "x": 3.5055180722891564,
+        "y": 0.6364819277108438
       },
       "prevControl": {
-        "x": 1.789867469879518,
-        "y": 2.330277108433736
+        "x": 6.991457831325301,
+        "y": 0.15566265060240997
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,22 +31,10 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "TurnOffShoot",
-      "waypointRelativePos": 0.3200000000000001,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "TurnOffShoot"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 1.0,
+    "maxAcceleration": 0.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -54,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.93908830973572
+    "rotation": -3.814074834290356
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Safe R Trench",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 129.36931724236467
+    "rotation": 91.54815769897792
   },
   "useDefaultConstraints": true
 }

@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TR1.1"
+            "pathName": "SRT1.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TR1.2"
+            "pathName": "SRT1.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "TR1.3"
+            "pathName": "SRT2.1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SRT2.2"
           }
         }
       ]

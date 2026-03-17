@@ -192,8 +192,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-          new PIDConstants(2.0, 0.0, 0.0), // Translation PID constants
-          new PIDConstants(1, 0.0, 0.0)), // Rotation PID constants
+          new PIDConstants(1.2, 0.0, 0.0), // Translation PID constants
+          new PIDConstants(5.0, 0.0, 0.0)), // Rotation PID constants
         RobotConfig.fromGUISettings(),
             ()->{
         // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -241,7 +241,7 @@ public class DriveSubsystem extends SubsystemBase {
     for (PhotonVision.Result visionRes : visionResult) {
       if (visionRes.apriltag.isPresent()) {
         if (visionRes.singleTag) {
-          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2 && visionRes.robotPose.isPresent()) {
+          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .1 && visionRes.robotPose.isPresent()) {
             m_poseEstimator.addVisionMeasurement(visionRes.robotPose.get(), visionRes.apriltagTime);
           }
         } else {
@@ -432,11 +432,11 @@ public class DriveSubsystem extends SubsystemBase {
     ySpeed = Constants.isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
     rot = Constants.isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
-    if (!Constants.isAutoXSpeed) {
+    if (!Constants.isAutoXSpeed && !auto) {
       xSpeed *= SwerveConstants.kMaxSpeedTeleop;
     }
 
-    if (!Constants.isAutoYSpeed) {
+    if (!Constants.isAutoYSpeed && !auto) {
       ySpeed *= SwerveConstants.kMaxSpeedTeleop;
     }
     
