@@ -4,8 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "Fake Autos",
-    "Safe test",
-    "Safe R Trench"
+    "Trench Left",
+    "Safe R Trench",
+    "Safe test"
   ],
   "autoFolders": [],
   "defaultMaxVel": 1.0,
