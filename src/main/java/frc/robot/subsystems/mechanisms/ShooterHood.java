@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -197,9 +198,9 @@ public class ShooterHood extends SubsystemBase {
 
     // Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
     Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.2))) * 1.42; // 1.5833
-
+    
     // Constants.hoodAngle = Math.toDegrees(theta) - 90.0;
-    Constants.flywheelSpeed = flyWheelVelocity;
+    Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget*.5),0,95);
 
     SmartDashboard.putNumber("TargetPoseX", targetPose.getX());
     SmartDashboard.putNumber("DistanceToTargetX", distanceToTargetX);

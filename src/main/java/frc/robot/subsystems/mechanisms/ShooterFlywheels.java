@@ -12,6 +12,8 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 // import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -72,8 +74,8 @@ public class ShooterFlywheels extends SubsystemBase {
   }
 
   public void setShooterFlywheelsRps(double rps) {
-    m_shooterFlywheelsLeft.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(rps));
-    m_shooterFlywheelsRight.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(-rps));
+    m_shooterFlywheelsLeft.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(MathUtil.clamp(rps,0,100)));
+    m_shooterFlywheelsRight.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(-MathUtil.clamp(rps,0,100)));
   }
 
   public double getLeftFlywheelVelocity() {
