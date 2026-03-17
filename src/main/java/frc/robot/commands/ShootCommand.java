@@ -67,7 +67,7 @@ public class ShootCommand extends Command {
   @Override
   public void execute() {
     if (Constants.visionShoot) {
-      m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
+      // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
       m_turret.setTurretAngle(Constants.turretAngle);
       m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 83.3333333333);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);

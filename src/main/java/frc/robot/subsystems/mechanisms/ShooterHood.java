@@ -179,7 +179,9 @@ public class ShooterHood extends SubsystemBase {
       theta = Math.toDegrees(60.0);
     }
 
-    ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians() + 90.0 * Math.PI / 180.0) - heightDifferenceToTarget)));
+    // ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians() + 90.0 * Math.PI / 180.0) - heightDifferenceToTarget)));
+    ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.2))) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.2))) - heightDifferenceToTarget));
+
 
     if (distanceToTarget < 3.0) {
       ballVelocityToFlywheels = 6.25;
@@ -193,9 +195,10 @@ public class ShooterHood extends SubsystemBase {
 
     flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
 
-    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
+    // Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
+    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.2))) * 1.42; // 1.5833
 
-    Constants.hoodAngle = Math.toDegrees(theta) - 90.0;
+    // Constants.hoodAngle = Math.toDegrees(theta) - 90.0;
     Constants.flywheelSpeed = flyWheelVelocity;
 
     SmartDashboard.putNumber("TargetPoseX", targetPose.getX());
