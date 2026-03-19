@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.95332530120482,
-        "y": 0.22122891566265024
+        "x": 5.953325301204821,
+        "y": 0.22122891566265013
       },
       "isLocked": false,
       "linkedName": "SRT1.2 end"
@@ -45,7 +45,7 @@
     "rotation": 91.54815769897792
   },
   "reversed": false,
-  "folder": "Safe R Trench",
+  "folder": "SRT",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.45835645800045566
