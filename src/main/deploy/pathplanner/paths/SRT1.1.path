@@ -3,32 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1342048192771081,
-        "y": 5.969204819277109
+        "x": 4.42344578313253,
+        "y": 0.6255542168674697
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.117698795180723,
-        "y": 5.838072289156627
+        "x": 8.608759036144578,
+        "y": 0.6474096385542167
       },
       "isLocked": false,
-      "linkedName": "H1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.5822409638554213,
-        "y": 4.526746987951808
+        "x": 7.636192771084337,
+        "y": 3.2154216867469883
       },
       "prevControl": {
-        "x": 1.9865662650602407,
-        "y": 5.094987951807228
+        "x": 7.625265060240963,
+        "y": 1.4560602409638557
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "H1.2"
+      "linkedName": "SRT1.1 end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.07375886524822758,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.5035460992907838,
+      "rotationDegrees": 111.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +51,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.85423716182493
+    "rotation": 111.03751102542182
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Safe R Trench",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

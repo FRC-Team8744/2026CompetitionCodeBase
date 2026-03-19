@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1342048192771081,
-        "y": 5.969204819277109
+        "x": 7.636192771084337,
+        "y": 3.2154216867469883
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.117698795180723,
-        "y": 5.838072289156627
+        "x": 7.811036144578313,
+        "y": 0.5381325301204822
       },
       "isLocked": false,
-      "linkedName": "H1"
+      "linkedName": "SRT1.1 end"
     },
     {
       "anchor": {
-        "x": 1.5822409638554213,
-        "y": 4.526746987951808
+        "x": 3.8224216867469876,
+        "y": 0.5709156626506025
       },
       "prevControl": {
-        "x": 1.9865662650602407,
-        "y": 5.094987951807228
+        "x": 4.926120481927711,
+        "y": 0.5381325301204822
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "H1.2"
+      "linkedName": "SRT1.2 end"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 178.85423716182493
+    "rotation": 0.45835645800045566
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Safe R Trench",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 111.03751102542182
   },
   "useDefaultConstraints": true
 }
