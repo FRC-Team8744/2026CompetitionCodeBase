@@ -44,12 +44,13 @@ public final class Constants {
 
   public static boolean shuttleMode = false;
   public static boolean shootWhileIntake = false;
-
+  public static boolean slowMode = false;
   public static double hoodAngle = 74.0;
   public static double turretAngle = 0;
   public static double timeToShoot = 1;
   public static double flywheelSpeed = 0.0;
   public static double intakeSpeed = 0.7;
+  public static final double slowModeSpeed = 0.25;
 
   public static double presetHoodAngle = 60;
   public static double presetFlywheelSpeed = 30.0;
