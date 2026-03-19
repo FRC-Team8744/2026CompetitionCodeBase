@@ -241,7 +241,7 @@ public class DriveSubsystem extends SubsystemBase {
     for (PhotonVision.Result visionRes : visionResult) {
       if (visionRes.apriltag.isPresent()) {
         if (visionRes.singleTag) {
-          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2 && visionRes.robotPose.isPresent()) {
+          if (visionRes.apriltag.map((t) -> t.getPoseAmbiguity()).orElse(1.0) <= .2 && visionRes.robotPose.isPresent() && visionRes.distanceToTarget < 3.5) {
             m_poseEstimator.addVisionMeasurement(visionRes.robotPose.get(), visionRes.apriltagTime);
           }
         } else {

@@ -43,7 +43,7 @@ public class ToggleShuttleMode extends Command {
       m_turret.setTurretAngle(180);
       m_spindexer.stopSpindexer();
       m_indexer.stopIndexer();
-      m_shooterFlywheels.setShooterFlywheelsSpeed(m_shooterFlywheels.defaultSpeed);
+      m_shooterFlywheels.stopShooterFlywheels();
       CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
     } else {
       Constants.shuttleMode = true;

@@ -16,7 +16,7 @@ import frc.robot.subsystems.mechanisms.Spindexer;
 import frc.robot.subsystems.mechanisms.Turret;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class IntakeAndShootCommand extends Command {
+public class RemainShooting extends Command {
   /** Creates a new TeleopIntake. */
   private final Intake m_intake;
   private final IntakePivot m_intakePivot;
@@ -26,9 +26,8 @@ public class IntakeAndShootCommand extends Command {
   private final ShooterHood m_shooterHood;
   private final Spindexer m_spindexer;
   private final ShooterHoodToZero m_shooterHoodToZero;
-  private final RemainShooting m_remainShooting;  
   // private final Turret m_turret;
-  public IntakeAndShootCommand(Intake in, IntakePivot inp, Turret tur, Indexer idx, ShooterFlywheels shf, ShooterHood shh, Spindexer sp, ShooterHoodToZero shtz, RemainShooting rem) {
+  public RemainShooting(Intake in, IntakePivot inp, Turret tur, Indexer idx, ShooterFlywheels shf, ShooterHood shh, Spindexer sp, ShooterHoodToZero shtz) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_intake = in;
     m_intakePivot = inp;
@@ -38,7 +37,6 @@ public class IntakeAndShootCommand extends Command {
     m_shooterHood = shh;
     m_spindexer = sp;
     m_shooterHoodToZero = shtz;
-    m_remainShooting = rem;
 
     addRequirements(m_turret);
     addRequirements(m_indexer);
@@ -52,8 +50,8 @@ public class IntakeAndShootCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeSpeed(0.9);
-    m_intakePivot.intakeDown(-1500); // -1500
+    // m_intake.setIntakeSpeed(0.9);
+    // m_intakePivot.intakeDown(-1500); // -1500
 
   }
 
@@ -62,18 +60,13 @@ public class IntakeAndShootCommand extends Command {
   public void execute() {
     if (Constants.shootWhileIntake || Constants.shuttleMode) {
       if (Constants.shuttleMode) {
-        // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         if (Constants.robotPositionXString == "AllianceTrench" || Constants.robotPositionXString == "OpponentTrench") {
           CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
         } else {
           m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         }
       }
-      if (Constants.shuttleMode) {
-        m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 50);
-      } else {
-        m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350);
-      }
+      m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 50);
       m_turret.setTurretAngle(Constants.turretAngle);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9)) {
@@ -90,12 +83,7 @@ public class IntakeAndShootCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_intake.stopIntake();
-    m_intakePivot.intakeDown(-1150); // -1150
-    
-    CommandScheduler.getInstance().schedule(m_remainShooting);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

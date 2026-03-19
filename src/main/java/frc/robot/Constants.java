@@ -45,7 +45,7 @@ public final class Constants {
   public static boolean shuttleMode = false;
   public static boolean shootWhileIntake = false;
 
-  public static double hoodAngle = 83.25;
+  public static double hoodAngle = 74.0;
   public static double turretAngle = 0;
   public static double timeToShoot = 1;
   public static double flywheelSpeed = 0.0;
@@ -229,6 +229,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kCoDriverControllerPort = 1;
     public static final double kDeadband = 0.05;
     public static final double kRotationDeadband = 0.1;
   }

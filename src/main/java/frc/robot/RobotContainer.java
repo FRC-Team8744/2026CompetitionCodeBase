@@ -14,6 +14,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.IntakeAndShootCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.RemainShooting;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShooterHoodToZero;
 import frc.robot.commands.ToggleShootWhileIntakeMode;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.mechanisms.Turret;
 import frc.robot.subsystems.vision.PhotonVision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -79,8 +81,10 @@ public class RobotContainer {
   private final Turret m_turret = new Turret(m_robotDrive);
   private final ShooterHood m_shooterHood = new ShooterHood(m_robotDrive, m_turret);
   private final ShooterHoodToZero m_shooterHoodToZero = new ShooterHoodToZero(m_shooterHood);
+  private final RemainShooting m_remainShooting = new RemainShooting(m_intake, m_intakePivot, m_turret, m_indexer, m_shooterFlywheels, m_shooterHood, m_spindexer, m_shooterHoodToZero);
   // The driver's controller
   private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
+  private final CommandXboxController m_codriver = new CommandXboxController(OIConstants.kCoDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
   private final AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive, m_shooterFlywheels, m_shooterHood, m_intake, m_indexer, m_spindexer, m_intakePivot, m_turret);
   
@@ -122,7 +126,7 @@ public class RobotContainer {
     // .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
 
     m_driver.leftTrigger()
-    .whileTrue(new IntakeAndShootCommand(m_intake, m_intakePivot, m_turret, m_indexer, m_shooterFlywheels, m_shooterHood, m_spindexer));
+    .whileTrue(new IntakeAndShootCommand(m_intake, m_intakePivot, m_turret, m_indexer, m_shooterFlywheels, m_shooterHood, m_spindexer, m_shooterHoodToZero, m_remainShooting));
     m_driver.rightTrigger()
     .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret, m_shooterHoodToZero, m_intake, m_intakePivot));
 
@@ -137,17 +141,32 @@ public class RobotContainer {
     .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(-1)))
     .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
     m_driver.pov(180)
-    .whileTrue(Commands.runOnce(() -> m_shooterHood.setHoodRollerSpeed(0.1)))
-    .whileFalse(Commands.runOnce(() -> m_shooterHood.stopHoodRollers()));
-    m_driver.pov(270)
-    .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
-    .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));
+    .whileTrue(Commands.runOnce(() -> m_spindexer.setSpindexerSpeed(1.0)))
+    .whileFalse(Commands.runOnce(() -> m_spindexer.stopSpindexer()));
+    // m_driver.pov(270)
+    // .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
+    // .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));
 
     m_driver.x()
     .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-0.7)))
     .whileFalse(Commands.runOnce(() -> m_intake.stopIntake()));
     m_driver.b()
     .whileTrue(Commands.runOnce(() -> m_turret.setTurretAngle(180)));
+    m_driver.a()
+    .whileTrue(Commands.runOnce(() -> Constants.visionShoot = !Constants.visionShoot));
+
+    m_codriver.pov(90)
+    .whileTrue(Commands.runOnce(() -> Constants.targetShuttleRelativePosition = "Close"));
+    m_codriver.pov(270)
+    .whileTrue(Commands.runOnce(() -> Constants.targetShuttleRelativePosition = "Far"));
+    // m_codriver.pov(0)
+    // .whileTrue(new ParallelCommandGroup(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 70)));
+    // m_codriver.pov(180)
+    // .whileTrue(new ParallelCommandGroup(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 40)));
+    m_codriver.pov(0)
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 70));
+    m_codriver.pov(180)
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 40));
     // m_driver.a()
 
     m_driver.rightStick()

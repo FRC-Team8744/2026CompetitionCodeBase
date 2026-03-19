@@ -44,8 +44,8 @@ public class ShooterHood extends SubsystemBase {
   private final double shooterMotorToCANCoderRatio = 1.0 / 1.0;
   private final double startingPositionRotations = 0.233;
 
-  private final double minimumAngle = -88.50;
-  private final double maximumAngle = 0;
+  private final double minimumAngle = 0;
+  private final double maximumAngle = 74;
 
   private final DriveSubsystem m_robotDrive;
   // TODO: Make shooter hood go to a position
@@ -56,7 +56,7 @@ public class ShooterHood extends SubsystemBase {
     m_robotDrive = drive;
     m_turret = turret;
 
-    shooterHoodCANCoderConfig.MagnetSensor.MagnetOffset = 0.3888888;
+    shooterHoodCANCoderConfig.MagnetSensor.MagnetOffset = 0.8888888;
     m_shooterHoodCANCoder = new CANcoder(Constants.SwerveConstants.kHoodRotateCANCoderID);
     m_shooterHoodCANCoder.getConfigurator().apply(shooterHoodCANCoderConfig);
 
@@ -73,7 +73,7 @@ public class ShooterHood extends SubsystemBase {
     shooterHoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;
     shooterHoodConfigPID.GravityType = GravityTypeValue.Arm_Cosine;
-    shooterHoodConfigPID.kG = -2.0; // Add 0.25 V output to overcome static friction
+    // shooterHoodConfigPID.kG = -2.0; // Add 0.25 V output to overcome static friction
     shooterHoodConfigPID.kS = 8.0; // Add 0.25 V output to overcome static friction
     shooterHoodConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     shooterHoodConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
@@ -174,15 +174,21 @@ public class ShooterHood extends SubsystemBase {
     theta = Math.atan((heightDifferenceToTarget + Math.sqrt(heightDifferenceToTarget * heightDifferenceToTarget + distanceToTarget * distanceToTarget)) / distanceToTarget);
     thetaOffset45 = theta + (theta - Math.toRadians(45));
 
-    theta += Math.toRadians(5.5);
+    // theta -= Math.toRadians(2.5);
+
+    if (Constants.shuttleMode) {
+      theta = MathUtil.clamp(theta, Math.toRadians(58), Math.toRadians(74));
+    }
 
     if (Double.isNaN(theta)) {
       theta = Math.toDegrees(60.0);
     }
 
-    // ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians() + 90.0 * Math.PI / 180.0) - heightDifferenceToTarget)));
-    ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.2))) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.2))) - heightDifferenceToTarget));
-
+    if (Constants.shuttleMode) {
+      ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));;
+    } else {
+      ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.0))) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.0))) - heightDifferenceToTarget));
+    }
 
     if (distanceToTarget < 3.0) {
       ballVelocityToFlywheels = 6.25;
@@ -197,10 +203,16 @@ public class ShooterHood extends SubsystemBase {
     flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
 
     // Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
-    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.2))) * 1.42; // 1.5833
+    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.0))) * 1.42; // 1.5833
     
-    // Constants.hoodAngle = Math.toDegrees(theta) - 90.0;
-    Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget*.5),0,95);
+    flyWheelVelocity *= 0.6;
+
+    Constants.hoodAngle = Math.toDegrees(theta);
+    if (Constants.shuttleMode) {
+      Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity, 0,60);
+    } else {
+      Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget*.5),0,95);
+    }
 
     SmartDashboard.putNumber("TargetPoseX", targetPose.getX());
     SmartDashboard.putNumber("DistanceToTargetX", distanceToTargetX);
