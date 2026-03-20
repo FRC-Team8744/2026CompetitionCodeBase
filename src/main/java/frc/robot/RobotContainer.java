@@ -135,7 +135,7 @@ public class RobotContainer {
     m_driver.leftBumper()
     .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));
     m_driver.rightBumper()
-    .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero));
+    .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));
 
     m_driver.pov(0)
     .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(-400)));

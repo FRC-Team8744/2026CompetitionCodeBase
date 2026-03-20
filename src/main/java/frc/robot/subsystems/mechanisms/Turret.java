@@ -75,7 +75,7 @@ public class Turret extends SubsystemBase {
     turretConfigPID.kS = 12.5; // Add 0.25 V output to overcome static friction
     turretConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     turretConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    turretConfigPID.kP = 50.0; // A position error of 2.5 rotations results in 12 V output
+    turretConfigPID.kP = 60.0; // A position error of 2.5 rotations results in 12 V output
     turretConfigPID.kI = 0.0; // no output for integrated error
     turretConfigPID.kD = 1.5; // A velocity error of 1 rps results in 0.1 V output
     turretConfig.withSlot0(turretConfigPID);
@@ -127,7 +127,7 @@ public class Turret extends SubsystemBase {
     } else if (targetAngle < minimumAngle) {
       targetAngle += 360;
     }
-    
+
     if (Math.abs(getPositionAngle() - targetAngle) > 45) {
       Constants.shouldShoot = false;
     } else {

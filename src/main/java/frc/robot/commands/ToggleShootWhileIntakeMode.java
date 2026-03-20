@@ -7,8 +7,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
+import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.ShooterFlywheels;
 import frc.robot.subsystems.mechanisms.ShooterHood;
+import frc.robot.subsystems.mechanisms.Spindexer;
 import frc.robot.subsystems.mechanisms.Turret;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -17,13 +19,19 @@ public class ToggleShootWhileIntakeMode extends Command {
   private final Turret m_turret;
   private final ShooterFlywheels m_shooterFlywheels;
   private final ShooterHoodToZero m_shooterHoodToZero;
-  public ToggleShootWhileIntakeMode(Turret tur, ShooterFlywheels shf, ShooterHoodToZero shhz) {
+  private final Spindexer m_spindexer;
+  private final Indexer m_indexer;
+  public ToggleShootWhileIntakeMode(Turret tur, ShooterFlywheels shf, ShooterHoodToZero shhz, Spindexer spi, Indexer ind) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = tur;
     m_shooterFlywheels = shf;
     m_shooterHoodToZero = shhz;
+    m_spindexer = spi;
+    m_indexer = ind;
     addRequirements(m_turret);
     addRequirements(m_shooterFlywheels);
+    addRequirements(m_spindexer);
+    addRequirements(m_indexer);
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +40,9 @@ public class ToggleShootWhileIntakeMode extends Command {
     if (Constants.shootWhileIntake) {
       Constants.shootWhileIntake = false;
       m_turret.setTurretAngle(180);
-      m_shooterFlywheels.setShooterFlywheelsSpeed(m_shooterFlywheels.defaultSpeed);
+      m_spindexer.stopSpindexer();
+      m_indexer.stopIndexer();
+      m_shooterFlywheels.stopShooterFlywheels();
       CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
     } else {
       Constants.shootWhileIntake = true;
