@@ -205,7 +205,7 @@ public class ShooterHood extends SubsystemBase {
     // Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
     Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.0))) * 1.42; // 1.5833
     
-    flyWheelVelocity *= 0.6;
+    flyWheelVelocity *= 0.85;
 
     Constants.hoodAngle = Math.toDegrees(theta);
     if (Constants.shuttleMode) {

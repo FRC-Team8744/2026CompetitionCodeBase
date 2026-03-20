@@ -38,8 +38,8 @@ public class Turret extends SubsystemBase {
   private final Timer m_shuttleTimer = new Timer();
   private final double turretMotorToSensorGearRatio = 15 / 116;
   private final double startingPositionRotations = 0;
-  private final double minimumAngle = -60;
-  private final double maximumAngle = 310;
+  private final double minimumAngle = -25;
+  private final double maximumAngle = 335;
   private Translation3d targetPose;
   private Double robotXWhenShotLands;
   private Double robotYWhenShotLands;
@@ -116,11 +116,18 @@ public class Turret extends SubsystemBase {
   }
 
   private double optimizeAngle(double targetAngle) {
+    if (targetAngle >= 0) {
+      targetAngle = targetAngle % 360;
+    } else {
+      targetAngle = targetAngle % -360;
+    }
+
     if (targetAngle > maximumAngle) {
       targetAngle -= 360;
     } else if (targetAngle < minimumAngle) {
       targetAngle += 360;
     }
+    
     if (Math.abs(getPositionAngle() - targetAngle) > 45) {
       Constants.shouldShoot = false;
     } else {

@@ -61,7 +61,7 @@ public class DriveSubsystem extends SubsystemBase {
   double offset_FR = 0;
   double offset_RR = 0;
   
-  private double m_DriverSpeedScale = 1.0;
+  public double m_DriverSpeedScale = 1.0;
   private double m_AutoSpeedScale = 1.0;
 
   public DriveModifier[] driveModifiers;

@@ -128,7 +128,9 @@ public class RobotContainer {
     m_driver.leftTrigger()
     .whileTrue(new IntakeAndShootCommand(m_intake, m_intakePivot, m_turret, m_indexer, m_shooterFlywheels, m_shooterHood, m_spindexer, m_shooterHoodToZero, m_remainShooting));
     m_driver.rightTrigger()
-    .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret, m_shooterHoodToZero, m_intake, m_intakePivot));
+    .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret, m_shooterHoodToZero, m_intake, m_intakePivot)
+    .alongWith(Commands.runOnce(() -> m_robotDrive.m_DriverSpeedScale = .25)))
+    .whileFalse(Commands.runOnce(() -> m_robotDrive.m_DriverSpeedScale = 1.0));
 
     m_driver.leftBumper()
     .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));

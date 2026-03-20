@@ -25,6 +25,8 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommandAuto;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShootCommandAuto;
+import frc.robot.commands.ShootCommandAuto2;
+import frc.robot.commands.ShooterHoodToZero;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.Intake;
@@ -131,8 +133,8 @@ public class AutoCommandManager {
         Turret m_turret
     ) {
         // TODO: Add named commands for auto builder to use
-        NamedCommands.registerCommand("Shoot", new ShootCommandAuto(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer));
-        NamedCommands.registerCommand("Intake", new IntakeCommandAuto(m_intake, m_intakePivot, m_turret));
+        NamedCommands.registerCommand("Shoot", new ShootCommandAuto2(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret));
+        NamedCommands.registerCommand("Intake", new IntakeCommandAuto(m_intake, m_intakePivot));
         NamedCommands.registerCommand("TurnOffIntake", Commands.runOnce(() -> Constants.autoIntake = false));
         NamedCommands.registerCommand("TurnOffShoot", Commands.runOnce(() -> Constants.autoShoot = false));
     }
