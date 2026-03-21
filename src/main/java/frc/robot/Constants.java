@@ -218,10 +218,10 @@ public final class Constants {
     public static final double ANGLE_MAX_ERR_PROFILED = 0.02;  // Error tolerance of PID controller, rotations
 
     /** Angle motor PID values. */
-    public static final double KRAKENROTATION_P = 20.0; // 40.0
+    public static final double KRAKENROTATION_P = 40.0; // 40.0
     public static final double KRAKENROTATION_I = 0.0;
     public static final double KRAKENROTATION_D = 1.0;
-    public static final double KRAKENROTATION_V = 0.0; // 0.1
+    public static final double KRAKENROTATION_V = 0.1; // 0.1
     public static final PIDConstants ANGLE_PID = new PIDConstants(KRAKENROTATION_P, KRAKENROTATION_I, KRAKENROTATION_D);
     
     /** Swerve constraints. */
