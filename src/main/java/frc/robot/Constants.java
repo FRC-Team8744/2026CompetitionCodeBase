@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -159,6 +160,10 @@ public final class Constants {
     public static int kSwerveFR_enum = 1;
     public static int kSwerveRL_enum = 2;
     public static int kSwerveRR_enum = 3;
+
+    public static final SlewRateLimiter slewX = new SlewRateLimiter(0.9);
+    public static final SlewRateLimiter slewY = new SlewRateLimiter(0.9);
+    public static final SlewRateLimiter slewRot = new SlewRateLimiter(1.5);
   }
 
   public static final class ConstantsOffboard {
@@ -194,10 +199,12 @@ public final class Constants {
     public static final double DRIVE_KD = 0.0;
     public static final double DRIVE_KF = 0.25;
 
-    public static final double KRAKEN_V = 0.32;
-    public static final double KRAKEN_P = 0.11;
-    public static final double KRAKEN_I = 0.48;
-    public static final double KRAKEN_D = 0.01;
+    public static final double KRAKEN_V = 0.32; // 0.32
+    // public static final double KRAKEN_S = 0.39499; // 0
+    public static final double KRAKEN_P = 0.11; // 0.11
+    public static final double KRAKEN_I = 0.48; // 0.48
+    public static final double KRAKEN_D = 0.01; // 0.01
+    // public static final double KRAKEN_A = 0.22899;
 
     public static final boolean ANGLE_MOTOR_PROFILED_MODE = false;
     /** Angle motor PID values for speed/acceleration limited mode. */
@@ -211,10 +218,10 @@ public final class Constants {
     public static final double ANGLE_MAX_ERR_PROFILED = 0.02;  // Error tolerance of PID controller, rotations
 
     /** Angle motor PID values. */
-    public static final double KRAKENROTATION_P = 40.0;
+    public static final double KRAKENROTATION_P = 20.0; // 40.0
     public static final double KRAKENROTATION_I = 0.0;
-    public static final double KRAKENROTATION_D = 0.0;
-    public static final double KRAKENROTATION_V = 0.1;
+    public static final double KRAKENROTATION_D = 1.0;
+    public static final double KRAKENROTATION_V = 0.0; // 0.1
     public static final PIDConstants ANGLE_PID = new PIDConstants(KRAKENROTATION_P, KRAKENROTATION_I, KRAKENROTATION_D);
     
     /** Swerve constraints. */
@@ -259,11 +266,14 @@ public final class Constants {
     driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    driveConfig.CurrentLimits.StatorCurrentLimit = 80.0;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     driveConfigPID.kV = Constants.ConstantsOffboard.KRAKEN_V;
     driveConfigPID.kP = Constants.ConstantsOffboard.KRAKEN_P;
     driveConfigPID.kI = Constants.ConstantsOffboard.KRAKEN_I;
     driveConfigPID.kD = Constants.ConstantsOffboard.KRAKEN_D;
+    // driveConfigPID.kS = Constants.ConstantsOffboard.KRAKEN_S;
+    // driveConfigPID.kA = Constants.ConstantsOffboard.KRAKEN_A;
     driveConfig.withSlot0(driveConfigPID);
   }
 }

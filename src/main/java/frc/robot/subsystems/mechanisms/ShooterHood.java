@@ -87,7 +87,7 @@ public class ShooterHood extends SubsystemBase {
     hoodRollersConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     hoodRollersConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     hoodRollersConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    hoodRollersConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    hoodRollersConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     hoodRollersConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
     hoodRollersConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     hoodRollersConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
@@ -205,13 +205,15 @@ public class ShooterHood extends SubsystemBase {
     // Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
     Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.0))) * 1.42; // 1.5833
     
-    flyWheelVelocity *= 0.85;
+    if (Constants.shuttleMode) {
+      flyWheelVelocity *= 0.6;
+    }
 
     Constants.hoodAngle = Math.toDegrees(theta);
     if (Constants.shuttleMode) {
       Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity, 0,60);
     } else {
-      Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget*.5),0,95);
+      Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget*.5),0,88);
     }
 
     SmartDashboard.putNumber("TargetPoseX", targetPose.getX());
@@ -234,10 +236,11 @@ public class ShooterHood extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Hood Angle Error", m_shooterHood.getClosedLoopError().getValueAsDouble() * 360);
     SmartDashboard.putNumber("Shooter Hood Rollers RPM", m_hoodRollers.getVelocity().getValueAsDouble() * 60);
     SmartDashboard.putNumber("Shooter Hood Rollers Current", m_hoodRollers.getSupplyCurrent().getValueAsDouble());
-
+ 
     SmartDashboard.putNumber("Constants Hood Angle", Constants.hoodAngle);
     SmartDashboard.putNumber("Constants Flywheel Speed", Constants.flywheelSpeed);
     SmartDashboard.putNumber("Time To Shoot", Constants.timeToShoot);
+    SmartDashboard.putString("Shuttle Preset", Constants.targetShuttleRelativePosition);
     calculateShooterHoodAngleFlywheelSpeeds(m_turret.getPoseWhenShotLands());
   }
 }

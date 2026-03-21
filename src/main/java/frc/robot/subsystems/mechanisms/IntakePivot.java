@@ -33,7 +33,7 @@ public class IntakePivot extends SubsystemBase {
     intakePivotConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     // intakePivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     intakePivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    intakePivotConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    intakePivotConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     intakePivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     intakePivotConfigPID.kS = 8.5; // Add 0.25 V output to overcome static friction
     intakePivotConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output

@@ -18,6 +18,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -404,6 +405,12 @@ public class DriveSubsystem extends SubsystemBase {
     if (isDrivingSlow) {
       ySpeed *= 0.1;
       xSpeed *= 0.1;
+    }
+
+    if (!auto) {
+      // xSpeed = SwerveConstants.slewX.calculate(xSpeed);
+      // ySpeed = SwerveConstants.slewY.calculate(ySpeed);
+      // rot = SwerveConstants.slewRot.calculate(rot);
     }
 
     if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {

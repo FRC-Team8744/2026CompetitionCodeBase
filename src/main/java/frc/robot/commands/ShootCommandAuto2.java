@@ -91,7 +91,7 @@ public class ShootCommandAuto2 extends Command {
       m_shooterFlywheels.stopShooterFlywheels();
       m_turret.stopTurret();
       m_shooterHood.stopHoodRollers();
-      m_shooterHood.setShooterHoodAngle(72.0); // 75
+      // m_shooterHood.setShooterHoodAngle(72.0); // 75
       // CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
   }
 

@@ -3,55 +3,55 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.259530120481927,
-        "y": 7.400734939759036
+        "x": 4.423,
+        "y": 0.655
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.669204846819568,
-        "y": 7.411659097047378
-      },
-      "isLocked": false,
-      "linkedName": "ST1.5"
-    },
-    {
-      "anchor": {
-        "x": 6.7510481927710835,
-        "y": 7.269602409638554
-      },
-      "prevControl": {
-        "x": 6.3480116651383165,
-        "y": 7.489440515620061
-      },
-      "nextControl": {
-        "x": 7.11166265060241,
-        "y": 7.072903614457832
+        "x": 6.352352261145837,
+        "y": 0.7561130674613675
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.587132530120481,
-        "y": 4.854578313253012
+        "x": 7.724,
+        "y": 1.814
       },
       "prevControl": {
-        "x": 6.947746987951808,
-        "y": 6.122192771084338
+        "x": 7.263222193356967,
+        "y": 0.306863704602256
+      },
+      "nextControl": {
+        "x": 7.977778639699336,
+        "y": 2.644072528175915
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.549,
+        "y": 3.1061445783132537
+      },
+      "prevControl": {
+        "x": 7.538704648472763,
+        "y": 2.81132428434262
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ST1.6"
+      "linkedName": "WR1.1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.09,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.5693581780538293,
-      "rotationDegrees": -110.0
+      "waypointRelativePos": 0.57,
+      "rotationDegrees": 116.15
     }
   ],
   "constraintZones": [],
@@ -67,10 +67,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -107.19854122006583
+    "rotation": 114.94
   },
   "reversed": false,
-  "folder": "TestWhip",
+  "folder": "TestWhipRight",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

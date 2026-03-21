@@ -36,7 +36,7 @@ public class ShooterFlywheels extends SubsystemBase {
     shooterFlywheelsConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     shooterFlywheelsConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     shooterFlywheelsConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    shooterFlywheelsConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    shooterFlywheelsConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     shooterFlywheelsConfigPID.kS = 0.0005; // Add 0.25 V output to overcome static friction
     shooterFlywheelsConfigPID.kV = 0.13; // A velocity target of 1 rps results in 0.12 V output
     shooterFlywheelsConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output

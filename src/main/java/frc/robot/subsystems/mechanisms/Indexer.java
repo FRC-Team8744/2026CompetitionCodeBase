@@ -26,7 +26,7 @@ public class Indexer extends SubsystemBase {
     indexerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     indexerConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     indexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    indexerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    indexerConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     indexerConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
     indexerConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     indexerConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
