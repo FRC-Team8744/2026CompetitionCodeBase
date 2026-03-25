@@ -24,6 +24,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "PresetShooterFlywheelSpeed"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "ST1.5"
@@ -36,7 +42,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.5
+                  "waitTime": 2.75
                 }
               },
               {
@@ -68,6 +74,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "PresetShooterFlywheelSpeed"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "ST1.7"
@@ -77,12 +89,6 @@
           "type": "race",
           "data": {
             "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.5
-                }
-              },
               {
                 "type": "named",
                 "data": {

@@ -132,10 +132,10 @@ public class AutoCommandManager {
         IntakePivot m_intakePivot,
         Turret m_turret
     ) {
-        // TODO: Add named commands for auto builder to use
         NamedCommands.registerCommand("Shoot", new ShootCommandAuto2(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret));
         NamedCommands.registerCommand("Intake", new IntakeCommandAuto(m_intake, m_intakePivot));
         NamedCommands.registerCommand("TurnOffIntake", Commands.runOnce(() -> Constants.autoIntake = false));
         NamedCommands.registerCommand("TurnOffShoot", Commands.runOnce(() -> Constants.autoShoot = false));
+        NamedCommands.registerCommand("PresetShooterFlywheelSpeed", Commands.runOnce(() -> m_shooterFlywheels.setShooterFlywheelsSpeed(0.67)));
     }
 }

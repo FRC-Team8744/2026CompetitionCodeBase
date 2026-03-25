@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.259530120481927,
-        "y": 7.400734939759036
+        "x": 2.6968674698795176,
+        "y": 6.362602409638554
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.669204846819568,
-        "y": 7.411659097047378
+        "x": 2.86078313253012,
+        "y": 7.662999999999999
+      },
+      "isLocked": false,
+      "linkedName": "ST1.5.3"
+    },
+    {
+      "anchor": {
+        "x": 4.521795180722892,
+        "y": 7.4553734939759035
+      },
+      "prevControl": {
+        "x": 3.4183947228351372,
+        "y": 7.481033969740735
+      },
+      "nextControl": {
+        "x": 5.9314698795180725,
+        "y": 7.422590361445783
       },
       "isLocked": false,
       "linkedName": "ST1.5"
     },
     {
       "anchor": {
-        "x": 6.7510481927710835,
-        "y": 7.269602409638554
+        "x": 6.587132530120481,
+        "y": 7.2368192771084345
       },
       "prevControl": {
-        "x": 6.3480116651383165,
-        "y": 7.489440515620061
+        "x": 6.184096002487714,
+        "y": 7.456657383089942
       },
       "nextControl": {
-        "x": 7.11166265060241,
-        "y": 7.072903614457832
+        "x": 6.947746987951808,
+        "y": 7.040120481927713
       },
       "isLocked": false,
       "linkedName": null
@@ -46,11 +62,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.9080745341614896,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.5693581780538293,
+      "waypointRelativePos": 2.5693581780538293,
       "rotationDegrees": -110.0
     }
   ],
@@ -58,8 +74,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 3.35,
+    "maxAcceleration": 2.35,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -73,7 +89,7 @@
   "folder": "TestWhip",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -49.184916125118335
   },
   "useDefaultConstraints": true
 }

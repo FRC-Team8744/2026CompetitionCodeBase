@@ -8,33 +8,58 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.046096385542168,
-        "y": 6.144048192771083
+        "x": 7.100734939759036,
+        "y": 6.286108433734939
       },
       "isLocked": false,
       "linkedName": "ST1.6"
     },
     {
       "anchor": {
-        "x": 4.237674698795181,
-        "y": 7.378879518072289
+        "x": 4.270457831325301,
+        "y": 7.51001204819277
       },
       "prevControl": {
-        "x": 6.499710843373493,
-        "y": 7.663
+        "x": 6.550189612357425,
+        "y": 7.528852806713695
+      },
+      "nextControl": {
+        "x": 2.9482048192771084,
+        "y": 7.499084337349398
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7733614457831326,
+        "y": 6.384457831325301
+      },
+      "prevControl": {
+        "x": 2.8170722891566267,
+        "y": 6.887132530120482
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.2248447204968895,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 3.35,
+    "maxAcceleration": 2.35,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +67,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -54.00850374202516
   },
   "reversed": false,
   "folder": "TestWhip",

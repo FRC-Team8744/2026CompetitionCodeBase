@@ -10,14 +10,11 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.PowerDistribution;
 
 public final class Constants {
   public static final int kMaxSpeedPercentAuto = 100; //This effects Drive speed in telop DONT ASK ME WHY
@@ -58,6 +55,7 @@ public final class Constants {
 
   public static boolean shouldShoot = true;
   public static boolean visionShoot = true;
+  public static boolean enableAntiStall = true;
 
   public static boolean autoIntake = true;
   public static boolean autoShoot = true;
@@ -80,10 +78,7 @@ public final class Constants {
   public static final Translation3d redHubPosition = new Translation3d(11.920, 4.035, 1.6);
 
   public static Translation3d targetShuttlePosition = new Translation3d(2.062, 1.100, 0);
-  public static String targetShuttleRelativePosition = "Far";
-
-  //TODO: Add positions for shuttling presets
-  //TODO: Add turret and hood positions for shuttling presets
+  public static String targetShuttleRelativePosition = "Close";
 
   public Constants() {
     configureKrakens();
@@ -99,7 +94,6 @@ public final class Constants {
     // The positive X axis points ahead, the positive Y axis points left, and the positive Z axis points up.
     // We use NWU here because the rest of the library, and math in general, use NWU axes convention.
     // https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html#axis-conventions
-    // TODO: Get all motor ids for the swerve modules and enure the orientation of the modules is correct
     public static final int kFrontLeftDriveMotorPort = 1; // 8
     public static final int kFrontRightDriveMotorPort = 4; // 3
     public static final int kRearLeftDriveMotorPort = 10; // 17
@@ -115,7 +109,6 @@ public final class Constants {
     public static final int kRearLeftMagEncoderPort = 12; // 18
     public static final int kRearRightMagEncoderPort = 9; // 21
 
-    // TODO: Get all motor ids for the other mechanisms
     public static final int kIntakePivotMotorPort = 14;
     public static final int kIntakeMotorPort = 15;
     public static final int kSpindexerMotorPort = 16;
@@ -133,7 +126,6 @@ public final class Constants {
     public static final boolean DISABLE_ANGLE_OPTIMIZER = false;
 
     // Note: Zeroing the CanCoder in Tuner X doesn't seem to affect the reported absolute position.
-    // TODO: Get new offsets of swerve modules
     public static final double kFrontLeftMagEncoderOffsetDegrees = 1 - 0.598877; // 0.125244; // 3
     public static final double kFrontRightMagEncoderOffsetDegrees = 1 - 0.999023; // 0.846191; // 6
     public static final double kRearLeftMagEncoderOffsetDegrees = 1 - 0.228516; // 0.224121; // 12 
@@ -153,7 +145,6 @@ public final class Constants {
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),  // Rear Left Quadrant
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));  // Rear Right Quadrant
 
-    // TODO: Recalibrate pigeon 2
     public static final int kIMU_ID = 13;
 
     public static int kSwerveFL_enum = 0;
@@ -199,12 +190,12 @@ public final class Constants {
     public static final double DRIVE_KD = 0.0;
     public static final double DRIVE_KF = 0.25;
 
-    public static final double KRAKEN_V = 0.32; // 0.32
-    // public static final double KRAKEN_S = 0.39499; // 0
-    public static final double KRAKEN_P = 0.11; // 0.11
-    public static final double KRAKEN_I = 0.48; // 0.48
-    public static final double KRAKEN_D = 0.01; // 0.01
-    // public static final double KRAKEN_A = 0.22899;
+    public static final double KRAKEN_V = 2.2998; // 0.32
+    public static final double KRAKEN_S = 0.39499; // 0
+    public static final double KRAKEN_P = 0.1; // 0.11
+    public static final double KRAKEN_I = 0.; // 0.48
+    public static final double KRAKEN_D = 0.0; // 0.01
+    public static final double KRAKEN_A = 0.22899;
 
     public static final boolean ANGLE_MOTOR_PROFILED_MODE = false;
     /** Angle motor PID values for speed/acceleration limited mode. */
@@ -267,6 +258,7 @@ public final class Constants {
     driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     driveConfig.CurrentLimits.StatorCurrentLimit = 80.0;
+    driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     driveConfigPID.kV = Constants.ConstantsOffboard.KRAKEN_V;
     driveConfigPID.kP = Constants.ConstantsOffboard.KRAKEN_P;

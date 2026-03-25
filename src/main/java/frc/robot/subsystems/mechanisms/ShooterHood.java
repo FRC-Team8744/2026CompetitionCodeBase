@@ -48,7 +48,6 @@ public class ShooterHood extends SubsystemBase {
   private final double maximumAngle = 74;
 
   private final DriveSubsystem m_robotDrive;
-  // TODO: Make shooter hood go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
   private final Turret m_turret;
 
@@ -72,6 +71,8 @@ public class ShooterHood extends SubsystemBase {
     shooterHoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     shooterHoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    shooterHoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    shooterHoodConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     shooterHoodConfigPID.GravityType = GravityTypeValue.Arm_Cosine;
     // shooterHoodConfigPID.kG = -2.0; // Add 0.25 V output to overcome static friction
     shooterHoodConfigPID.kS = 8.0; // Add 0.25 V output to overcome static friction
@@ -86,8 +87,9 @@ public class ShooterHood extends SubsystemBase {
     hoodRollersConfig.Voltage.PeakReverseVoltage = -12;
     hoodRollersConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     hoodRollersConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    hoodRollersConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    hoodRollersConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    // hoodRollersConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    hoodRollersConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    hoodRollersConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     hoodRollersConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
     hoodRollersConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     hoodRollersConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
@@ -181,13 +183,26 @@ public class ShooterHood extends SubsystemBase {
     }
 
     if (Double.isNaN(theta)) {
-      theta = Math.toDegrees(60.0);
+      theta = Math.toDegrees(74.0);
+    }
+
+    if (distanceToTarget > 4) {
+      theta = MathUtil.clamp(theta, Math.toRadians(58), Math.toRadians(74));
+    } else {
+      theta = 72;
     }
 
     if (Constants.shuttleMode) {
       ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));;
     } else {
+      if (distanceToTarget > 4) {
+        ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));;
+      }
       ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.0))) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.0))) - heightDifferenceToTarget));
+    }
+
+    if (Double.isNaN(ballInitialVelocity)) {
+      ballInitialVelocity = 0;
     }
 
     if (distanceToTarget < 3.0) {
@@ -213,7 +228,11 @@ public class ShooterHood extends SubsystemBase {
     if (Constants.shuttleMode) {
       Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity, 0,60);
     } else {
-      Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget*.5),0,88);
+      if (distanceToTarget < 2) {
+        Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity / (distanceToTarget * .5),0,88);
+      } else {
+        Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget *.5),0,88);
+      }
     }
 
     SmartDashboard.putNumber("TargetPoseX", targetPose.getX());

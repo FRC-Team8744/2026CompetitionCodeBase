@@ -36,6 +36,9 @@ public class SwerveModuleOffboard {
   private static final TalonFXConfiguration rotationConfig = new TalonFXConfiguration();
   private static final Slot0Configs rotationConfigPID = rotationConfig.Slot0;
 
+  public static final TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+  public static final Slot0Configs driveConfigPID = driveConfig.Slot0;
+
   private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(0.32, 1.51, 0.27);
 
   // Turning motor
@@ -73,14 +76,15 @@ public class SwerveModuleOffboard {
 
     configureDevices();
 
-    rotationConfig.Voltage.PeakForwardVoltage = 10;
-    rotationConfig.Voltage.PeakReverseVoltage = -10;
+    rotationConfig.Voltage.PeakForwardVoltage = 12;
+    rotationConfig.Voltage.PeakReverseVoltage = -12;
     rotationConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     rotationConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     rotationConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     rotationConfig.Feedback.FeedbackRemoteSensorID = magEncoderID;
     rotationConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    rotationConfig.CurrentLimits.StatorCurrentLimit = 80.0;
+    rotationConfig.CurrentLimits.StatorCurrentLimit = 60.0;
+    rotationConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     rotationConfig.CurrentLimits.SupplyCurrentLimit = 20.0;
     rotationConfig.ClosedLoopGeneral.ContinuousWrap = true;
     rotationConfigPID.kV = Constants.ConstantsOffboard.KRAKENROTATION_V;
@@ -88,6 +92,23 @@ public class SwerveModuleOffboard {
     rotationConfigPID.kI = Constants.ConstantsOffboard.KRAKENROTATION_I;
     rotationConfigPID.kD = Constants.ConstantsOffboard.KRAKENROTATION_D;
     rotationConfig.withSlot0(rotationConfigPID);
+
+    driveConfig.Voltage.PeakForwardVoltage = 12;
+    driveConfig.Voltage.PeakReverseVoltage = -12;
+    driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
+    driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
+    driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    driveConfig.CurrentLimits.StatorCurrentLimit = 80.0;
+    driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    driveConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    driveConfigPID.kV = Constants.ConstantsOffboard.KRAKEN_V;
+    driveConfigPID.kP = Constants.ConstantsOffboard.KRAKEN_P;
+    driveConfigPID.kI = Constants.ConstantsOffboard.KRAKEN_I;
+    driveConfigPID.kD = Constants.ConstantsOffboard.KRAKEN_D;
+    // driveConfigPID.kS = Constants.ConstantsOffboard.KRAKEN_S;
+    // driveConfigPID.kA = Constants.ConstantsOffboard.KRAKEN_A;
+    driveConfig.withSlot0(driveConfigPID);
 
     m_driveMotor.getConfigurator().apply(Constants.driveConfig);
     m_driveMotor.getConfigurator().setPosition(0);

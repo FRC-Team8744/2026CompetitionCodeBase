@@ -50,7 +50,6 @@ public class Turret extends SubsystemBase {
   private double m_output;
   private Pose2d initialPoseShoot;
   private Pose2d initialPoseShuttle;
-  // TODO: Make turret go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(0);
 
   public Turret(DriveSubsystem drive) {
@@ -71,7 +70,9 @@ public class Turret extends SubsystemBase {
     turretConfig.Feedback.FeedbackRemoteSensorID = Constants.SwerveConstants.kTurretCANCoderID;
     turretConfig.Feedback.RotorToSensorRatio = turretMotorToSensorGearRatio;
     turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    turretConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    turretConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    turretConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     turretConfigPID.kS = 12.5; // Add 0.25 V output to overcome static friction
     turretConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     turretConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output

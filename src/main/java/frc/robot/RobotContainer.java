@@ -46,7 +46,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
-  // TODO: Add new offsets for the cameras
   // private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-139.8));
   // private final Rotation3d cameraToRobotOffsetRotationRight = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20.2), Units.degreesToRadians(141.7));
   // private final Rotation3d cameraToRobotOffsetRotationLeft = new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(19.6), Units.degreesToRadians(-147.4));
@@ -71,7 +70,6 @@ public class RobotContainer {
   
   private final AlignToHub m_alignToHub = new AlignToHub();
   private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_visionPV, m_alignToHub);
-  // TODO: Add other subsystems
   // private final Climber m_climber = new Climber();
   private final Indexer m_indexer = new Indexer();
   private final Intake m_intake = new Intake();
@@ -120,8 +118,7 @@ public class RobotContainer {
    */
   
   private void configureButtonBindings() {
-    // TODO: Add button bindings for the commands
-    m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
+   m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
     // m_driver.b()
     // .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
 
@@ -145,6 +142,8 @@ public class RobotContainer {
     m_driver.pov(180)
     .whileTrue(Commands.runOnce(() -> m_spindexer.setSpindexerSpeed(1.0)))
     .whileFalse(Commands.runOnce(() -> m_spindexer.stopSpindexer()));
+    m_driver.pov(270)
+    .whileTrue(Commands.runOnce(() -> Constants.enableAntiStall = !Constants.enableAntiStall));
     // m_driver.pov(270)
     // .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
     // .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));
@@ -166,9 +165,19 @@ public class RobotContainer {
     // m_codriver.pov(180)
     // .whileTrue(new ParallelCommandGroup(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 40)));
     m_codriver.pov(0)
-    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 70));
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed += 5));
     m_codriver.pov(180)
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed -= 5));
+    m_codriver.y()
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 70));
+    m_codriver.b()
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 60));
+    m_codriver.a()
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 50));
+    m_codriver.x()
     .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 40));
+    m_codriver.pov(90)
+    .whileTrue(Commands.runOnce(() -> m_shooterFlywheels.stopShooterFlywheels()));
     // m_driver.a()
 
     m_driver.rightStick()

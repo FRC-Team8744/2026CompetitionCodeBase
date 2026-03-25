@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
@@ -26,7 +28,9 @@ public class IntakeAndShootCommand extends Command {
   private final ShooterHood m_shooterHood;
   private final Spindexer m_spindexer;
   private final ShooterHoodToZero m_shooterHoodToZero;
-  private final RemainShooting m_remainShooting;  
+  private final RemainShooting m_remainShooting; 
+  private final Timer m_timer; 
+  private final Timer m_stallTimer;
   // private final Turret m_turret;
   public IntakeAndShootCommand(Intake in, IntakePivot inp, Turret tur, Indexer idx, ShooterFlywheels shf, ShooterHood shh, Spindexer sp, ShooterHoodToZero shtz, RemainShooting rem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -39,6 +43,8 @@ public class IntakeAndShootCommand extends Command {
     m_spindexer = sp;
     m_shooterHoodToZero = shtz;
     m_remainShooting = rem;
+    m_timer = new Timer();
+    m_stallTimer = new Timer();
 
     addRequirements(m_turret);
     addRequirements(m_indexer);
@@ -54,7 +60,7 @@ public class IntakeAndShootCommand extends Command {
   public void initialize() {
     m_intake.setIntakeSpeed(0.9);
     m_intakePivot.intakeDown(-1500); // -1500
-
+    m_timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -76,7 +82,7 @@ public class IntakeAndShootCommand extends Command {
       }
       m_turret.setTurretAngle(Constants.turretAngle);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
-      if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9)) {
+      if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
         if (Constants.shouldShoot) {
           m_indexer.setIndexerSpeed(1.0);
           m_spindexer.setSpindexerSpeed(-0.67);
@@ -86,13 +92,31 @@ public class IntakeAndShootCommand extends Command {
         }
       }
     }
+    if (Constants.enableAntiStall) {
+      if (m_timer.hasElapsed(0.25)) {
+        if (m_intake.isMotorStalling()) {
+          if (!m_stallTimer.isRunning()) {
+            m_stallTimer.start();
+          }
+          m_intake.setIntakeSpeed(-0.7);
+        }
+        if (m_stallTimer.hasElapsed(0.02)) {
+          m_intake.setIntakeSpeed(0.9);
+          m_stallTimer.stop();
+          m_stallTimer.reset();
+        }
+      }
+    }
+    SmartDashboard.putNumber("Stall Timer time", m_stallTimer.get());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_intake.stopIntake();
-    m_intakePivot.intakeDown(-1150); // -1150
+    m_intakePivot.stopIntakePivot(); // -1150
+    m_timer.stop();
+    m_timer.reset();
     
     CommandScheduler.getInstance().schedule(m_remainShooting);
   }

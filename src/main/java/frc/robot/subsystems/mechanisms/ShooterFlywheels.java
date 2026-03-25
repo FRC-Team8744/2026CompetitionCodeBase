@@ -26,7 +26,7 @@ public class ShooterFlywheels extends SubsystemBase {
   private final TalonFX m_shooterFlywheelsRight;
   private final TalonFXConfiguration shooterFlywheelsConfig = new TalonFXConfiguration();
   private final Slot0Configs shooterFlywheelsConfigPID = shooterFlywheelsConfig.Slot0;
-  public final double defaultSpeed = 0.3;
+  public final double defaultSpeed = 0.2;
   private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
   // private final VelocityVoltage goalVelocityRight = new VelocityVoltage(0);
 
@@ -35,8 +35,9 @@ public class ShooterFlywheels extends SubsystemBase {
     shooterFlywheelsConfig.Voltage.PeakReverseVoltage = -12;
     shooterFlywheelsConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     shooterFlywheelsConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    shooterFlywheelsConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    shooterFlywheelsConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    // shooterFlywheelsConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    shooterFlywheelsConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    shooterFlywheelsConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     shooterFlywheelsConfigPID.kS = 0.0005; // Add 0.25 V output to overcome static friction
     shooterFlywheelsConfigPID.kV = 0.13; // A velocity target of 1 rps results in 0.12 V output
     shooterFlywheelsConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output

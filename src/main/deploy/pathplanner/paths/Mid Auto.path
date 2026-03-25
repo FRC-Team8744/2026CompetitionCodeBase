@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.54922891566265,
-        "y": 0.680192771084337
+        "x": 3.5164457831325304,
+        "y": 4.089638554216867
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9482048192771084,
-        "y": 0.6692650602409639
+        "x": 2.60944578313253,
+        "y": 4.089638554216867
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2488313253012047,
-        "y": 0.680192771084337
+        "x": 2.325325301204819,
+        "y": 4.089638554216867
       },
       "prevControl": {
-        "x": 3.1995421686746988,
-        "y": 0.691120481927711
+        "x": 2.8935662650602403,
+        "y": 4.067783132530121
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Fake Autos",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

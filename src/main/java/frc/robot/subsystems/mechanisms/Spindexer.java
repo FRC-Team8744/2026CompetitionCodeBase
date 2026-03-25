@@ -25,8 +25,9 @@ public class Spindexer extends SubsystemBase {
     spindexerConfig.Voltage.PeakReverseVoltage = -12;
     spindexerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     spindexerConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    spindexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    spindexerConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    // spindexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    spindexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    spindexerConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     spindexerConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
     spindexerConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     spindexerConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output

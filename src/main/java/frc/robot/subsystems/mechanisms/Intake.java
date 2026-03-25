@@ -25,8 +25,9 @@ public class Intake extends SubsystemBase {
     intakeConfig.Voltage.PeakReverseVoltage = -12;
     intakeConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     intakeConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    intakeConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    // intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    intakeConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     intakeConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
     intakeConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     intakeConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
@@ -51,9 +52,15 @@ public class Intake extends SubsystemBase {
     m_intakeMotor.set(speed);
   }
 
+  public boolean isMotorStalling() {
+    return m_intakeMotor.getSupplyCurrent().getValueAsDouble() > 20 && Math.abs(m_intakeMotor.getVelocity().getValueAsDouble()) < 1;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Intake Motor Speed", m_intakeMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Intake Supply Current",  m_intakeMotor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putBoolean("Intake Stalling", isMotorStalling());
   }
 }

@@ -46,13 +46,7 @@ public class ShootCommandAuto2 extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // m_spindexer.setSpindexerSpeed(-0.8);
-    // m_indexer.setIndexerSpeed(0.8);
-    // m_shooterHood.setShooterHoodAngle(55);
-    // m_shooterHood.setHoodRollerSpeed(0.2);
-    // m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
     m_timer.start();
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -77,8 +71,8 @@ public class ShootCommandAuto2 extends Command {
       m_shooterHood.setHoodRollerSpeed(Constants.presetFlywheelSpeed / -350);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.presetFlywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8)) {
-        m_indexer.setIndexerSpeed(0.5);
-        m_spindexer.setSpindexerSpeed(-0.5);
+        m_indexer.setIndexerSpeed(1);
+        m_spindexer.setSpindexerSpeed(-0.67);
       }
     }
   }

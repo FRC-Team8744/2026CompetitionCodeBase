@@ -21,7 +21,6 @@ public class IntakePivot extends SubsystemBase {
   private final TalonFXConfiguration intakePivotConfig = new TalonFXConfiguration();
   private final Slot0Configs intakePivotConfigPID = intakePivotConfig.Slot0;
   private final double startingPositionRotations = 0;
-  // TODO: Change values for minimum and maximum angle of the intake
   private final double minimumAngle = -1244;
   private final double maximumAngle = 0;
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
@@ -33,7 +32,9 @@ public class IntakePivot extends SubsystemBase {
     intakePivotConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
     // intakePivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     intakePivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    intakePivotConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+    intakePivotConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    intakePivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    intakePivotConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     intakePivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     intakePivotConfigPID.kS = 8.5; // Add 0.25 V output to overcome static friction
     intakePivotConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
