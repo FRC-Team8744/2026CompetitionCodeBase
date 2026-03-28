@@ -142,8 +142,11 @@ public class RobotContainer {
     m_driver.pov(180)
     .whileTrue(Commands.runOnce(() -> m_spindexer.setSpindexerSpeed(1.0)))
     .whileFalse(Commands.runOnce(() -> m_spindexer.stopSpindexer()));
+    // m_driver.pov(270)
+    // .whileTrue(Commands.runOnce(() -> Constants.enableAntiStall = !Constants.enableAntiStall));
     m_driver.pov(270)
-    .whileTrue(Commands.runOnce(() -> Constants.enableAntiStall = !Constants.enableAntiStall));
+    .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(50)))
+    .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(70)));
     // m_driver.pov(270)
     // .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
     // .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));

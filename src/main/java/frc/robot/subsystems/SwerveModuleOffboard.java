@@ -110,7 +110,7 @@ public class SwerveModuleOffboard {
     // driveConfigPID.kA = Constants.ConstantsOffboard.KRAKEN_A;
     driveConfig.withSlot0(driveConfigPID);
 
-    m_driveMotor.getConfigurator().apply(Constants.driveConfig);
+    m_driveMotor.getConfigurator().apply(driveConfig);
     m_driveMotor.getConfigurator().setPosition(0);
     m_driveMotor.setNeutralMode(NeutralModeValue.Brake);
     // }

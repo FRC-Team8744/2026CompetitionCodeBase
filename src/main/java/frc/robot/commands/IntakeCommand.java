@@ -32,7 +32,7 @@ public class IntakeCommand extends Command {
   @Override
   public void initialize() {
     m_intake.setIntakeSpeed(Constants.intakeSpeed);
-    m_intakePivot.intakeDown(-1500);
+    // m_intakePivot.intakeDown(-1500);
 
   }
 
@@ -44,7 +44,7 @@ public class IntakeCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     m_intake.stopIntake();
-    m_intakePivot.intakeDown(-1150);
+    // m_intakePivot.intakeDown(-1150);
   }
 
   // Returns true when the command should end.

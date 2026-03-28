@@ -41,9 +41,9 @@ public AlignToHub() {
 
   // Called every time the scheduler runs while the command is scheduled.
   public void doExecute(DriveSubsystem drive) {
-    var alliance = DriverStation.getAlliance();
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
 
-    if (alliance.get() == DriverStation.Alliance.Blue) {
+    if (alliance == DriverStation.Alliance.Blue) {
       targetPose = new Pose2d(4.620, 4.035, new Rotation2d());
     }
     else {
@@ -53,7 +53,7 @@ public AlignToHub() {
     double distanceToTargetX = drive.getEstimatedPose().getX() - targetPose.getX();
     double distanceToTargetY = drive.getEstimatedPose().getY() - targetPose.getY();
 
-    if (alliance.get() == DriverStation.Alliance.Red) {
+    if (alliance == DriverStation.Alliance.Red) {
       goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)) - 180);
     }
     else {

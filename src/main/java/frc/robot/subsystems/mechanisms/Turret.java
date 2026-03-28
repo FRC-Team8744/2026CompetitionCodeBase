@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -138,8 +139,8 @@ public class Turret extends SubsystemBase {
   }
 
   private void calculateHubPose() {
-    var alliance = DriverStation.getAlliance();
-    if (alliance.get() == DriverStation.Alliance.Red) {
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
+    if (alliance == DriverStation.Alliance.Red) {
       Constants.targetHubPosition = Constants.redHubPosition;
     } else {
       Constants.targetHubPosition = Constants.blueHubPosition;
@@ -155,7 +156,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void calculateGoalAngleShoot() {
-    var alliance = DriverStation.getAlliance();
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
     Pose2d newPose;
 
     targetPose = Constants.targetHubPosition;
@@ -187,7 +188,7 @@ public class Turret extends SubsystemBase {
       robotXWhenShotLands = positionWhenShotLandsX;
       robotYWhenShotLands = positionWhenShotLandsY;
 
-      if (alliance.get() == DriverStation.Alliance.Red) {
+      if (alliance == DriverStation.Alliance.Red) {
         goalAngle = (Math.toDegrees(Math.atan(distanceToTargetWhenShotLandsY / distanceToTargetWhenShotLandsX)) - 180);
       }
       else {
@@ -205,7 +206,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void calculateGoalAngleShuttle() {
-    var alliance = DriverStation.getAlliance();
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red );
     Pose2d newPose;
 
     Translation3d targetShuttlePose = Constants.targetShuttlePosition;
@@ -237,7 +238,7 @@ public class Turret extends SubsystemBase {
       robotXWhenShotLands = positionWhenShotLandsX;
       robotYWhenShotLands = positionWhenShotLandsY;
 
-      if (alliance.get() == DriverStation.Alliance.Red) {
+      if (alliance == DriverStation.Alliance.Red) {
         goalAngle = (Math.toDegrees(Math.atan(distanceToTargetWhenShotLandsY / distanceToTargetWhenShotLandsX)));
       }
       else {
@@ -256,8 +257,8 @@ public class Turret extends SubsystemBase {
   }
 
   public void calculateGoalShuttlePosition() {
-    var alliance = DriverStation.getAlliance();
-    if (alliance.get() == DriverStation.Alliance.Blue) {
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
+    if (alliance == DriverStation.Alliance.Blue) {
       if (Constants.targetShuttleRelativePosition == "Close") {
         if (Constants.robotPositionYString == "Left") {
           Constants.targetShuttlePosition = Constants.blueLeftCloseShuttle;
@@ -271,7 +272,7 @@ public class Turret extends SubsystemBase {
           Constants.targetShuttlePosition = Constants.blueRightFarShuttle;
         }
       }
-    } else if (alliance.get() == DriverStation.Alliance.Red) {
+    } else if (alliance == DriverStation.Alliance.Red) {
       if (Constants.targetShuttleRelativePosition == "Close") {
         if (Constants.robotPositionYString == "Left") {
           Constants.targetShuttlePosition = Constants.redLeftCloseShuttle;

@@ -33,29 +33,31 @@ public class PhotonVision extends SubsystemBase {
 
     for (int i = 0; i < context.numberOfCameras; i++) {
       CameraWithOffsets cameraWithOffsets = context.cameras[i];
-      PhotonPipelineResult result = cameraWithOffsets.camera.getLatestResult();
-      resultBuilder[i] = new Result(null, null, 0.0, true,0);
-      resultBuilder[i].apriltagTime = result.getTimestampSeconds();
-      result.getTargets();
-  
-      if (result.hasTargets()) {
-        PhotonTrackedTarget resultAprilTag = distillTarget(result);
-        resultBuilder[i].apriltag = Optional.ofNullable(resultAprilTag);
+      if (cameraWithOffsets.camera.isConnected()) {
+        PhotonPipelineResult result = cameraWithOffsets.camera.getLatestResult();
+        resultBuilder[i] = new Result(null, null, 0.0, true,0);
+        resultBuilder[i].apriltagTime = result.getTimestampSeconds();
+        result.getTargets();
+    
+        if (result.hasTargets()) {
+          PhotonTrackedTarget resultAprilTag = distillTarget(result);
+          resultBuilder[i].apriltag = Optional.ofNullable(resultAprilTag);
 
-        // Start of check list
-        Transform3d multiTagResult = result.getMultiTagResult().map(((m) -> m.estimatedPose.best)).orElse(null);
+          // Start of check list
+          Transform3d multiTagResult = result.getMultiTagResult().map(((m) -> m.estimatedPose.best)).orElse(null);
 
-        var id = resultAprilTag.getFiducialId();
-        Optional<Pose3d> aprilTagPose3d = context.aprilTagFieldLayout.getTagPose(id);
+          var id = resultAprilTag.getFiducialId();
+          Optional<Pose3d> aprilTagPose3d = context.aprilTagFieldLayout.getTagPose(id);
 
-        if (multiTagResult == null && aprilTagPose3d.isPresent()) {
-          resultBuilder[i].singleTag = true;
-          Transform3d cameraToTarget = resultAprilTag.getBestCameraToTarget();
-          resultBuilder[i].distanceToTarget = Math.sqrt(cameraToTarget.getTranslation().getX() * cameraToTarget.getTranslation().getX() + cameraToTarget.getTranslation().getY() * cameraToTarget.getTranslation().getY());
-          resultBuilder[i].robotPose = Optional.of(PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d.get(), cameraWithOffsets.cameraToRobotOffset).toPose2d());
-        } else {
-          resultBuilder[i].singleTag = false;
-          resultBuilder[i].robotPose = Optional.of(new Pose3d().plus(multiTagResult.plus(cameraWithOffsets.cameraToRobotOffset)).toPose2d());
+          if (multiTagResult == null && aprilTagPose3d.isPresent()) {
+            resultBuilder[i].singleTag = true;
+            Transform3d cameraToTarget = resultAprilTag.getBestCameraToTarget();
+            resultBuilder[i].distanceToTarget = Math.sqrt(cameraToTarget.getTranslation().getX() * cameraToTarget.getTranslation().getX() + cameraToTarget.getTranslation().getY() * cameraToTarget.getTranslation().getY());
+            resultBuilder[i].robotPose = Optional.of(PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, aprilTagPose3d.get(), cameraWithOffsets.cameraToRobotOffset).toPose2d());
+          } else {
+            resultBuilder[i].singleTag = false;
+            resultBuilder[i].robotPose = Optional.of(new Pose3d().plus(multiTagResult.plus(cameraWithOffsets.cameraToRobotOffset)).toPose2d());
+          }
         }
       }
     }

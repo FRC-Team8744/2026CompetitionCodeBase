@@ -21,7 +21,8 @@ public class ShooterHoodToZero extends Command {
   @Override
   public void initialize() {
     m_shooterHood.stopHoodRollers();
-    m_shooterHood.setShooterHoodAngle(72.0); // 75
+    // m_shooterHood.setShooterHoodAngle(72.0); // 75
+    m_shooterHood.stopHoodAngle();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

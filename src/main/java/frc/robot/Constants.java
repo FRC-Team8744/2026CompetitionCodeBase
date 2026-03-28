@@ -190,12 +190,19 @@ public final class Constants {
     public static final double DRIVE_KD = 0.0;
     public static final double DRIVE_KF = 0.25;
 
-    public static final double KRAKEN_V = 2.2998; // 0.32
-    public static final double KRAKEN_S = 0.39499; // 0
-    public static final double KRAKEN_P = 0.1; // 0.11
-    public static final double KRAKEN_I = 0.; // 0.48
-    public static final double KRAKEN_D = 0.0; // 0.01
-    public static final double KRAKEN_A = 0.22899;
+    // public static final double KRAKEN_V = 2.2998; // 0.32
+    // public static final double KRAKEN_S = 0.39499; // 0
+    // public static final double KRAKEN_P = 0.1; // 0.11
+    // public static final double KRAKEN_I = 0.0; // 0.48
+    // public static final double KRAKEN_D = 0.0; // 0.01
+    // public static final double KRAKEN_A = 0.22899;
+
+    public static final double KRAKEN_V = 0.0005; // 0.32
+    //public static final double KRAKEN_S = 0.0; // 0
+    public static final double KRAKEN_P = 0.000165; // 0.11
+    public static final double KRAKEN_I = 0.00; // 0.48
+    public static final double KRAKEN_D = 0.00; // 0.01
+    // public static final double KRAKEN_A = 0.22899;
 
     public static final boolean ANGLE_MOTOR_PROFILED_MODE = false;
     /** Angle motor PID values for speed/acceleration limited mode. */

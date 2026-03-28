@@ -67,9 +67,9 @@ public class ShootCommand extends Command {
   @Override
   public void execute() {
     if (Constants.visionShoot) {
-      m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
+      // m_shooterHood.setShooterHoodAngle(67);
       m_turret.setTurretAngle(Constants.turretAngle);
-      m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350);
+      m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350); // -350
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
         if (Constants.shouldShoot) {
@@ -81,7 +81,7 @@ public class ShootCommand extends Command {
         }
       }
     } else {
-      // m_shooterHood.setShooterHoodAngle(Constants.presetHoodAngle);
+      m_shooterHood.setShooterHoodAngle(58);
       m_shooterHood.setHoodRollerSpeed(Constants.presetFlywheelSpeed / -350);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.presetFlywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8)) {
@@ -108,7 +108,7 @@ public class ShootCommand extends Command {
       m_indexer.stopIndexer();
       m_shooterFlywheels.stopShooterFlywheels();
       m_turret.stopTurret();
-      m_intakePivot.intakeDown(-1150);
+      // m_intakePivot.intakeDown(-1150);
       m_intake.stopIntake();
       CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
   }

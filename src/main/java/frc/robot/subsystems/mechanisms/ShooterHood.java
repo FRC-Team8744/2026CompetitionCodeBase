@@ -187,22 +187,22 @@ public class ShooterHood extends SubsystemBase {
     }
 
     if (distanceToTarget > 4) {
-      theta = MathUtil.clamp(theta, Math.toRadians(58), Math.toRadians(74));
+      theta = 69;
     } else {
       theta = 72;
     }
 
     if (Constants.shuttleMode) {
-      ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));;
+      ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget))));
     } else {
       if (distanceToTarget > 4) {
-        ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget)));;
+        ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget))));
       }
-      ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.0))) * Math.sqrt(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.0))) - heightDifferenceToTarget));
+      ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.0))) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.0)) - heightDifferenceToTarget))));
     }
 
     if (Double.isNaN(ballInitialVelocity)) {
-      ballInitialVelocity = 0;
+      ballInitialVelocity = 10;
     }
 
     if (distanceToTarget < 3.0) {
