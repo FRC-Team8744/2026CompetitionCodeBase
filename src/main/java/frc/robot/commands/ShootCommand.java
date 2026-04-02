@@ -29,6 +29,7 @@ public class ShootCommand extends Command {
   private final Intake m_intake;
   private final IntakePivot m_intakePivot;
   private Timer m_timer;
+  private Timer m_stallTimer;
   private boolean intakeUp = false;
 
   public ShootCommand(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx, Turret turret, ShooterHoodToZero shtz, Intake in, IntakePivot inp) {
@@ -48,6 +49,7 @@ public class ShootCommand extends Command {
     addRequirements(m_intake);
     addRequirements(m_intakePivot);
     m_timer = new Timer();
+    m_stallTimer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -60,7 +62,7 @@ public class ShootCommand extends Command {
     // m_shooterHood.setHoodRollerSpeed(0.2);
     // m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
     m_timer.start();
-
+    m_stallTimer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -81,7 +83,7 @@ public class ShootCommand extends Command {
         }
       }
     } else {
-      m_shooterHood.setShooterHoodAngle(58);
+      // m_shooterHood.setShooterHoodAngle(58);
       m_shooterHood.setHoodRollerSpeed(Constants.presetFlywheelSpeed / -350);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.presetFlywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8)) {
@@ -89,15 +91,30 @@ public class ShootCommand extends Command {
         m_spindexer.setSpindexerSpeed(-0.67);
       }
     }
-    m_intake.setIntakeSpeed(0.3);
-    // if (m_timer.hasElapsed(0.5) && intakeUp == false) {
-    //   m_intakePivot.intakeDown(-800);
-    //   intakeUp = true;
-    //   m_timer.restart();
-    // } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
-    //   m_intakePivot.intakeDown(-1100);
-    //   intakeUp = false;
-    //   m_timer.restart();
+    m_intake.setIntakeSpeed(0.8);
+    if (m_timer.hasElapsed(0.5) && intakeUp == false) {
+      m_intakePivot.intakeDown(-1200);
+      intakeUp = true;
+      m_timer.restart();
+    } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
+      m_intakePivot.intakeDown(-2110);
+      intakeUp = false;
+      m_timer.restart();
+    }
+    // if (Constants.enableAntiStall) {
+    //   if (m_timer.hasElapsed(0.25)) {
+    //     if (m_indexer.isMotorStalling()) {
+    //       if (!m_stallTimer.isRunning()) {
+    //         m_stallTimer.start();
+    //       }
+    //       m_spindexer.setSpindexerSpeed(0.67);
+    //     }
+    //     if (m_stallTimer.hasElapsed(0.02)) {
+    //       m_spindexer.setSpindexerSpeed(-0.67);
+    //       m_stallTimer.stop();
+    //       m_stallTimer.reset();
+    //     }
+    //   }
     // }
   }
 
@@ -108,7 +125,7 @@ public class ShootCommand extends Command {
       m_indexer.stopIndexer();
       m_shooterFlywheels.stopShooterFlywheels();
       m_turret.stopTurret();
-      // m_intakePivot.intakeDown(-1150);
+      // m_intakePivot.intakeDown(-2110);
       m_intake.stopIntake();
       CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
   }

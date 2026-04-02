@@ -60,7 +60,8 @@ public class Turret extends SubsystemBase {
     robotYWhenShotLands = drive.getEstimatedPose().getY();
     m_shootTimer.start();
     m_shuttleTimer.start();
-    turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.3716666667;
+    // turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.3716666667;
+    turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.859166666666667;
     m_turretCANCoder.getConfigurator().apply(turretCANCoderConfig);
 
     turretConfig.Voltage.PeakForwardVoltage = 12;
@@ -74,10 +75,10 @@ public class Turret extends SubsystemBase {
     turretConfig.CurrentLimits.StatorCurrentLimit = 40.0;
     turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turretConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
-    turretConfigPID.kS = 12.5; // Add 0.25 V output to overcome static friction
+    turretConfigPID.kS = 8.5; // Add 0.25 V output to overcome static friction 12.5
     turretConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     turretConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    turretConfigPID.kP = 60.0; // A position error of 2.5 rotations results in 12 V output
+    turretConfigPID.kP = 40.0; // A position error of 2.5 rotations results in 12 V output 60
     turretConfigPID.kI = 0.0; // no output for integrated error
     turretConfigPID.kD = 1.5; // A velocity error of 1 rps results in 0.1 V output
     turretConfig.withSlot0(turretConfigPID);
@@ -130,7 +131,7 @@ public class Turret extends SubsystemBase {
       targetAngle += 360;
     }
 
-    if (Math.abs(getPositionAngle() - targetAngle) > 45) {
+    if (Math.abs(getPositionAngle() - targetAngle) > 5) {
       Constants.shouldShoot = false;
     } else {
       Constants.shouldShoot = true;
@@ -311,5 +312,7 @@ public class Turret extends SubsystemBase {
 
     SmartDashboard.putBoolean("Shuttle Mode", Constants.shuttleMode);
     SmartDashboard.putBoolean("Shoot While Intake", Constants.shootWhileIntake);
+    
+    SmartDashboard.putBoolean("Vision Shoot", Constants.visionShoot);
   }
 }

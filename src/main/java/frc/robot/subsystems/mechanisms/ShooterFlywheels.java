@@ -94,5 +94,6 @@ public class ShooterFlywheels extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Flywheels Right Motor Speed", m_shooterFlywheelsRight.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Shooter Flywheels Left Motor Current", m_shooterFlywheelsLeft.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter Flywheels Right Motor Current", m_shooterFlywheelsRight.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Preset Shooter Flywheels", Constants.presetFlywheelSpeed);
   }
 }

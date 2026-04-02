@@ -218,7 +218,7 @@ public class ShooterHood extends SubsystemBase {
     flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
 
     // Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
-    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.0))) * 1.42; // 1.5833
+    Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.0))); // 1.42
     
     if (Constants.shuttleMode) {
       flyWheelVelocity *= 0.6;

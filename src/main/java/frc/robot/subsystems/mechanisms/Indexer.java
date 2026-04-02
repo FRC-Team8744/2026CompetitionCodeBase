@@ -39,7 +39,7 @@ public class Indexer extends SubsystemBase {
     m_indexerMotor = new TalonFX(Constants.SwerveConstants.kIndexerMotorPort);
 
     m_indexerMotor.getConfigurator().apply(indexerConfig);
-    m_indexerMotor.setNeutralMode(NeutralModeValue.Brake);
+    m_indexerMotor.setNeutralMode(NeutralModeValue.Coast);
     m_indexerMotor.setPosition(0);
   }
 
@@ -50,6 +50,10 @@ public class Indexer extends SubsystemBase {
   public void setIndexerSpeed(double speed) {
     // m_indexerMotor.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(speed));
     m_indexerMotor.set(speed);
+  }
+
+  public boolean isMotorStalling() {
+    return m_indexerMotor.getSupplyCurrent().getValueAsDouble() > 20 && Math.abs(m_indexerMotor.getVelocity().getValueAsDouble()) < 1;
   }
 
   @Override

@@ -135,18 +135,18 @@ public class RobotContainer {
     .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));
 
     m_driver.pov(0)
-    .whileTrue(Commands.run(() -> m_intakePivot.intakeDown(-400)));
+    .whileTrue(Commands.runOnce(() -> m_intakePivot.intakeDown(-1600)));
     m_driver.pov(90)
-    .whileTrue(Commands.run(() -> m_indexer.setIndexerSpeed(-1)))
-    .whileFalse(Commands.run(() -> m_indexer.stopIndexer()));
+    .whileTrue(Commands.runOnce(() -> m_indexer.setIndexerSpeed(-1)))
+    .whileFalse(Commands.runOnce(() -> m_indexer.stopIndexer()));
     m_driver.pov(180)
     .whileTrue(Commands.runOnce(() -> m_spindexer.setSpindexerSpeed(1.0)))
     .whileFalse(Commands.runOnce(() -> m_spindexer.stopSpindexer()));
     // m_driver.pov(270)
     // .whileTrue(Commands.runOnce(() -> Constants.enableAntiStall = !Constants.enableAntiStall));
     m_driver.pov(270)
-    .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(50)))
-    .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(70)));
+    .whileTrue(Commands.runOnce(() -> m_indexer.setIndexerSpeed(1.0)))
+    .whileFalse(Commands.runOnce(() -> m_indexer.stopIndexer()));
     // m_driver.pov(270)
     // .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
     // .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));
@@ -168,9 +168,9 @@ public class RobotContainer {
     // m_codriver.pov(180)
     // .whileTrue(new ParallelCommandGroup(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 40)));
     m_codriver.pov(0)
-    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed += 5));
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed += 1));
     m_codriver.pov(180)
-    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed -= 5));
+    .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed -= 1));
     m_codriver.y()
     .whileTrue(Commands.runOnce(() -> Constants.presetFlywheelSpeed = 70));
     m_codriver.b()
