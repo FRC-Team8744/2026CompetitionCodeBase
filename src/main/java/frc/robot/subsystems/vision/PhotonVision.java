@@ -35,7 +35,7 @@ public class PhotonVision extends SubsystemBase {
       CameraWithOffsets cameraWithOffsets = context.cameras[i];
       if (cameraWithOffsets.camera.isConnected()) {
         PhotonPipelineResult result = cameraWithOffsets.camera.getLatestResult();
-        resultBuilder[i] = new Result(null, null, 0.0, true,0);
+        resultBuilder[i] = new Result(null, null, 0.0, true, 0);
         resultBuilder[i].apriltagTime = result.getTimestampSeconds();
         result.getTargets();
     
@@ -59,6 +59,8 @@ public class PhotonVision extends SubsystemBase {
             resultBuilder[i].robotPose = Optional.of(new Pose3d().plus(multiTagResult.plus(cameraWithOffsets.cameraToRobotOffset)).toPose2d());
           }
         }
+      } else {
+        resultBuilder[i] = new Result(null, null, 0.0, true, 0);
       }
     }
 

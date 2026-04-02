@@ -125,7 +125,7 @@ public class ShootCommand extends Command {
       m_indexer.stopIndexer();
       m_shooterFlywheels.stopShooterFlywheels();
       m_turret.stopTurret();
-      // m_intakePivot.intakeDown(-2110);
+      m_intakePivot.intakeDown(-2110);
       m_intake.stopIntake();
       CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
   }

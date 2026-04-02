@@ -67,7 +67,7 @@ public class ShootCommandAuto2 extends Command {
         }
       }
     } else {
-      m_shooterHood.setShooterHoodAngle(Constants.presetHoodAngle);
+      // m_shooterHood.setShooterHoodAngle(Constants.presetHoodAngle);
       m_shooterHood.setHoodRollerSpeed(Constants.presetFlywheelSpeed / -350);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.presetFlywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8)) {

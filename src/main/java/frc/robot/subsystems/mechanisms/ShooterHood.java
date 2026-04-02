@@ -18,6 +18,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,7 +26,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class ShooterHood extends SubsystemBase {
   /** Creates a new ShooterHood. */
-  private final TalonFX m_shooterHood;
+  // private final TalonFX m_shooterHood;
   private final TalonFX m_hoodRollers;
   private final CANcoder m_shooterHoodCANCoder;
 
@@ -98,13 +99,13 @@ public class ShooterHood extends SubsystemBase {
     hoodRollersConfigPID.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
     hoodRollersConfig.withSlot0(hoodRollersConfigPID);
 
-    m_shooterHood = new TalonFX(Constants.SwerveConstants.kHoodRotateMotorPort);
+    // m_shooterHood = new TalonFX(Constants.SwerveConstants.kHoodRotateMotorPort);
     m_hoodRollers = new TalonFX(Constants.SwerveConstants.kHoodRollerMotorPort);
 
 
-    m_shooterHood.getConfigurator().apply(shooterHoodConfig);
+    // m_shooterHood.getConfigurator().apply(shooterHoodConfig);
     // m_shooterHood.setNeutralMode(NeutralModeValue.Brake);
-    m_shooterHood.setPosition(startingPositionRotations);
+    // m_shooterHood.setPosition(startingPositionRotations);
 
     m_hoodRollers.getConfigurator().apply(hoodRollersConfig);
     m_hoodRollers.setNeutralMode(NeutralModeValue.Coast);
@@ -120,28 +121,28 @@ public class ShooterHood extends SubsystemBase {
     } else if (angle > maximumAngle) {
       angle = maximumAngle;
     }
-    m_shooterHood.setControl(goalPosition.withEnableFOC(false).withSlot(0).withPosition(angle / 360));
+    // m_shooterHood.setControl(goalPosition.withEnableFOC(false).withSlot(0).withPosition(angle / 360));
   }
 
   public void stopHoodAngle() {
-    m_shooterHood.stopMotor();
+    // m_shooterHood.stopMotor();
     // m_shooterHood.setPosition(-9.4262695312);
   }
 
   // Returns the position of the shooter hood
   public double getPositionAngle() {
-    return m_shooterHood.getPosition().getValueAsDouble();
+    return 74;
   }
 
   public double getPositionRadians() {
-    if (m_shooterHood.getPosition().getValue() == null) {
-      return 60.0 / 180.0 * Math.PI;
-    }
-    return m_shooterHood.getPosition().getValueAsDouble() * 2 * Math.PI;
+      // if (m_shooterHood.getPosition().getValue() == null) {
+      //   return 60.0 / 180.0 * Math.PI;
+      // }
+    return getPositionAngle() * 2 * Math.PI;
   }
 
   public void resetHood() {
-    m_shooterHood.setPosition(startingPositionRotations);
+    // m_shooterHood.setPosition(startingPositionRotations);
   }
 
   public void setHoodRollerSpeed(double speed) {
@@ -173,73 +174,77 @@ public class ShooterHood extends SubsystemBase {
     double ballInitialVelocity = 0.0;
     double flyWheelVelocity = 0.0;
 
-    theta = Math.atan((heightDifferenceToTarget + Math.sqrt(heightDifferenceToTarget * heightDifferenceToTarget + distanceToTarget * distanceToTarget)) / distanceToTarget);
-    thetaOffset45 = theta + (theta - Math.toRadians(45));
+    // theta = Math.atan((heightDifferenceToTarget + Math.sqrt(heightDifferenceToTarget * heightDifferenceToTarget + distanceToTarget * distanceToTarget)) / distanceToTarget);
+    // thetaOffset45 = theta + (theta - Math.toRadians(45));
 
-    // theta -= Math.toRadians(2.5);
+    // // theta -= Math.toRadians(2.5);
 
-    if (Constants.shuttleMode) {
-      theta = MathUtil.clamp(theta, Math.toRadians(58), Math.toRadians(74));
-    }
+    // if (Constants.shuttleMode) {
+    //   theta = MathUtil.clamp(theta, Math.toRadians(58), Math.toRadians(74));
+    // }
 
-    if (Double.isNaN(theta)) {
-      theta = Math.toDegrees(74.0);
-    }
+    // if (Double.isNaN(theta)) {
+    //   theta = Math.toDegrees(74.0);
+    // }
 
-    if (distanceToTarget > 4) {
-      theta = 69;
-    } else {
-      theta = 72;
-    }
+    // if (distanceToTarget > 4) {
+    //   theta = 69;
+    // } else {
+    //   theta = 72;
+    // }
 
-    if (Constants.shuttleMode) {
-      ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget))));
-    } else {
-      if (distanceToTarget > 4) {
-        ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget))));
-      }
-      ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.0))) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.0)) - heightDifferenceToTarget))));
-    }
+    // if (Constants.shuttleMode) {
+    //   ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget))));
+    // } else {
+    //   if (distanceToTarget > 4) {
+    //     ballInitialVelocity = (distanceToTarget / Math.cos(getPositionRadians())) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(getPositionRadians()) - heightDifferenceToTarget))));
+    //   }
+    //   ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.0))) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.0)) - heightDifferenceToTarget))));
+    // }
 
-    if (Double.isNaN(ballInitialVelocity)) {
-      ballInitialVelocity = 10;
-    }
+    // if (Double.isNaN(ballInitialVelocity)) {
+    //   ballInitialVelocity = 10;
+    // }
 
-    if (distanceToTarget < 3.0) {
-      ballVelocityToFlywheels = 6.25;
-    } else {
-      ballVelocityToFlywheels = 6.07;
-    }
+    // if (distanceToTarget < 3.0) {
+    //   ballVelocityToFlywheels = 6.25;
+    // } else {
+    //   ballVelocityToFlywheels = 6.07;
+    // }
 
-    if (!Constants.shuttleMode) {
-      ballVelocityToFlywheels = 6.16 - (distanceToTarget - 2.5) * 0.1;
-    }
+    // if (!Constants.shuttleMode) {
+    //   ballVelocityToFlywheels = 6.16 - (distanceToTarget - 2.5) * 0.1;
+    // }
 
-    flyWheelVelocity = ballInitialVelocity * ballVelocityToFlywheels;
+    flyWheelVelocity = (3.1111111111 * Math.pow(distanceToTarget, 3)) - (23.61904762 * Math.pow(distanceToTarget, 2)) + (65.6984127 * distanceToTarget) - 16.9047619;
+
+    ballInitialVelocity = flyWheelVelocity / ballVelocityToFlywheels;
 
     // Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(getPositionRadians() + 90.0 * Math.PI / 180.0)) * 1.42; // 1.5833
     Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(74.0))); // 1.42
     
-    if (Constants.shuttleMode) {
-      flyWheelVelocity *= 0.6;
-    }
+    // if (Constants.shuttleMode) {
+    //   flyWheelVelocity *= 0.6;
+    // }
 
-    Constants.hoodAngle = Math.toDegrees(theta);
-    if (Constants.shuttleMode) {
-      Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity, 0,60);
-    } else {
-      if (distanceToTarget < 2) {
-        Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity / (distanceToTarget * .5),0,88);
-      } else {
-        Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget *.5),0,88);
-      }
-    }
+    // Constants.hoodAngle = Math.toDegrees(theta);
+    // if (Constants.shuttleMode) {
+    //   Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity, 0,60);
+    // } else {
+    //   if (distanceToTarget < 2) {
+    //     Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity / (distanceToTarget * .5),0,88);
+    //   } else {
+    //     Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity * (distanceToTarget *.5),0,88);
+    //   }
+    // }
+
+    Constants.flywheelSpeed = MathUtil.clamp(flyWheelVelocity, 0,88);
 
     SmartDashboard.putNumber("TargetPoseX", targetPose.getX());
     SmartDashboard.putNumber("DistanceToTargetX", distanceToTargetX);
     SmartDashboard.putNumber("DistanceToTarget", distanceToTarget);
     SmartDashboard.putNumber("BallInitalVelocty", ballInitialVelocity);
-    SmartDashboard.putNumber("ShooterHoodRadians", getPositionRadians());
+    // SmartDashboard.putNumber("ShooterHoodRadians", getPositionRadians());
 
     return new double[] {theta, flyWheelVelocity};
   }
@@ -251,8 +256,8 @@ public class ShooterHood extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter Hood Angle", getPositionAngle() * 360);
-    SmartDashboard.putNumber("Shooter Hood Angle Error", m_shooterHood.getClosedLoopError().getValueAsDouble() * 360);
+    // SmartDashboard.putNumber("Shooter Hood Angle", getPositionAngle() * 360);
+    // SmartDashboard.putNumber("Shooter Hood Angle Error", m_shooterHood.getClosedLoopError().getValueAsDouble() * 360);
     SmartDashboard.putNumber("Shooter Hood Rollers RPM", m_hoodRollers.getVelocity().getValueAsDouble() * 60);
     SmartDashboard.putNumber("Shooter Hood Rollers Current", m_hoodRollers.getSupplyCurrent().getValueAsDouble());
  

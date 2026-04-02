@@ -36,7 +36,7 @@ public class ShootCommandAuto extends Command {
     Constants.autoShoot = true;
     m_spindexer.setSpindexerSpeed(-0.8);
     m_indexer.setIndexerSpeed(0.8);
-    m_shooterHood.setShooterHoodAngle(60);
+    // m_shooterHood.setShooterHoodAngle(60);
     m_shooterHood.setHoodRollerSpeed(0.2);
     m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
 
@@ -48,7 +48,7 @@ public class ShootCommandAuto extends Command {
     if (Constants.robotPositionXString == "OpponentTrench" || Constants.robotPositionXString == "AllianceTrench") {
       m_shooterHood.stopHoodAngle();
     } else {
-      m_shooterHood.setShooterHoodAngle(60);
+      // m_shooterHood.setShooterHoodAngle(60);
     }
     m_spindexer.setSpindexerSpeed(-0.8);
     m_indexer.setIndexerSpeed(0.8);

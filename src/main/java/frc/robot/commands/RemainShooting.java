@@ -63,7 +63,7 @@ public class RemainShooting extends Command {
         if (Constants.robotPositionXString == "AllianceTrench" || Constants.robotPositionXString == "OpponentTrench") {
           CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
         } else {
-          m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
+          // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         }
       }
       m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 50);
