@@ -314,5 +314,6 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putBoolean("Shoot While Intake", Constants.shootWhileIntake);
     
     SmartDashboard.putBoolean("Vision Shoot", Constants.visionShoot);
+    SmartDashboard.putBoolean("Enable anti stall", Constants.enableAntiStall);
   }
 }

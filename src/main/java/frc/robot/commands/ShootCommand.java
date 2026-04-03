@@ -30,6 +30,7 @@ public class ShootCommand extends Command {
   private final IntakePivot m_intakePivot;
   private Timer m_timer;
   private Timer m_stallTimer;
+  private Timer m_startTimer;
   private boolean intakeUp = false;
 
   public ShootCommand(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx, Turret turret, ShooterHoodToZero shtz, Intake in, IntakePivot inp) {
@@ -49,6 +50,7 @@ public class ShootCommand extends Command {
     addRequirements(m_intake);
     addRequirements(m_intakePivot);
     m_timer = new Timer();
+    m_startTimer = new Timer();
     m_stallTimer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -62,6 +64,7 @@ public class ShootCommand extends Command {
     // m_shooterHood.setHoodRollerSpeed(0.2);
     // m_shooterFlywheels.setShooterFlywheelsSpeed(1.0);
     m_timer.start();
+    m_startTimer.start();
     m_stallTimer.start();
   }
 
@@ -100,6 +103,23 @@ public class ShootCommand extends Command {
       m_intakePivot.intakeDown(-2110);
       intakeUp = false;
       m_timer.restart();
+    }
+    if (Constants.enableAntiStall && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
+      if (m_startTimer.hasElapsed(0.25)) {
+        if (m_spindexer.isMotorStalling()) {
+          if (!m_stallTimer.isRunning()) {
+            m_stallTimer.start();
+          }
+          m_spindexer.setSpindexerSpeed(0.67);
+        }
+        if (m_stallTimer.hasElapsed(0.05)) {
+          m_spindexer.setSpindexerSpeed(-0.67);
+          m_stallTimer.stop();
+          m_stallTimer.reset();
+        }
+      }
+    } else if (!Constants.enableAntiStall && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
+      m_spindexer.setSpindexerSpeed(-0.67);
     }
     // if (Constants.enableAntiStall) {
     //   if (m_timer.hasElapsed(0.25)) {

@@ -158,6 +158,8 @@ public class RobotContainer {
     .whileTrue(Commands.runOnce(() -> m_turret.setTurretAngle(180)));
     m_driver.a()
     .whileTrue(Commands.runOnce(() -> Constants.visionShoot = !Constants.visionShoot));
+    m_driver.y()
+    .whileTrue(Commands.runOnce(() -> Constants.enableAntiStall = !Constants.enableAntiStall));
 
     m_codriver.pov(90)
     .whileTrue(Commands.runOnce(() -> Constants.targetShuttleRelativePosition = "Close"));

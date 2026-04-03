@@ -51,6 +51,10 @@ public class Spindexer extends SubsystemBase {
     m_spindexer.set(speed);
   }
 
+  public boolean isMotorStalling() {
+    return m_spindexer.getSupplyCurrent().getValueAsDouble() > 20 && Math.abs(m_spindexer.getVelocity().getValueAsDouble()) < 1;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

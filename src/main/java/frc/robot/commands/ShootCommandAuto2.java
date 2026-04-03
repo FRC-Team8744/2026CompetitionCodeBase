@@ -26,6 +26,8 @@ public class ShootCommandAuto2 extends Command {
   private final Indexer m_indexer;
   private final Turret m_turret;
   private Timer m_timer;
+  private Timer m_startTimer;
+  private Timer m_stallTimer;
   private boolean intakeUp = false;
 
   public ShootCommandAuto2(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx, Turret turret) {
@@ -40,6 +42,8 @@ public class ShootCommandAuto2 extends Command {
     addRequirements(m_indexer);
     addRequirements(m_turret);
     m_timer = new Timer();
+    m_stallTimer = new Timer();
+    m_startTimer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -47,6 +51,8 @@ public class ShootCommandAuto2 extends Command {
   @Override
   public void initialize() {
     m_timer.start();
+    m_startTimer.start();
+    m_stallTimer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -74,6 +80,23 @@ public class ShootCommandAuto2 extends Command {
         m_indexer.setIndexerSpeed(1);
         m_spindexer.setSpindexerSpeed(-0.67);
       }
+    }
+    if (Constants.enableAntiStall) {
+      if (m_startTimer.hasElapsed(0.25)) {
+        if (m_spindexer.isMotorStalling()) {
+          if (!m_stallTimer.isRunning()) {
+            m_stallTimer.start();
+          }
+          m_spindexer.setSpindexerSpeed(0.67);
+        }
+        if (m_stallTimer.hasElapsed(0.05)) {
+          m_spindexer.setSpindexerSpeed(-0.67);
+          m_stallTimer.stop();
+          m_stallTimer.reset();
+        }
+      }
+    } else {
+      m_spindexer.setSpindexerSpeed(-0.67);
     }
   }
 

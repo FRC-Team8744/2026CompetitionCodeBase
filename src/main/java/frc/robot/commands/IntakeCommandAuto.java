@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.mechanisms.Intake;
@@ -15,6 +16,7 @@ public class IntakeCommandAuto extends Command {
   /** Creates a new TeleopIntake. */
   private final Intake m_intake;
   private final IntakePivot m_intakePivot;
+  private final Timer m_timer;
   // private final Turret m_turret;
   public IntakeCommandAuto(Intake in, IntakePivot inp/* , Turret tur*/) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -24,6 +26,7 @@ public class IntakeCommandAuto extends Command {
     addRequirements(m_intakePivot);
     // m_turret = tur;
     // addRequirements(m_turret);
+    m_timer = new Timer();
   }
 
   // Called when the command is initially scheduled.
@@ -31,15 +34,16 @@ public class IntakeCommandAuto extends Command {
   public void initialize() {
     Constants.autoIntake = true;
     m_intake.setIntakeSpeed(1);
-    m_intakePivot.intakeDown(-2400);
+    m_intakePivot.intakeDown(-600); // -2400
+    m_timer.start();
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Constants.shuttleMode) {
-      // m_turret.shuttle();
+    if (m_timer.hasElapsed(0.5)) {
+      m_intakePivot.intakeDown(-2400);
     }
   }
 

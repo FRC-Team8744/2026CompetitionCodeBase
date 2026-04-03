@@ -58,7 +58,7 @@ public class IntakeAndShootCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.setIntakeSpeed(0.8);
+    m_intake.setIntakeSpeed(0.9);
     m_intakePivot.intakeDown(-2400); // -1500
     m_timer.start();
   }
