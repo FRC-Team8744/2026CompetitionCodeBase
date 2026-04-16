@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.subsystems.mechanisms.Indexer;
+import frc.robot.subsystems.mechanisms.Intake;
 import frc.robot.subsystems.mechanisms.ShooterFlywheels;
 import frc.robot.subsystems.mechanisms.ShooterHood;
 import frc.robot.subsystems.mechanisms.Spindexer;
@@ -21,17 +22,21 @@ public class ToggleShootWhileIntakeMode extends Command {
   private final ShooterHoodToZero m_shooterHoodToZero;
   private final Spindexer m_spindexer;
   private final Indexer m_indexer;
-  public ToggleShootWhileIntakeMode(Turret tur, ShooterFlywheels shf, ShooterHoodToZero shhz, Spindexer spi, Indexer ind) {
+  private final Intake m_intake;
+
+  public ToggleShootWhileIntakeMode(Turret tur, ShooterFlywheels shf, ShooterHoodToZero shhz, Spindexer spi, Indexer ind, Intake in) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = tur;
     m_shooterFlywheels = shf;
     m_shooterHoodToZero = shhz;
     m_spindexer = spi;
     m_indexer = ind;
+    m_intake = in;
     addRequirements(m_turret);
     addRequirements(m_shooterFlywheels);
     addRequirements(m_spindexer);
     addRequirements(m_indexer);
+    addRequirements(m_intake);
   }
 
   // Called when the command is initially scheduled.
@@ -39,10 +44,11 @@ public class ToggleShootWhileIntakeMode extends Command {
   public void initialize() {
     if (Constants.shootWhileIntake) {
       Constants.shootWhileIntake = false;
-      m_turret.setTurretAngle(180);
+      // m_turret.setTurretAngle(180);
+      m_intake.stopIntake();
       m_spindexer.stopSpindexer();
       m_indexer.stopIndexer();
-      m_shooterFlywheels.stopShooterFlywheels();
+      m_shooterFlywheels.setShooterFlywheelsSpeed(0.4);
       CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
     } else {
       Constants.shootWhileIntake = true;

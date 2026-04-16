@@ -59,7 +59,7 @@ public class ShootCommandAuto2 extends Command {
   @Override
   public void execute() {
     if (Constants.visionShoot) {
-      // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
+      m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
       m_turret.setTurretAngle(Constants.turretAngle);
       m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
@@ -108,7 +108,7 @@ public class ShootCommandAuto2 extends Command {
       m_shooterFlywheels.stopShooterFlywheels();
       m_turret.stopTurret();
       m_shooterHood.stopHoodRollers();
-      // m_shooterHood.setShooterHoodAngle(72.0); // 75
+      m_shooterHood.setShooterHoodAngle(72.0); // 75
       // CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
   }
 

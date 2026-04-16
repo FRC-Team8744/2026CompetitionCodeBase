@@ -50,8 +50,8 @@ public class RemainShooting extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // m_intake.setIntakeSpeed(0.9);
-    // m_intakePivot.intakeDown(-2400); // -1500
+    m_intake.setIntakeSpeed(0.9);
+    m_intakePivot.intakeDown(-2400); // -1500
 
   }
 
@@ -59,20 +59,24 @@ public class RemainShooting extends Command {
   @Override
   public void execute() {
     if (Constants.shootWhileIntake || Constants.shuttleMode) {
-      if (Constants.shuttleMode) {
+      // if (Constants.shuttleMode) {
         if (Constants.robotPositionXString == "AllianceTrench" || Constants.robotPositionXString == "OpponentTrench") {
-          CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
+          m_shooterHood.setShooterHoodAngle(74);
         } else {
-          // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
+          m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         }
+      // }
+      if (Constants.shuttleMode) {
+        m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -1250);
+      } else {
+        m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350);
       }
-      m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 50);
       m_turret.setTurretAngle(Constants.turretAngle);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9)) {
-        if (Constants.shouldShoot) {
+        if (Constants.shouldShoot && (Constants.robotPositionXString != "AllianceTrench" && Constants.robotPositionXString != "OpponentTrench")) {
           m_indexer.setIndexerSpeed(1.0);
-          m_spindexer.setSpindexerSpeed(-0.67);
+          m_spindexer.setSpindexerSpeed(-0.9);
         } else {
           m_indexer.stopIndexer();
           m_spindexer.stopSpindexer();

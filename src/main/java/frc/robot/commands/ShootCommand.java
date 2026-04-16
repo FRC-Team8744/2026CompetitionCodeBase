@@ -72,14 +72,14 @@ public class ShootCommand extends Command {
   @Override
   public void execute() {
     if (Constants.visionShoot) {
-      // m_shooterHood.setShooterHoodAngle(67);
+      m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
       m_turret.setTurretAngle(Constants.turretAngle);
       m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350); // -350
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
         if (Constants.shouldShoot) {
           m_indexer.setIndexerSpeed(1);
-          m_spindexer.setSpindexerSpeed(-0.67);
+          m_spindexer.setSpindexerSpeed(-0.9);
         } else {
           m_indexer.stopIndexer();
           m_spindexer.stopSpindexer();
@@ -91,7 +91,7 @@ public class ShootCommand extends Command {
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.presetFlywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8)) {
         m_indexer.setIndexerSpeed(1);
-        m_spindexer.setSpindexerSpeed(-0.67);
+        m_spindexer.setSpindexerSpeed(-0.9);
       }
     }
     m_intake.setIntakeSpeed(0.8);
@@ -110,16 +110,16 @@ public class ShootCommand extends Command {
           if (!m_stallTimer.isRunning()) {
             m_stallTimer.start();
           }
-          m_spindexer.setSpindexerSpeed(0.67);
+          m_spindexer.setSpindexerSpeed(0.9);
         }
         if (m_stallTimer.hasElapsed(0.05)) {
-          m_spindexer.setSpindexerSpeed(-0.67);
+          m_spindexer.setSpindexerSpeed(-0.9);
           m_stallTimer.stop();
           m_stallTimer.reset();
         }
       }
     } else if (!Constants.enableAntiStall && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
-      m_spindexer.setSpindexerSpeed(-0.67);
+      m_spindexer.setSpindexerSpeed(-0.9);
     }
     // if (Constants.enableAntiStall) {
     //   if (m_timer.hasElapsed(0.25)) {
@@ -143,7 +143,7 @@ public class ShootCommand extends Command {
   public void end(boolean interrupted) {
       m_spindexer.stopSpindexer();
       m_indexer.stopIndexer();
-      m_shooterFlywheels.stopShooterFlywheels();
+      m_shooterFlywheels.setShooterFlywheelsSpeed(0.4);
       m_turret.stopTurret();
       m_intakePivot.intakeDown(-2110);
       m_intake.stopIntake();

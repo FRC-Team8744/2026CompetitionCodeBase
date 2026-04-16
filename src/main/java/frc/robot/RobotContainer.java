@@ -130,9 +130,9 @@ public class RobotContainer {
     .whileFalse(Commands.runOnce(() -> m_robotDrive.m_DriverSpeedScale = 1.0));
 
     m_driver.leftBumper()
-    .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));
+    .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer, m_intake));
     m_driver.rightBumper()
-    .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));
+    .whileTrue(new ToggleShootWhileIntakeMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer, m_intake));
 
     m_driver.pov(0)
     .whileTrue(Commands.runOnce(() -> m_intakePivot.intakeDown(-1600)));
@@ -147,9 +147,6 @@ public class RobotContainer {
     m_driver.pov(270)
     .whileTrue(Commands.runOnce(() -> m_indexer.setIndexerSpeed(1.0)))
     .whileFalse(Commands.runOnce(() -> m_indexer.stopIndexer()));
-    // m_driver.pov(270)
-    // .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-30)))
-    // .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(-10)));
 
     m_driver.x()
     .whileTrue(Commands.runOnce(() -> m_intake.setIntakeSpeed(-0.7)))
@@ -158,8 +155,11 @@ public class RobotContainer {
     .whileTrue(Commands.runOnce(() -> m_turret.setTurretAngle(180)));
     m_driver.a()
     .whileTrue(Commands.runOnce(() -> Constants.visionShoot = !Constants.visionShoot));
+    // m_driver.y()
+    // .whileTrue(Commands.runOnce(() -> Constants.enableAntiStall = !Constants.enableAntiStall));
     m_driver.y()
-    .whileTrue(Commands.runOnce(() -> Constants.enableAntiStall = !Constants.enableAntiStall));
+    .whileTrue(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(60)))
+    .whileFalse(Commands.runOnce(() -> m_shooterHood.setShooterHoodAngle(70)));
 
     m_codriver.pov(90)
     .whileTrue(Commands.runOnce(() -> Constants.targetShuttleRelativePosition = "Close"));

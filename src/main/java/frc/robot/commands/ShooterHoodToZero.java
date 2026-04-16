@@ -21,7 +21,7 @@ public class ShooterHoodToZero extends Command {
   @Override
   public void initialize() {
     m_shooterHood.stopHoodRollers();
-    // m_shooterHood.setShooterHoodAngle(72.0); // 75
+    m_shooterHood.setShooterHoodAngle(72.0); // 75
     // m_shooterHood.stopHoodAngle();
   }
 
@@ -36,9 +36,9 @@ public class ShooterHoodToZero extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // if (m_shooterHood.getPositionAngle() * 360 <= 72.0) { // 74.5
+    if (m_shooterHood.getPositionAngle() <= 70.0) { // 74.5
       return true;
-    // }
-    // return false;
+    }
+    return false;
   }
 }

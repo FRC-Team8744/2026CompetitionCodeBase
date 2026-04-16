@@ -39,8 +39,8 @@ public class Turret extends SubsystemBase {
   private final Timer m_shuttleTimer = new Timer();
   private final double turretMotorToSensorGearRatio = 15 / 116;
   private final double startingPositionRotations = 0;
-  private final double minimumAngle = -25;
-  private final double maximumAngle = 335;
+  private final double minimumAngle = -95;
+  private final double maximumAngle = 340;
   private Translation3d targetPose;
   private Double robotXWhenShotLands;
   private Double robotYWhenShotLands;
@@ -72,7 +72,7 @@ public class Turret extends SubsystemBase {
     turretConfig.Feedback.FeedbackRemoteSensorID = Constants.SwerveConstants.kTurretCANCoderID;
     turretConfig.Feedback.RotorToSensorRatio = turretMotorToSensorGearRatio;
     turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    turretConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    turretConfig.CurrentLimits.StatorCurrentLimit = 120.0;
     turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turretConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     turretConfigPID.kS = 8.5; // Add 0.25 V output to overcome static friction 12.5
@@ -207,7 +207,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void calculateGoalAngleShuttle() {
-    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red );
+    var alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
     Pose2d newPose;
 
     Translation3d targetShuttlePose = Constants.targetShuttlePosition;

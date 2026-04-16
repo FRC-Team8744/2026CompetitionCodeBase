@@ -3,83 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6968674698795176,
-        "y": 1.532554216867469
+        "x": 4.281385542168675,
+        "y": 0.6255542168674697
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.439951807228915,
-        "y": 0.1556626506024097
+        "x": 6.6199156626506035,
+        "y": 0.43978313253011947
       },
       "isLocked": false,
       "linkedName": "WR1.2.3"
     },
     {
       "anchor": {
-        "x": 5.035397590361446,
-        "y": 0.5490602409638552
+        "x": 7.668975903614458,
+        "y": 3.2154216867469883
       },
       "prevControl": {
-        "x": 4.67478313253012,
-        "y": 0.5709156626506021
-      },
-      "nextControl": {
-        "x": 5.284939714519243,
-        "y": 0.5339364758633826
-      },
-      "isLocked": false,
-      "linkedName": "WR1.2"
-    },
-    {
-      "anchor": {
-        "x": 6.571,
-        "y": 0.797
-      },
-      "prevControl": {
-        "x": 6.175907661057408,
-        "y": 0.5815886639267269
-      },
-      "nextControl": {
-        "x": 6.930973019925472,
-        "y": 0.993263661755649
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.761975903614458,
-        "y": 3.1389277108433737
-      },
-      "prevControl": {
-        "x": 7.057155225051877,
-        "y": 2.101318122572466
+        "x": 7.876602409638554,
+        "y": 0.7566867469879517
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "WR1.3.2"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.38136645962733595,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.3552795031055862,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 2.5700000000000003,
-      "rotationDegrees": 116.25
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.35,
-    "maxAcceleration": 2.35,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -93,7 +48,7 @@
   "folder": "TestWhipRight",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 38.99099404250548
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

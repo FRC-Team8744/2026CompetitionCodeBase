@@ -67,16 +67,16 @@ public class IntakeAndShootCommand extends Command {
   @Override
   public void execute() {
     if (Constants.shootWhileIntake || Constants.shuttleMode) {
-      if (Constants.shuttleMode) {
+      // if (Constants.shuttleMode) {
         // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         if (Constants.robotPositionXString == "AllianceTrench" || Constants.robotPositionXString == "OpponentTrench") {
-          // CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
+          m_shooterHood.setShooterHoodAngle(74);
         } else {
-          // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
+          m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         }
-      }
+      // }
       if (Constants.shuttleMode) {
-        m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 50);
+        m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -1250);
       } else {
         m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350);
       }
@@ -85,14 +85,14 @@ public class IntakeAndShootCommand extends Command {
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
         if (Constants.shouldShoot) {
           m_indexer.setIndexerSpeed(1.0);
-          m_spindexer.setSpindexerSpeed(-0.67);
+          m_spindexer.setSpindexerSpeed(-0.9);
         } else {
           m_indexer.stopIndexer();
           m_spindexer.stopSpindexer();
         }
       }
     }
-    if (Constants.enableAntiStall) {
+    if (Constants.enableAntiStall && !Constants.shootWhileIntake && !Constants.shuttleMode) {
       if (m_timer.hasElapsed(0.25)) {
         if (m_intake.isMotorStalling()) {
           if (!m_stallTimer.isRunning()) {
@@ -113,12 +113,16 @@ public class IntakeAndShootCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_intake.stopIntake();
-    m_intakePivot.stopIntakePivot(); // -1150
+    if (!Constants.shootWhileIntake && !Constants.shuttleMode) {
+      m_intake.stopIntake();
+      m_intakePivot.stopIntakePivot(); // -1150
+    }
     m_timer.stop();
     m_timer.reset();
     
-    CommandScheduler.getInstance().schedule(m_remainShooting);
+    if (Constants.shootWhileIntake || Constants.shuttleMode) {
+      CommandScheduler.getInstance().schedule(m_remainShooting);
+    }
   }
 
   // Returns true when the command should end.
