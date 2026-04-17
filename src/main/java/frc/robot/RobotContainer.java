@@ -42,6 +42,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+  
   // The robot's subsystems
   // private LimeLight4 m_vision = new LimeLight4();
   // TODO: Add new offsets for the cameras
@@ -83,10 +85,14 @@ public class RobotContainer {
   private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
   // private CommandXboxController m_coDriver = new CommandXboxController(1);
   private final AutoCommandManager m_autoManager = new AutoCommandManager(m_robotDrive, m_shooterFlywheels, m_shooterHood, m_intake, m_indexer, m_spindexer, m_intakePivot, m_turret);
-  
+    public static double ShootTriggerPressed = 1;
+
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+
+
    // Configure the button bindings
     configureButtonBindings();
 
@@ -108,23 +114,33 @@ public class RobotContainer {
     // SmartDashboard.putData("Auto Mode", m_autoChooser);
   }
 
+  
+
+
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
    * {@link JoystickButton}.
-   */
-  
-  private void configureButtonBindings() {
-    // TODO: Add button bindings for the commands
-    m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
-    // m_driver.b()
-    // .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
+      * @param m_DriverSpeedScale 
+      */
+     
+     private void configureButtonBindings() {
+       // TODO: Add button bindings for the commands
+       m_driver.back().onTrue(Commands.runOnce (() -> m_robotDrive.zeroGyro()));
+       // m_driver.b()
+       // .whileTrue(Commands.runOnce(() -> m_robotDrive.isAutoYSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoXSpeed = false).alongWith(Commands.runOnce(() -> m_robotDrive.isAutoRotate = RotationEnum.NONE))));
+   
+       m_driver.leftTrigger()
+       .whileTrue(new IntakeAndShootCommand(m_intake, m_intakePivot, m_turret, m_indexer, m_shooterFlywheels, m_shooterHood, m_spindexer));
+       m_driver.rightTrigger()
+       .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret, m_shooterHoodToZero, m_intake, m_intakePivot)
+       .alongWith(Commands.runOnce(() -> m_robotDrive.m_DriverSpeedScale = .5)))
+       .whileFalse(Commands.runOnce(() -> m_robotDrive.m_DriverSpeedScale = 1));
+       
+    
 
-    m_driver.leftTrigger()
-    .whileTrue(new IntakeAndShootCommand(m_intake, m_intakePivot, m_turret, m_indexer, m_shooterFlywheels, m_shooterHood, m_spindexer));
-    m_driver.rightTrigger()
-    .whileTrue(new ShootCommand(m_shooterHood, m_spindexer, m_shooterFlywheels, m_indexer, m_turret, m_shooterHoodToZero, m_intake, m_intakePivot));
+
 
     m_driver.leftBumper()
     .whileTrue(new ToggleShuttleMode(m_turret, m_shooterFlywheels, m_shooterHoodToZero, m_spindexer, m_indexer));

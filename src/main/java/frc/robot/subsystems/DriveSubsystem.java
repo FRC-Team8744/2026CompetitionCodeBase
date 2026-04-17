@@ -45,23 +45,30 @@ import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.DriveModifier;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.mechanisms.ShooterFlywheels;
 import frc.robot.subsystems.vision.PhotonVision;
 // import frc.robot.subsystems.vision.Limelight4Test;
 // import frc.robot.subsystems.vision.LimeLight4;
 import frc.robot.RotationEnum;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.XboxController;
 
 public class DriveSubsystem extends SubsystemBase {
   StructPublisher<Pose2d> pose_publisher = NetworkTableInstance.getDefault().getStructTopic("RobotPose", Pose2d.struct).publish();
   StructArrayPublisher<SwerveModuleState> swerve_publisher = NetworkTableInstance.getDefault().getStructArrayTopic("Swerve States", SwerveModuleState.struct).publish();
+  private final CommandXboxController m_driver = new CommandXboxController(OIConstants.kDriverControllerPort);
 
   double offset_FL = 0;
   double offset_RL = 0;
   double offset_FR = 0;
   double offset_RR = 0;
+
   
-  private double m_DriverSpeedScale = 1.0;
+  
+  public double m_DriverSpeedScale = 1.0;
   private double m_AutoSpeedScale = 1.0;
 
   public DriveModifier[] driveModifiers;
@@ -232,7 +239,18 @@ public class DriveSubsystem extends SubsystemBase {
     m_timerX.start();
     m_timerY.start();
     rotationTimer.start();
+
+
+
+
   }
+public void SlowShooting(double m_SpeedSlow){
+
+  
+
+}
+
+
 
   @Override
   public void periodic() {
@@ -398,13 +416,21 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rot Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
+
+
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean auto) {
     // rot = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : rot;
+   
+
+
+
 
     if (isDrivingSlow) {
       ySpeed *= 0.1;
       xSpeed *= 0.1;
     }
+
+    
 
     if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
       rot = Constants.autoRotateSpeed;
@@ -433,11 +459,11 @@ public class DriveSubsystem extends SubsystemBase {
     rot = Constants.isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
     if (!Constants.isAutoXSpeed && !auto) {
-      xSpeed *= SwerveConstants.kMaxSpeedTeleop;
+      xSpeed *= SwerveConstants.kMaxSpeedTeleop / RobotContainer.ShootTriggerPressed;
     }
 
     if (!Constants.isAutoYSpeed && !auto) {
-      ySpeed *= SwerveConstants.kMaxSpeedTeleop;
+      ySpeed *= SwerveConstants.kMaxSpeedTeleop / RobotContainer.ShootTriggerPressed;
     }
     
     if (Constants.isAutoRotate != RotationEnum.NONE) {
@@ -540,7 +566,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void setMaxOutput(double val) {
     m_DriverSpeedScale = val;
   }
-
+  
   public void toggleMaxOutput() {
     if (m_DriverSpeedScale == 1.0){
       m_DriverSpeedScale = Constants.kDriverSpeedLimit;

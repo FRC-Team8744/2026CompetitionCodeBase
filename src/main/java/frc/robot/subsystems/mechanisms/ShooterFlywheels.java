@@ -22,7 +22,7 @@ import frc.robot.Constants;
 
 public class ShooterFlywheels extends SubsystemBase {
   /** Creates a new ShooterFlywheels. */
-  private final TalonFX m_shooterFlywheelsLeft;
+  public final TalonFX m_shooterFlywheelsLeft;
   private final TalonFX m_shooterFlywheelsRight;
   private final TalonFXConfiguration shooterFlywheelsConfig = new TalonFXConfiguration();
   private final Slot0Configs shooterFlywheelsConfigPID = shooterFlywheelsConfig.Slot0;

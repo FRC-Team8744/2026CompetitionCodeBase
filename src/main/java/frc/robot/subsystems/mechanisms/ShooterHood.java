@@ -48,7 +48,6 @@ public class ShooterHood extends SubsystemBase {
   private final double maximumAngle = 0;
 
   private final DriveSubsystem m_robotDrive;
-  // TODO: Make shooter hood go to a position
   private final PositionVoltage goalPosition = new PositionVoltage(startingPositionRotations);
   private final Turret m_turret;
 
