@@ -39,7 +39,7 @@ public class Turret extends SubsystemBase {
   private final Timer m_shuttleTimer = new Timer();
   private final double turretMotorToSensorGearRatio = 15 / 116;
   private final double startingPositionRotations = 0;
-  private final double minimumAngle = -95;
+  private final double minimumAngle = -15;
   private final double maximumAngle = 340;
   private Translation3d targetPose;
   private Double robotXWhenShotLands;
@@ -61,7 +61,7 @@ public class Turret extends SubsystemBase {
     m_shootTimer.start();
     m_shuttleTimer.start();
     // turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.3716666667;
-    turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.859166666666667;
+    turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.022222222222222; //0.859166666666667;
     m_turretCANCoder.getConfigurator().apply(turretCANCoderConfig);
 
     turretConfig.Voltage.PeakForwardVoltage = 12;
