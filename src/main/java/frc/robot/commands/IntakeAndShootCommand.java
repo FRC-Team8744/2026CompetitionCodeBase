@@ -76,14 +76,21 @@ public class IntakeAndShootCommand extends Command {
         }
       // }
       if (Constants.shuttleMode) {
-        m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -1250);
+        if (Constants.farShuttle) {
+          m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 250);
+        } else {
+          m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -2500);
+        }
       } else {
         m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -350);
       }
       m_turret.setTurretAngle(Constants.turretAngle);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.flywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
-        if (Constants.shouldShoot) {
+        if (Constants.shouldShoot && Constants.robotVelocity < 1.0 && Constants.shootWhileIntake) {
+          m_indexer.setIndexerSpeed(1.0);
+          m_spindexer.setSpindexerSpeed(-0.9);
+        } else if (Constants.shouldShoot && Constants.shuttleMode && Constants.robotPositionYString != "Middle") {
           m_indexer.setIndexerSpeed(1.0);
           m_spindexer.setSpindexerSpeed(-0.9);
         } else {

@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.54922891566265,
-        "y": 0.680192771084337
+        "x": 6.7510481927710835,
+        "y": 4.089638554216867
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9482048192771084,
-        "y": 0.6692650602409639
+        "x": 6.980530120484918,
+        "y": 6.843421686748497
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "ST1.3Delay"
     },
     {
       "anchor": {
-        "x": 2.2488313253012047,
-        "y": 0.680192771084337
+        "x": 3.7350000000000003,
+        "y": 7.433518072289157
       },
       "prevControl": {
-        "x": 3.1995421686746988,
-        "y": 0.691120481927711
+        "x": 6.259301204819275,
+        "y": 7.739493975903613
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "ST1.5.3"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,10 +50,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Fake Autos",
+  "folder": "TestWhip",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -100.0
   },
   "useDefaultConstraints": true
 }

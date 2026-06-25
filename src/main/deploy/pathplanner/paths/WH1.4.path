@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.811265060240963,
-        "y": 4.799939759036144
+        "x": 5.854975903614458,
+        "y": 3.947578313253013
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.281156626506024,
-        "y": 6.734144578313253
+        "x": 6.871253012048194,
+        "y": 6.548373493975904
       },
       "isLocked": false,
       "linkedName": "WH1.3"
     },
     {
       "anchor": {
-        "x": 2.3690361445783132,
-        "y": 7.488156626506025
+        "x": 3.54922891566265,
+        "y": 7.433518072289157
       },
       "prevControl": {
-        "x": 7.33021686746988,
-        "y": 7.794132530120482
+        "x": 6.6199156626506035,
+        "y": 8.012686746987951
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.75,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -53,7 +53,7 @@
   "folder": "TestWhip",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -98.97262661489641
+    "rotation": -95.07960786001473
   },
   "useDefaultConstraints": true
 }

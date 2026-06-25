@@ -39,7 +39,7 @@ public class Turret extends SubsystemBase {
   private final Timer m_shuttleTimer = new Timer();
   private final double turretMotorToSensorGearRatio = 15 / 116;
   private final double startingPositionRotations = 0;
-  private final double minimumAngle = -15;
+  private final double minimumAngle = -16;
   private final double maximumAngle = 340;
   private Translation3d targetPose;
   private Double robotXWhenShotLands;
@@ -72,9 +72,10 @@ public class Turret extends SubsystemBase {
     turretConfig.Feedback.FeedbackRemoteSensorID = Constants.SwerveConstants.kTurretCANCoderID;
     turretConfig.Feedback.RotorToSensorRatio = turretMotorToSensorGearRatio;
     turretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    turretConfig.CurrentLimits.StatorCurrentLimit = 120.0;
+    turretConfig.CurrentLimits.StatorCurrentLimit = 60.0;
     turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turretConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
+    // turretConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 1;
     turretConfigPID.kS = 8.5; // Add 0.25 V output to overcome static friction 12.5
     turretConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     turretConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
@@ -179,6 +180,10 @@ public class Turret extends SubsystemBase {
 
       double xVelocity = (newPose.getX() - initialPoseShoot.getX()) / m_shootTimer.get();
       double yVelocity = (newPose.getY() - initialPoseShoot.getY()) / m_shootTimer.get();
+
+      SmartDashboard.putNumber("Velocity", Math.hypot(xVelocity, yVelocity));
+
+      Constants.robotVelocity = Math.hypot(xVelocity, yVelocity);
 
       double positionWhenShotLandsX = xVelocity * Constants.timeToShoot + initialPoseShoot.getX();
       double positionWhenShotLandsY = yVelocity * Constants.timeToShoot + initialPoseShoot.getY();

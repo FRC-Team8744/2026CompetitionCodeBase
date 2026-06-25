@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import com.fasterxml.jackson.databind.ser.std.NumberSerializers.IntLikeSerializer;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,22 +27,28 @@ public class ShootCommandAuto2 extends Command {
   private final ShooterFlywheels m_shooterFlywheels;
   private final Indexer m_indexer;
   private final Turret m_turret;
+  private final Intake m_intake;
+  private final IntakePivot m_intakePivot;
   private Timer m_timer;
   private Timer m_startTimer;
   private Timer m_stallTimer;
   private boolean intakeUp = false;
 
-  public ShootCommandAuto2(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx, Turret turret) {
+  public ShootCommandAuto2(ShooterHood hd, Spindexer sp, ShooterFlywheels sf, Indexer idx, Turret turret, Intake in, IntakePivot inp) {
     m_shooterHood = hd;
     m_spindexer = sp;
     m_shooterFlywheels = sf;
     m_indexer = idx;
     m_turret = turret;
+    m_intake = in;
+    m_intakePivot = inp;
     addRequirements(m_shooterHood);
     addRequirements(m_spindexer);
     addRequirements(m_shooterFlywheels);
     addRequirements(m_indexer);
     addRequirements(m_turret);
+    // addRequirements(m_intake);
+    // addRequirements(m_intakePivot);
     m_timer = new Timer();
     m_stallTimer = new Timer();
     m_startTimer = new Timer();
@@ -81,6 +89,18 @@ public class ShootCommandAuto2 extends Command {
         m_spindexer.setSpindexerSpeed(-0.67);
       }
     }
+
+    m_intake.setIntakeSpeed(0.8);
+    if (m_timer.hasElapsed(0.5) && intakeUp == false) {
+      m_intakePivot.intakeDown(-1200);
+      intakeUp = true;
+      m_timer.restart();
+    } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
+      m_intakePivot.intakeDown(-2110);
+      intakeUp = false;
+      m_timer.restart();
+    }
+
     if (Constants.enableAntiStall) {
       if (m_startTimer.hasElapsed(0.25)) {
         if (m_spindexer.isMotorStalling()) {

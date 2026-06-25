@@ -86,7 +86,7 @@ public class ShootCommand extends Command {
         }
       }
     } else {
-      // m_shooterHood.setShooterHoodAngle(58);
+      m_shooterHood.setShooterHoodAngle(65);
       m_shooterHood.setHoodRollerSpeed(Constants.presetFlywheelSpeed / -350);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.presetFlywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8)) {
@@ -95,15 +95,15 @@ public class ShootCommand extends Command {
       }
     }
     m_intake.setIntakeSpeed(0.8);
-    if (m_timer.hasElapsed(0.5) && intakeUp == false) {
-      m_intakePivot.intakeDown(-1200);
-      intakeUp = true;
-      m_timer.restart();
-    } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
-      m_intakePivot.intakeDown(-2110);
-      intakeUp = false;
-      m_timer.restart();
-    }
+    // if (m_timer.hasElapsed(0.5) && intakeUp == false) {
+    //   m_intakePivot.intakeDown(-1200);
+    //   intakeUp = true;
+    //   m_timer.restart();
+    // } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
+    //   m_intakePivot.intakeDown(-2110);
+    //   intakeUp = false;
+    //   m_timer.restart();
+    // }
     if (Constants.enableAntiStall && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
       if (m_startTimer.hasElapsed(0.25)) {
         if (m_spindexer.isMotorStalling()) {
@@ -143,7 +143,8 @@ public class ShootCommand extends Command {
   public void end(boolean interrupted) {
       m_spindexer.stopSpindexer();
       m_indexer.stopIndexer();
-      m_shooterFlywheels.setShooterFlywheelsSpeed(0.4);
+      // m_shooterFlywheels.setShooterFlywheelsSpeed(0.4);\
+      m_shooterFlywheels.stopShooterFlywheels();
       m_turret.stopTurret();
       m_intakePivot.intakeDown(-2110);
       m_intake.stopIntake();

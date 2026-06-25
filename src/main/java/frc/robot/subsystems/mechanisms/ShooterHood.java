@@ -47,7 +47,7 @@ public class ShooterHood extends SubsystemBase {
   private final double shooterMotorToCANCoderRatio = 36.0 / 1.0;
   private final double startingPositionRotations = 0.233;
 
-  private final double minimumAngle = 51;
+  private final double minimumAngle = 54;
   private final double maximumAngle = 75;
 
   private final boolean oldShooter = false;
@@ -74,11 +74,13 @@ public class ShooterHood extends SubsystemBase {
     shooterHoodConfig.Feedback.SensorToMechanismRatio = shooterHoodGearRatio;
     shooterHoodConfig.Feedback.RotorToSensorRatio = shooterMotorToCANCoderRatio;
     shooterHoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    shooterHoodConfig.CurrentLimits.StatorCurrentLimitEnable = false;
-    shooterHoodConfig.CurrentLimits.StatorCurrentLimit = 120.0;
+    shooterHoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    shooterHoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;
     shooterHoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     shooterHoodConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
     shooterHoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    shooterHoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    shooterHoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 52/360;
     // shooterHoodConfigPID.GravityType = GravityTypeValue.Arm_Cosine;
     // shooterHoodConfigPID.kG = -2.0; // Add 0.25 V output to overcome static friction
     shooterHoodConfigPID.kS = 8.0; // Add 0.25 V output to overcome static friction
@@ -175,12 +177,16 @@ public class ShooterHood extends SubsystemBase {
     SmartDashboard.putNumber("DistanceToTarget", distanceToTarget);
 
     double theta = 0.0;
-    double thetaOffset45 = 0.0;
+    // double thetaOffset45 = 0.0;
     double ballInitialVelocity = 0.0;
     double flyWheelVelocity = 0.0;
 
     theta = Math.atan((heightDifferenceToTarget + Math.sqrt(heightDifferenceToTarget * heightDifferenceToTarget + distanceToTarget * distanceToTarget)) / distanceToTarget);
-    thetaOffset45 = theta + (theta - Math.toRadians(45));
+    // thetaOffset45 = theta + (theta - Math.toRadians(45));
+
+    if (Double.isNaN(theta)) {
+      theta = Math.toRadians(74.0);
+    }
 
     if (!Constants.shuttleMode) {
       theta += Math.toRadians(9.0);
@@ -190,9 +196,6 @@ public class ShooterHood extends SubsystemBase {
     //   theta = MathUtil.clamp(theta, Math.toRadians(58), Math.toRadians(74));
     // }
 
-    if (Double.isNaN(theta)) {
-      theta = Math.toRadians(74.0);
-    }
 
     // if (distanceToTarget > 4) {
     //   theta = 69;
@@ -209,9 +212,9 @@ public class ShooterHood extends SubsystemBase {
       // ballInitialVelocity = (distanceToTarget / Math.cos(Math.toRadians(74.0))) * Math.sqrt(Math.abs(9.8 / (2 * (distanceToTarget * Math.tan(Math.toRadians(74.0)) - heightDifferenceToTarget))));
     // }
 
-    // if (Double.isNaN(ballInitialVelocity)) {
-    //   ballInitialVelocity = 10;
-    // }
+    if (Double.isNaN(ballInitialVelocity)) {
+      ballInitialVelocity = 10;
+    }
 
     // if (distanceToTarget < 3.0) {
     //   ballVelocityToFlywheels = 6.25;
@@ -223,9 +226,44 @@ public class ShooterHood extends SubsystemBase {
     //   ballVelocityToFlywheels = 6.16 - (distanceToTarget - 2.5) * 0.1;
     // }
 
-    if (Constants.shuttleMode) {
-
-    }
+    // if (distanceToTarget < 2.0 && !Constants.shuttleMode) {
+    //   theta = Math.toRadians(70.0);
+    //   flyWheelVelocity = (3.1111111111 * Math.pow(distanceToTarget, 3)) - (23.61904762 * Math.pow(distanceToTarget, 2)) + (65.6984127 * distanceToTarget) - 16.9047619;
+    //   ballInitialVelocity = flyWheelVelocity / ballVelocityToFlywheels;
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())) * 1.5625);
+    // } else if (distanceToTarget > 2.0 && !Constants.shuttleMode && distanceToTarget <= 2.5) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0);
+    //   // y = -0.08888888888 + 1.5244444444x
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    // } else if (distanceToTarget > 2.5 && !Constants.shuttleMode && distanceToTarget <= 3.0) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0) + 1.5;
+    //   // y = -0.08888888888 + 1.5244444444x
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    // } else if (distanceToTarget > 3.0 && !Constants.shuttleMode && distanceToTarget <= 3.5) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0) + 3;
+    //   // y = -0.08888888888 + 1.5244444444x
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    // } else if (distanceToTarget > 3.5 && !Constants.shuttleMode && distanceToTarget <= 3.75) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0) + 4;
+    //   // y = -0.08888888888 + 1.5244444444x
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    // } else if (distanceToTarget > 3.75 && !Constants.shuttleMode && distanceToTarget <= 4.75) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0) + 5;
+    //   // y = -0.08888888888 + 1.5244444444x
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    // } else if (distanceToTarget > 4.75 && !Constants.shuttleMode) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0) + 12;
+    //   // y = -0.08888888888 + 1.5244444444x
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    // } else if (Constants.shuttleMode && distanceToTarget < 6.0) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) - (distanceToTarget - 3.0);
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    //   Constants.farShuttle = false;
+    // } else if (Constants.shuttleMode && distanceToTarget >= 6.0) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) - 3 + 3 * (distanceToTarget - 6.0);
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    //   Constants.farShuttle = true;
+    // }
 
     if (distanceToTarget < 2.0 && !Constants.shuttleMode) {
       theta = Math.toRadians(70.0);
@@ -235,12 +273,22 @@ public class ShooterHood extends SubsystemBase {
     } else if (distanceToTarget > 2.0 && !Constants.shuttleMode) {
       flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0);
       // y = -0.08888888888 + 1.5244444444x
-      Constants.timeToShoot = (Math.abs(-0.08888888888 * distanceToTarget + 1.5244444444)) * distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
-    } else if (Constants.shuttleMode && distanceToTarget < 6.0) {
+      Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    } 
+    // else if (distanceToTarget > 4.75 && !Constants.shuttleMode) {
+    //   flyWheelVelocity = (ballInitialVelocity * 6.7) + (distanceToTarget - 3.0) + 3;
+    //   // y = -0.08888888888 + 1.5244444444x
+    //   Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+    // } 
+      else if (Constants.shuttleMode && distanceToTarget < 6.0) {
       flyWheelVelocity = (ballInitialVelocity * 6.7) - (distanceToTarget - 3.0);
       Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
       Constants.farShuttle = false;
-    } else if (Constants.shuttleMode && distanceToTarget >= 6.0) {
+    } else if (Constants.shuttleMode && distanceToTarget >= 6.0 && distanceToTarget < 9.0) {
+      flyWheelVelocity = (ballInitialVelocity * 6.7) - 3 + 3 * (distanceToTarget - 6.0);
+      Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
+      Constants.farShuttle = false;
+    } else if (Constants.shuttleMode && distanceToTarget >= 9.0) {
       flyWheelVelocity = (ballInitialVelocity * 6.7) - 3 + 3 * (distanceToTarget - 6.0);
       Constants.timeToShoot = distanceToTarget / (ballInitialVelocity * Math.cos(Math.toRadians(getPositionRadians())));
       Constants.farShuttle = true;

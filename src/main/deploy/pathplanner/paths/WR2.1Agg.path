@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.54922891566265,
-        "y": 0.680192771084337
+        "x": 4.401590361445783,
+        "y": 0.5927710843373495
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9482048192771084,
-        "y": 0.6692650602409639
+        "x": 7.395783132530121,
+        "y": 0.34143373493975904
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2488313253012047,
-        "y": 0.680192771084337
+        "x": 7.887530120481928,
+        "y": 3.8273734939759034
       },
       "prevControl": {
-        "x": 3.1995421686746988,
-        "y": 0.691120481927711
+        "x": 8.783602409638554,
+        "y": 2.177289156626506
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 100.0
   },
   "reversed": false,
-  "folder": "Fake Autos",
+  "folder": "TestWhipRight",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

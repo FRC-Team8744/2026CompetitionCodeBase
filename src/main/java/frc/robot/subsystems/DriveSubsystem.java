@@ -608,19 +608,21 @@ public class DriveSubsystem extends SubsystemBase {
   public void calculateRobotAreaStringY(Pose2d robotPose) {
     DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Red);
       // Calculate area for blue alliance
-    if (robotPose.getY() < 3.904) {
+    if (robotPose.getY() < 3.42) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionYString = "Right";
       } else {
         Constants.robotPositionYString = "Left";
       }
-    } else if (robotPose.getY() > 4.208) {
+    } else if (robotPose.getY() > 5.4) {
       if (alliance == DriverStation.Alliance.Blue) {
         Constants.robotPositionYString = "Left";
       } else {
         Constants.robotPositionYString = "Right";
       }
-    } 
+    }  else {
+      Constants.robotPositionYString = "Middle";
+    }
   }
 
   // public void getRobotVelocityX() {
