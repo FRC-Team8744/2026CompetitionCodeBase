@@ -31,7 +31,6 @@ public class IntakeAndShootCommand extends Command {
   private final RemainShooting m_remainShooting; 
   private final Timer m_timer; 
   private final Timer m_stallTimer;
-  // private final Turret m_turret;
   public IntakeAndShootCommand(Intake in, IntakePivot inp, Turret tur, Indexer idx, ShooterFlywheels shf, ShooterHood shh, Spindexer sp, ShooterHoodToZero shtz, RemainShooting rem) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_intake = in;
@@ -59,7 +58,7 @@ public class IntakeAndShootCommand extends Command {
   @Override
   public void initialize() {
     m_intake.setIntakeSpeed(0.9);
-    m_intakePivot.intakeDown(-2400); // -1500
+    m_intakePivot.intakeDown(-2400);
     m_timer.start();
   }
 
@@ -67,14 +66,11 @@ public class IntakeAndShootCommand extends Command {
   @Override
   public void execute() {
     if (Constants.shootWhileIntake || Constants.shuttleMode) {
-      // if (Constants.shuttleMode) {
-        // m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         if (Constants.robotPositionXString == "AllianceTrench" || Constants.robotPositionXString == "OpponentTrench") {
           m_shooterHood.setShooterHoodAngle(74);
         } else {
           m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         }
-      // }
       if (Constants.shuttleMode) {
         if (Constants.farShuttle) {
           m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / 250);
@@ -122,7 +118,7 @@ public class IntakeAndShootCommand extends Command {
   public void end(boolean interrupted) {
     if (!Constants.shootWhileIntake && !Constants.shuttleMode) {
       m_intake.stopIntake();
-      m_intakePivot.stopIntakePivot(); // -1150
+      m_intakePivot.stopIntakePivot();
     }
     m_timer.stop();
     m_timer.reset();

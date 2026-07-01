@@ -18,7 +18,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -82,9 +81,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double xVelocity = 0;
   public double yVelocity = 0;
-
-  private double originalX = 0;
-  private double originalY = 0;
 
   Joystick m_Joystick = new Joystick(OIConstants.kDriverControllerPort);
 
@@ -223,8 +219,6 @@ public class DriveSubsystem extends SubsystemBase {
       getPose(),
       VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
       VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-    originalX = m_poseEstimator.getEstimatedPosition().getX();
-    originalY = m_poseEstimator.getEstimatedPosition().getY();
     m_timerX.start();
     m_timerY.start();
     rotationTimer.start();
@@ -339,21 +333,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putString("Robot X Area", Constants.robotPositionXString);
     SmartDashboard.putString("Robot Y Area", Constants.robotPositionYString);
-
-    // getRobotVelocityX();
-    // getRobotVelocityY();
-
-    // SmartDashboard.putNumber("Voltage", m_pdh.getVoltage());
-
-    // SmartDashboard.putNumber("temperature", m_pdh.getTemperature());
-
-    // SmartDashboard.putNumber("Total Current", m_pdh.getTotalPower());
-
-    // SmartDashboard.putNumber("Total Energy", m_pdh.getTotalEnergy());
-
-    // for (int i = 0; i < 24; i++) {
-    // SmartDashboard.putNumber("Current Channel", m_pdh.getCurrent(i));
-    // }
   }
 
   /**
@@ -404,12 +383,6 @@ public class DriveSubsystem extends SubsystemBase {
       xSpeed *= 0.1;
     }
 
-    if (!auto) {
-      // xSpeed = SwerveConstants.slewX.calculate(xSpeed);
-      // ySpeed = SwerveConstants.slewY.calculate(ySpeed);
-      // rot = SwerveConstants.slewRot.calculate(rot);
-    }
-
     if (Arrays.stream(driveModifiers).anyMatch(((driveModifier) -> driveModifier.actingOnRot && driveModifier.shouldRun(this)))) {
       rot = Constants.autoRotateSpeed;
     }
@@ -426,11 +399,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("YSpeed", ySpeed);
     SmartDashboard.putNumber("Rotation", rot);
     SmartDashboard.putNumber("Auto Rotate Speed", Constants.autoRotateSpeed);
-
-    // Apply joystick deadband
-    // xSpeed = isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
-    // ySpeed = isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
-    // rot = isAutoRotate != RotationEnum.NONE ? rot : MathUtil.applyDeadband(rot, OIConstants.kRotationDeadband, 1.0);
 
     xSpeed = Constants.isAutoXSpeed ? xSpeed : MathUtil.applyDeadband(xSpeed, OIConstants.kDeadband, 1.0);
     ySpeed = Constants.isAutoYSpeed ? ySpeed : MathUtil.applyDeadband(ySpeed, OIConstants.kDeadband, 1.0);
@@ -492,12 +460,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveRobotRelative(ChassisSpeeds speeds){
-    // SmartDashboard.putNumber("Robot Auto X", speeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("Auto Rotate Speed", autoRotateSpeed);
-    // SmartDashboard.putBoolean("Auto Rotate", isAutoRotate == RotationEnum.STRAFEONTARGET);
-
-    // speeds.omegaRadiansPerSecond = isAutoRotate != RotationEnum.NONE ? autoRotateSpeed : speeds.omegaRadiansPerSecond;
-
     if (isAutoYSpeed && isAutoRotate == RotationEnum.STRAFEONTARGET) {
       speeds.vyMetersPerSecond = autoYSpeed;
     }
@@ -507,8 +469,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     if (isAutoRotate == RotationEnum.STRAFEONTARGET) {
-      // fieldRelative = false;
-      // ySpeed = -ySpeed;
       speeds.vxMetersPerSecond = -speeds.vxMetersPerSecond;
     }
 
@@ -516,12 +476,8 @@ public class DriveSubsystem extends SubsystemBase {
     speeds.vxMetersPerSecond = speeds.vxMetersPerSecond * m_AutoSpeedScale;
     speeds.vyMetersPerSecond = speeds.vyMetersPerSecond * m_AutoSpeedScale;
     speeds.omegaRadiansPerSecond = speeds.omegaRadiansPerSecond * m_AutoSpeedScale;
-    
-    // SmartDashboard.putNumber("Robot Auto X After align", speeds.vxMetersPerSecond);
 
     this.drive(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond,false, true);
-    // SmartDashboard.putNumber("DriveVelX", speeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("DriveVelY", speeds.vyMetersPerSecond);
     SmartDashboard.putNumber("DriveRotZ", speeds.omegaRadiansPerSecond);
   }
   
@@ -624,24 +580,6 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.robotPositionYString = "Middle";
     }
   }
-
-  // public void getRobotVelocityX() {
-  //   if (m_timerX.hasElapsed(0.1)) {
-  //     double newX = m_poseEstimator.getEstimatedPosition().getX();
-  //     xVelocity = (newX - originalX) / m_timerX.get();
-  //     originalX = newX;
-  //     m_timerX.restart();
-  //   }
-  // }
-
-  // public void getRobotVelocityY() {
-  //   if (m_timerY.hasElapsed(0.1)) {
-  //     double newY = m_poseEstimator.getEstimatedPosition().getY();
-  //     yVelocity = (newY - originalY) / m_timerY.get();
-  //     originalY = newY;
-  //     m_timerY.restart();
-  //   }
-  // }
 
   public void zeroGyro() {
     m_imu.setYaw(0);

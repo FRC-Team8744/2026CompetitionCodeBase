@@ -10,7 +10,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -106,8 +105,6 @@ public class SwerveModuleOffboard {
     driveConfigPID.kP = Constants.ConstantsOffboard.KRAKEN_P;
     driveConfigPID.kI = Constants.ConstantsOffboard.KRAKEN_I;
     driveConfigPID.kD = Constants.ConstantsOffboard.KRAKEN_D;
-    // driveConfigPID.kS = Constants.ConstantsOffboard.KRAKEN_S;
-    // driveConfigPID.kA = Constants.ConstantsOffboard.KRAKEN_A;
     driveConfig.withSlot0(driveConfigPID);
 
     m_driveMotor.getConfigurator().apply(driveConfig);
@@ -116,7 +113,6 @@ public class SwerveModuleOffboard {
     // }
 
     m_turningMotor.getConfigurator().apply(rotationConfig);
-    // m_turningMotor.getConfigurator().setPosition(0);
     m_turningMotor.setNeutralMode(NeutralModeValue.Brake);
   }
 
@@ -149,7 +145,6 @@ public class SwerveModuleOffboard {
     m_driveMotor.setControl(driveVelocity);
     turnPosition.Position = (state.angle.getRotations());
     m_turningMotor.setControl(turnPosition.withEnableFOC(false).withPosition(turnPosition.Position));
-    // m_turningPID.setReference(state.angle.getRadians(), (ConstantsOffboard.ANGLE_MOTOR_PROFILED_MODE) ? SparkMax.ControlType.kMAXMotionPositionControl : SparkMax.ControlType.kPosition);
     
   }
 
@@ -164,33 +159,6 @@ public class SwerveModuleOffboard {
     Rotation2d rot = Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble());
     return new SwerveModuleState(velocity, rot);
   }
-
-  // public static double wrapTo360(double angleDeg) {
-  //   angleDeg %= 360.0;
-  //   if (angleDeg < 0) {
-  //       angleDeg += 360.0;
-  //   }
-  //   return angleDeg;
-  // }
-
-  // public void optimize(double goalAngle, double currentAngle) {
-  //   double x = goalAngle - currentAngle;
-  //   double y = (goalAngle + 360) - currentAngle;
-  //   double z = goalAngle - (currentAngle + 360);
-  //   if (Math.abs(x) > 90.0 && Math.abs(y) > 90.0 && Math.abs(z) > 90.0) {
-  //     state.speedMetersPerSecond *= -1;
-  //     state.angle = Rotation2d.fromDegrees(goalAngle).rotateBy(Rotation2d.kPi);
-  //     // Constants.yCheck = true;
-  //   } 
-  //   else if (Math.abs(x) > 90.0 && Math.abs(y) <= 90.0) {
-  //     state.angle = Rotation2d.fromDegrees((goalAngle + 360));
-  //     // Constants.yCheck = true;
-  //   }
-  //   else if (Math.abs(x) > 90.0 && Math.abs(z) <= 90.0) {
-  //     state.angle = Rotation2d.fromDegrees((goalAngle - 360));
-  //     // Constants.yCheck = true;
-  //   }
-  // }
 
   /**
    * Returns the CANcoder's measured turn angle in degrees.
@@ -223,7 +191,6 @@ public class SwerveModuleOffboard {
    */
   public SwerveModulePosition getPosition() {
     double distance = m_driveMotor.getPosition().getValueAsDouble() * ConstantsOffboard.DRIVE_ROTATIONS_TO_METERS;
-    // Rotation2d rot = new Rotation2d(m_driveEncoder.getPosition().getValueAsDouble() * ConstantsOffboard.ANGLE_GEAR_RATIO);
     Rotation2d rot = Rotation2d.fromRotations(m_canCoder.getAbsolutePosition().getValueAsDouble());
     return new SwerveModulePosition(distance, rot);
   }

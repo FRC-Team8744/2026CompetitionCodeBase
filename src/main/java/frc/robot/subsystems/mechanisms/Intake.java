@@ -6,7 +6,6 @@ package frc.robot.subsystems.mechanisms;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-// import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,14 +17,12 @@ public class Intake extends SubsystemBase {
   private final TalonFX m_intakeMotor;
   private final TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
   private final Slot0Configs intakeConfigPID = intakeConfig.Slot0;
-  // private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
 
   public Intake() {
     intakeConfig.Voltage.PeakForwardVoltage = 12;
     intakeConfig.Voltage.PeakReverseVoltage = -12;
     intakeConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     intakeConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    // intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     intakeConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     intakeConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
@@ -48,7 +45,6 @@ public class Intake extends SubsystemBase {
   }
 
   public void setIntakeSpeed(double speed) {
-    // m_intakeMotor.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(speed));
     m_intakeMotor.set(speed);
   }
 

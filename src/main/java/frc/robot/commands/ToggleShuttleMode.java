@@ -10,7 +10,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.Intake;
 import frc.robot.subsystems.mechanisms.ShooterFlywheels;
-import frc.robot.subsystems.mechanisms.ShooterHood;
 import frc.robot.subsystems.mechanisms.Spindexer;
 import frc.robot.subsystems.mechanisms.Turret;
 
@@ -44,7 +43,6 @@ public class ToggleShuttleMode extends Command {
   public void initialize() {
     if (Constants.shuttleMode) {
       Constants.shuttleMode = false;
-      // m_turret.setTurretAngle(180);
       m_intake.stopIntake();
       m_spindexer.stopSpindexer();
       m_indexer.stopIndexer();

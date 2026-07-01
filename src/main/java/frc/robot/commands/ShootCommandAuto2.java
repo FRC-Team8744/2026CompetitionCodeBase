@@ -4,12 +4,8 @@
 
 package frc.robot.commands;
 
-import com.fasterxml.jackson.databind.ser.std.NumberSerializers.IntLikeSerializer;
-
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.Intake;
@@ -47,8 +43,6 @@ public class ShootCommandAuto2 extends Command {
     addRequirements(m_shooterFlywheels);
     addRequirements(m_indexer);
     addRequirements(m_turret);
-    // addRequirements(m_intake);
-    // addRequirements(m_intakePivot);
     m_timer = new Timer();
     m_stallTimer = new Timer();
     m_startTimer = new Timer();
@@ -81,7 +75,6 @@ public class ShootCommandAuto2 extends Command {
         }
       }
     } else {
-      // m_shooterHood.setShooterHoodAngle(Constants.presetHoodAngle);
       m_shooterHood.setHoodRollerSpeed(Constants.presetFlywheelSpeed / -350);
       m_shooterFlywheels.setShooterFlywheelsRps(Constants.presetFlywheelSpeed);
       if (Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.presetFlywheelSpeed * 60 * 0.8)) {
@@ -129,7 +122,6 @@ public class ShootCommandAuto2 extends Command {
       m_turret.stopTurret();
       m_shooterHood.stopHoodRollers();
       m_shooterHood.setShooterHoodAngle(72.0); // 75
-      // CommandScheduler.getInstance().schedule(m_shooterHoodToZero);
   }
 
   // Returns true when the command should end.

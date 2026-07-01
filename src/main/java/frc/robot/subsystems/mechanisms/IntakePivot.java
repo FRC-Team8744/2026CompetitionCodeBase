@@ -8,7 +8,6 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +29,6 @@ public class IntakePivot extends SubsystemBase {
     intakePivotConfig.Voltage.PeakReverseVoltage = -12;
     intakePivotConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     intakePivotConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    // intakePivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     intakePivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     intakePivotConfig.CurrentLimits.StatorCurrentLimit = 40.0;
     intakePivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -46,7 +44,6 @@ public class IntakePivot extends SubsystemBase {
 
     m_intakePivot = new TalonFX(Constants.SwerveConstants.kIntakePivotMotorPort);
 
-    // m_intakePivot.setNeutralMode(NeutralModeValue.Brake);
     m_intakePivot.setPosition(startingPositionRotations);
     m_intakePivot.getConfigurator().apply(intakePivotConfig);
   }
@@ -68,7 +65,6 @@ public class IntakePivot extends SubsystemBase {
 
   public void stopIntakePivot() {
     m_intakePivot.stopMotor();
-    // m_intakePivot.setPosition(-9.4262695312);
   }
 
   @Override

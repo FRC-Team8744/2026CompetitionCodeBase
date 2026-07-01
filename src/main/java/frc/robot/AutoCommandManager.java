@@ -21,17 +21,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeCommandAuto;
-import frc.robot.commands.ShootCommand;
-import frc.robot.commands.ShootCommandAuto;
 import frc.robot.commands.ShootCommandAuto2;
-import frc.robot.commands.ShooterHoodToZero;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.Intake;
 import frc.robot.subsystems.mechanisms.IntakePivot;
-// import frc.robot.subsystems.vision.LimeLight4;
 import frc.robot.subsystems.mechanisms.ShooterFlywheels;
 import frc.robot.subsystems.mechanisms.ShooterHood;
 import frc.robot.subsystems.mechanisms.Spindexer;
@@ -48,7 +43,6 @@ public class AutoCommandManager {
     public TrajectoryConfig reverseConfig;
 
     public AutoCommandManager(
-        // LimeLight4 m_visionGS,
         DriveSubsystem m_robotDrive,
         ShooterFlywheels m_shooterFlywheels,
         ShooterHood m_shooterHood,
@@ -60,7 +54,6 @@ public class AutoCommandManager {
          {
 
         configureNamedCommands(
-            // m_visionGS,
             m_robotDrive,
             m_shooterFlywheels,
             m_shooterHood,
@@ -122,7 +115,6 @@ public class AutoCommandManager {
     }
 
     public void configureNamedCommands(
-        // LimeLight4 m_visionGS,
         DriveSubsystem m_robotDrive,
         ShooterFlywheels m_shooterFlywheels,
         ShooterHood m_shooterHood,

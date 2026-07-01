@@ -10,22 +10,16 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class Turret extends SubsystemBase {
@@ -38,17 +32,13 @@ public class Turret extends SubsystemBase {
   private final Timer m_shootTimer = new Timer();
   private final Timer m_shuttleTimer = new Timer();
   private final double turretMotorToSensorGearRatio = 15 / 116;
-  private final double startingPositionRotations = 0;
   private final double minimumAngle = -16;
   private final double maximumAngle = 340;
   private Translation3d targetPose;
   private Double robotXWhenShotLands;
   private Double robotYWhenShotLands;
   private final DriveSubsystem m_drive;
-  // private PIDController m_turnCtrl = new PIDController(0.014, 0.015, 0.0013);
-  private double heading;
   private double goalAngle;
-  private double m_output;
   private Pose2d initialPoseShoot;
   private Pose2d initialPoseShuttle;
   private final PositionVoltage goalPosition = new PositionVoltage(0);
@@ -60,7 +50,6 @@ public class Turret extends SubsystemBase {
     robotYWhenShotLands = drive.getEstimatedPose().getY();
     m_shootTimer.start();
     m_shuttleTimer.start();
-    // turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.3716666667;
     turretCANCoderConfig.MagnetSensor.MagnetOffset = 0.022222222222222; //0.859166666666667;
     m_turretCANCoder.getConfigurator().apply(turretCANCoderConfig);
 
@@ -75,7 +64,6 @@ public class Turret extends SubsystemBase {
     turretConfig.CurrentLimits.StatorCurrentLimit = 60.0;
     turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     turretConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
-    // turretConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = 1;
     turretConfigPID.kS = 8.5; // Add 0.25 V output to overcome static friction 12.5
     turretConfigPID.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
     turretConfigPID.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
@@ -88,9 +76,6 @@ public class Turret extends SubsystemBase {
 
     m_turret.getConfigurator().apply(turretConfig);
     m_turret.setNeutralMode(NeutralModeValue.Brake);
-    // m_turret.setPosition(startingPositionRotations);
-
-    // this.setDefaultCommand(Commands.run(() -> setTurretAngle(calculateGoalAngle()), this));
 
     m_drive = drive;
   }
@@ -116,7 +101,6 @@ public class Turret extends SubsystemBase {
 
   public void stopTurret() {
     m_turret.stopMotor();
-    // m_turret.setPosition(-9.4262695312);
   }
 
   private double optimizeAngle(double targetAngle) {
@@ -163,18 +147,6 @@ public class Turret extends SubsystemBase {
 
     targetPose = Constants.targetHubPosition;
 
-    /*  double distanceToTargetX = m_drive.getEstimatedPose().getX() - targetPose.getX();
-    // double distanceToTargetY = m_drive.getEstimatedPose().getY() - targetPose.getY();
-
-    // if (alliance.get() == DriverStation.Alliance.Red) {
-    //   goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)) - 180);
-    // }
-    // else {
-    //   goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)));
-    // }
-    // goalAngle -= m_drive.getEstimatedPose().getRotation().getDegrees();
-    */
-
     if (m_shootTimer.hasElapsed(0.04)) {
       newPose = m_drive.getEstimatedPose();
 
@@ -216,18 +188,6 @@ public class Turret extends SubsystemBase {
     Pose2d newPose;
 
     Translation3d targetShuttlePose = Constants.targetShuttlePosition;
-
-  /* double distanceToTargetX = m_drive.getEstimatedPose().getX() - targetShuttlePose.getX();
-  // double distanceToTargetY = m_drive.getEstimatedPose().getY() - targetShuttlePose.getY();
-
-  // if (alliance.get() == DriverStation.Alliance.Red) {
-  //   goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)));
-  // }
-  // else {
-  //   goalAngle = (Math.toDegrees(Math.atan(distanceToTargetY / distanceToTargetX)) - 180);
-  // }
-  // goalAngle -= m_drive.getEstimatedPose().getRotation().getDegrees();
-    */
   
     if (m_shuttleTimer.hasElapsed(0.04)) {
       newPose = m_drive.getEstimatedPose();

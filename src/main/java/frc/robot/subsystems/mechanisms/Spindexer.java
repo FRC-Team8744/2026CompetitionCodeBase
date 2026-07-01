@@ -6,7 +6,6 @@ package frc.robot.subsystems.mechanisms;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,7 +17,6 @@ public class Spindexer extends SubsystemBase {
   private final TalonFX m_spindexer;
   private final TalonFXConfiguration spindexerConfig = new TalonFXConfiguration();
   private final Slot0Configs spindexerConfigPID = spindexerConfig.Slot0;
-  private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
 
   public Spindexer() {
     spindexerConfig.Voltage.PeakForwardVoltage = 12;

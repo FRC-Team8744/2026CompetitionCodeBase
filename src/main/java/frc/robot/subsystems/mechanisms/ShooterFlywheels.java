@@ -4,19 +4,14 @@
 
 package frc.robot.subsystems.mechanisms;
 
-import javax.security.auth.kerberos.DelegationPermission;
-
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-// import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -28,14 +23,12 @@ public class ShooterFlywheels extends SubsystemBase {
   private final Slot0Configs shooterFlywheelsConfigPID = shooterFlywheelsConfig.Slot0;
   public final double defaultSpeed = 0.2;
   private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
-  // private final VelocityVoltage goalVelocityRight = new VelocityVoltage(0);
 
   public ShooterFlywheels() {
     shooterFlywheelsConfig.Voltage.PeakForwardVoltage = 12;
     shooterFlywheelsConfig.Voltage.PeakReverseVoltage = -12;
     shooterFlywheelsConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     shooterFlywheelsConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    // shooterFlywheelsConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     shooterFlywheelsConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     shooterFlywheelsConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     shooterFlywheelsConfigPID.kS = 0.0005; // Add 0.25 V output to overcome static friction
@@ -56,8 +49,6 @@ public class ShooterFlywheels extends SubsystemBase {
     m_shooterFlywheelsRight.getConfigurator().apply(shooterFlywheelsConfig);
     m_shooterFlywheelsRight.setNeutralMode(NeutralModeValue.Coast);
     m_shooterFlywheelsRight.setPosition(0);
-
-    // setDefaultCommand(Commands.run(()->setShooterFlywheelsSpeed(defaultSpeed), this));
   }
 
   public void stopShooterFlywheels() {
@@ -68,8 +59,6 @@ public class ShooterFlywheels extends SubsystemBase {
   * @param speed Set the speed of the shooter flywheels 0-1
   **/ 
   public void setShooterFlywheelsSpeed(double speed) {
-    // m_shooterFlywheelsLeft.setControl(goalVelocityLeft.withEnableFOC(false).withSlot(0).withVelocity(4000));
-    // m_shooterFlywheelsRight.setControl(goalVelocityRight.withEnableFOC(false).withSlot(0).withVelocity(-4000));
     m_shooterFlywheelsLeft.set(speed);
     m_shooterFlywheelsRight.set(-speed);
   }

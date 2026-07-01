@@ -4,17 +4,11 @@
 
 package frc.robot.subsystems.alignment;
 
-import java.util.Vector;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.ConstantsOffboard;
 import frc.robot.DriveModifier;
@@ -69,8 +63,6 @@ public AlignToHub() {
     m_turnCtrl.setSetpoint(goalAngle);
 
     m_output = MathUtil.clamp(m_turnCtrl.calculate(heading), -1.0, 1.0);
-
-    // m_output = MathUtil.clamp(heading, -1.0, 1.0);
 
     if (Math.abs(m_turnCtrl.getError()) <= m_turnCtrl.getErrorTolerance()) {
       Constants.autoRotateSpeed = 0;

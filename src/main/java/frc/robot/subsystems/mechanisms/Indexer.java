@@ -6,7 +6,6 @@ package frc.robot.subsystems.mechanisms;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-// import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,14 +17,12 @@ public class Indexer extends SubsystemBase {
   private final TalonFX m_indexerMotor;
   private final TalonFXConfiguration indexerConfig = new TalonFXConfiguration();
   private final Slot0Configs indexerConfigPID = indexerConfig.Slot0;
-  // private final VelocityVoltage goalVelocity = new VelocityVoltage(0);
 
   public Indexer() {
     indexerConfig.Voltage.PeakForwardVoltage = 12;
     indexerConfig.Voltage.PeakReverseVoltage = -12;
     indexerConfig.TorqueCurrent.PeakForwardTorqueCurrent = 800;
     indexerConfig.TorqueCurrent.PeakReverseTorqueCurrent = -800;
-    // indexerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     indexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     indexerConfig.CurrentLimits.SupplyCurrentLimit = 35.0;
     indexerConfigPID.kS = 0.05; // Add 0.25 V output to overcome static friction
@@ -48,7 +45,6 @@ public class Indexer extends SubsystemBase {
   }
 
   public void setIndexerSpeed(double speed) {
-    // m_indexerMotor.setControl(goalVelocity.withEnableFOC(false).withSlot(0).withVelocity(speed));
     m_indexerMotor.set(speed);
   }
 

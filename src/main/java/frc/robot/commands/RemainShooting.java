@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.subsystems.mechanisms.Indexer;
 import frc.robot.subsystems.mechanisms.Intake;
@@ -25,7 +24,6 @@ public class RemainShooting extends Command {
   private final ShooterFlywheels m_shooterFlywheels;
   private final ShooterHood m_shooterHood;
   private final Spindexer m_spindexer;
-  private final ShooterHoodToZero m_shooterHoodToZero;
   // private final Turret m_turret;
   public RemainShooting(Intake in, IntakePivot inp, Turret tur, Indexer idx, ShooterFlywheels shf, ShooterHood shh, Spindexer sp, ShooterHoodToZero shtz) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -36,7 +34,6 @@ public class RemainShooting extends Command {
     m_shooterFlywheels = shf;
     m_shooterHood = shh;
     m_spindexer = sp;
-    m_shooterHoodToZero = shtz;
 
     addRequirements(m_turret);
     addRequirements(m_indexer);
@@ -59,13 +56,11 @@ public class RemainShooting extends Command {
   @Override
   public void execute() {
     if (Constants.shootWhileIntake || Constants.shuttleMode) {
-      // if (Constants.shuttleMode) {
         if (Constants.robotPositionXString == "AllianceTrench" || Constants.robotPositionXString == "OpponentTrench") {
           m_shooterHood.setShooterHoodAngle(74);
         } else {
           m_shooterHood.setShooterHoodAngle(Constants.hoodAngle);
         }
-      // }
       if (Constants.shuttleMode) {
         m_shooterHood.setHoodRollerSpeed(Constants.flywheelSpeed / -1250);
       } else {
