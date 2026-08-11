@@ -18,7 +18,7 @@ import edu.wpi.first.math.util.Units;
 
 public final class Constants {
   public static final int kMaxSpeedPercentAuto = 100; //This effects Drive speed in telop DONT ASK ME WHY
-  public static final int kMaxSpeedPercentTeleop = 65; // 65
+  public static final int kMaxSpeedPercentTeleop = 75; // 65
   public static final int kMaxAccelerationPercent = 100;
   public static final double kDriverSpeedLimit = 1; // sets how much the max speed is modified by when you press down on the left stick basicly make go slower the default is 1 btw 
 

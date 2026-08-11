@@ -94,15 +94,15 @@ public class ShootCommand extends Command {
       }
     }
     m_intake.setIntakeSpeed(0.8);
-    // if (m_timer.hasElapsed(0.5) && intakeUp == false) {
-    //   m_intakePivot.intakeDown(-1200);
-    //   intakeUp = true;
-    //   m_timer.restart();
-    // } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
-    //   m_intakePivot.intakeDown(-2110);
-    //   intakeUp = false;
-    //   m_timer.restart();
-    // }
+    if (m_timer.hasElapsed(0.5) && intakeUp == false) {
+      m_intakePivot.intakeDown(-1200);
+      intakeUp = true;
+      m_timer.restart();
+    } else if(m_timer.hasElapsed(0.5) && intakeUp == true) {
+      m_intakePivot.intakeDown(-2110);
+      intakeUp = false;
+      m_timer.restart();
+    }
     if (Constants.enableAntiStall && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getRightFlywheelVelocity()) >= (Constants.flywheelSpeed * 60 * 0.9) && Math.abs(m_shooterFlywheels.getLeftFlywheelVelocity()) > (5 * 60 * 0.9)) {
       if (m_startTimer.hasElapsed(0.25)) {
         if (m_spindexer.isMotorStalling()) {
